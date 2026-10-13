@@ -1,26 +1,15 @@
 // File: api/save-username.js
-// Place this file in the 'api' folder in your Vercel project root
+// Saves user completion data to Supabase PostgreSQL (with optional Firebase fallback)
 
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import pkg from 'pg';
+const { Pool } = pkg;
 
-// Initialize Firebase Admin (only once)
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: "cyber-awareness-b470b",
-      // You'll need to add your service account credentials as environment variables
-      // In Vercel dashboard: Settings > Environment Variables
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    })
-  });
-}
-
-const db = getFirestore();
+const pool = new Pool({
+  connectionString: `postgresql://postgres.qjvpdrdfbmblfhprnbbf:${encodeURIComponent('S!ddeeq5696')}@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres`,
+  ssl: { rejectUnauthorized: false }
+});
 
 export default async function handler(req, res) {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -29,53 +18,126 @@ export default async function handler(req, res) {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Handle OPTIONS request for CORS
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { userName, score, level, accuracy, date } = req.body;
+    const {
+      userName,
+      score = 0,
+      level = 'Beginner',
+      accuracy = 0,
+      videoCompleted = false,
+      videoMarks = 0,
+      quizMarks = 0,
+      correctAnswers = 0,
+      totalQuestions = 0,
+      activity = 'Cybersecurity Awareness',
+      date
+    } = req.body || {};
 
-    // Validate username
-    if (!userName || userName.trim() === '') {
+    if (!userName || String(userName).trim() === '') {
       return res.status(400).json({ error: 'Username is required' });
     }
 
-    // Sanitize username
-    const sanitizedName = userName.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedName = String(userName).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Prepare data to save
-    const userData = {
-      userName: sanitizedName,
-      score: score || 0,
-      level: level || 'Beginner',
-      accuracy: accuracy || 0,
-      completionDate: date || new Date().toLocaleDateString(),
-      timestamp: new Date().toISOString(),
-      createdAt: new Date()
-    };
+    // Save to Supabase
+    const client = await pool.connect();
+    try {
+      const insertQuery = `
+        INSERT INTO public.users (
+          "userName",
+          score,
+          level,
+          accuracy,
+          "videoCompleted",
+          "videoMarks",
+          "quizMarks",
+          "correctAnswers",
+          "totalQuestions",
+          activity,
+          "completionDate"
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING id, "userName", score, level, "createdAt";
+      `;
 
-    // Save to Firestore
-    const docRef = await db.collection('users').add(userData);
+      const values = [
+        sanitizedName,
+        parseInt(score, 10) || 0,
+        level,
+        parseInt(accuracy, 10) || 0,
+        Boolean(videoCompleted),
+        parseInt(videoMarks, 10) || 0,
+        parseInt(quizMarks, 10) || 0,
+        parseInt(correctAnswers, 10) || 0,
+        parseInt(totalQuestions, 10) || 0,
+        activity,
+        completionDate
+      ];
 
-    return res.status(200).json({ 
-      success: true, 
-      message: 'Username saved successfully to Firebase',
-      id: docRef.id,
-      data: userData
-    });
+      const result = await client.query(insertQuery, values);
+      const savedUser = result.rows[0];
+
+      return res.status(200).json({
+        success: true,
+        message: 'Saved successfully to Supabase',
+        id: savedUser.id,
+        data: savedUser
+      });
+    } finally {
+      client.release();
+    }
 
   } catch (error) {
-    console.error('Error saving to Firebase:', error);
-    return res.status(500).json({ 
+    console.error('Error saving user to Supabase:', error);
+
+    // Fallback to Firebase if configured
+    try {
+      if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+        const { initializeApp, getApps, cert } = await import('firebase-admin/app');
+        const { getFirestore } = await import('firebase-admin/firestore');
+
+        if (!getApps().length) {
+          initializeApp({
+            credential: cert({
+              projectId: 'cyber-awareness-b470b',
+              privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+              clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            })
+          });
+        }
+
+        const db = getFirestore();
+        const userData = {
+          userName: req.body?.userName,
+          score: req.body?.score || 0,
+          level: req.body?.level || 'Beginner',
+          accuracy: req.body?.accuracy || 0,
+          completionDate: req.body?.date || new Date().toLocaleDateString(),
+          timestamp: new Date().toISOString()
+        };
+        const docRef = await db.collection('users').add(userData);
+        return res.status(200).json({
+          success: true,
+          message: 'Saved to Firebase fallback',
+          id: docRef.id
+        });
+      }
+    } catch (fbErr) {
+      console.error('Firebase fallback failed:', fbErr);
+    }
+
+    return res.status(500).json({
       error: 'Failed to save username',
-      details: error.message 
+      details: error.message
     });
   }
 }
