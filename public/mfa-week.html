@@ -16,6 +16,8 @@
     
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="cert-assets.js"></script>
+    <script src="certificate.js"></script>
     
     <style>
         * {
@@ -532,7 +534,7 @@
     <header class="header">
         <div class="header-container">
             <nav class="nav">
-                <div class="logo"><a href="index.html">Packages-Cybersecurity</a></div>
+                <div class="logo"><a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">OGDCL Cybersecurity</span></a></div>
                 
                 <div class="hamburger" onclick="toggleMenu()">
                     <span></span>
@@ -570,8 +572,8 @@
         <div class="study-section">
             <h2 class="section-title">Protect Your Digital Identity</h2>
             
-            <div class="video-container">
-                <video id="trainingVideo" controls controlsList="nodownload">
+            <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
+                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/Password_policy_poster.jpg">
                     <source src="./videos/Password_policy.mp4" type="video/mp4">
                     <source src="videos/Password_policy.mp4" type="video/mp4">
                     Your browser does not support the video tag.
@@ -1201,95 +1203,14 @@
             showNotification('Generating PDF certificate...', 'info');
             
             try {
-                if (typeof window.jspdf === 'undefined') {
-                    throw new Error('jsPDF library not loaded');
-                }
-                
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-                
-                // Background
-                doc.setFillColor(245, 247, 250);
-                doc.rect(0, 0, 297, 210, 'F');
-                
-                // Outer Border
-                doc.setDrawColor(44, 62, 80);
-                doc.setLineWidth(3);
-                doc.rect(10, 10, 277, 190);
-                
-                // Inner Border
-                doc.setDrawColor(78, 205, 196);
-                doc.setLineWidth(0.5);
-                doc.rect(15, 15, 267, 180);
-                
-                // Title
-                doc.setTextColor(44, 62, 80);
-                doc.setFontSize(28);
-                doc.setFont(undefined, 'bold');
-                doc.text('Packages-Cybersecurity', 148.5, 60, { align: 'center' });
-                
-                doc.setFontSize(18);
-                doc.setFont(undefined, 'normal');
-                doc.text('Certificate of Password Security Awareness - Activity 2', 148.5, 70, { align: 'center' });
-                
-                // Certifies text
-                doc.setTextColor(52, 73, 94);
-                doc.setFontSize(12);
-                doc.text('This certifies that', 148.5, 85, { align: 'center' });
-                
-                // Name Box
-                doc.setFillColor(78, 205, 196);
-                doc.rect(70, 90, 157, 15, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22);
-                doc.setFont(undefined, 'bold');
-                doc.text(userName, 148.5, 100, { align: 'center' });
-                
-                // Achievement text
-                doc.setTextColor(52, 73, 94);
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text('has successfully completed Activity 2: Password Protection', 148.5, 115, { align: 'center' });
-                doc.text('and demonstrated understanding of password security best practices.', 148.5, 122, { align: 'center' });
-                
-                // Performance Summary Box
-                doc.setFillColor(236, 240, 241);
-                doc.rect(40, 130, 217, 35, 'F');
-                doc.setDrawColor(78, 205, 196);
-                doc.setLineWidth(0.5);
-                doc.rect(40, 130, 217, 35);
-                
-                // Performance Details
-                doc.setTextColor(44, 62, 80);
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Performance Summary:', 50, 140);
-                
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(10);
-                doc.text(`Quiz: ${quizMarks}/100 marks (${accuracy}% accuracy)`, 50, 148);
-                doc.text(`Video: ${videoMarks}/50 marks`, 50, 155);
-                doc.text(`Total Score: ${userScore}/150 marks`, 170, 148);
-                doc.text(`Security Level: ${currentLevel.name}`, 170, 155);
-                
-                // Signature Lines
-                doc.setDrawColor(52, 73, 94);
-                doc.setLineWidth(0.3);
-                doc.line(40, 178, 100, 178);
-                doc.line(197, 178, 257, 178);
-                
-                doc.setFontSize(9);
-                doc.text('Packages-Cybersecurity Team', 70, 183, { align: 'center' });
-                doc.text('Issued: ' + currentDate, 227, 183, { align: 'center' });
-                
-                // Footer
-                doc.setFontSize(8);
-                doc.setTextColor(127, 140, 141);
-                doc.text('Powered by Packages Group - Cyber Security Division', 148.5, 193, { align: 'center' });
-                
-                // Save PDF
-                const safeFileName = userName.replace(/[^a-zA-Z0-9]/g, '_');
-                doc.save(`Packages_Cybersecurity_Activity2_${safeFileName}.pdf`);
+                window.downloadOGDCLCertificate({
+                    userName: userName,
+                    score: userScore,
+                    accuracy: accuracy,
+                    level: currentLevel.name,
+                    activity: 'Activity 2: Password Protection & Multi-Factor Authentication',
+                    date: currentDate
+                });
                 
                 showNotification(`Certificate generated for ${userName}!`, 'success');
                 
