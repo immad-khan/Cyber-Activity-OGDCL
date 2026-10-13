@@ -6,6 +6,8 @@
     <title>Social Engineering Week - CyberShield</title>
     <!-- jsPDF Library for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="cert-assets.js"></script>
+    <script src="certificate.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -733,7 +735,7 @@
         <div class="container">
             <nav class="nav">
                 <div class="nav-left">
-                    <a href="index.html" class="logo">🛡️ CyberShield</a>
+                    <a href="index.html" class="logo" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:30px;margin-right:8px;object-fit:contain;"><span style="color:#fff;">OGDCL</span></a>
                     <a href="index.html" class="back-button">
                         <span>Back to Home</span>
                     </a>
@@ -1381,96 +1383,14 @@
     
     showNotification('Generating PDF certificate...', 'info');            
             try {
-                let logoData = null;
-                try {
-                    const response = await fetch('/logo.png');
-                    const blob = await response.blob();
-                    logoData = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    });
-                } catch (e) {
-                    console.warn('Logo not loaded:', e);
-                }
-                
-                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-                
-                const primaryColor = [44, 62, 80];
-                const accentColor = [186, 85, 211];
-                const textColor = [52, 73, 94];
-                
-                doc.setFillColor(245, 247, 250);
-                doc.rect(0, 0, 297, 210, 'F');
-                doc.setDrawColor(...primaryColor);
-                doc.setLineWidth(3);
-                doc.rect(10, 10, 277, 190);
-                doc.setDrawColor(...accentColor);
-                doc.setLineWidth(0.5);
-                doc.rect(15, 15, 267, 180);
-                
-                if (logoData) {
-                    try {
-                        doc.addImage(logoData, 'PNG', 133.5, 22, 30, 30);
-                    } catch(e) { 
-                        console.warn('Logo add failed:', e); 
-                    }
-                }
-                
-                doc.setTextColor(...primaryColor);
-                doc.setFontSize(28);
-                doc.setFont(undefined, 'bold');
-                doc.text('CyberShield - Social Engineering Week', 148.5, 60, { align: 'center' });
-                doc.setFontSize(18);
-                doc.setFont(undefined, 'normal');
-                doc.text('Certificate of Social Engineering Awareness', 148.5, 70, { align: 'center' });
-                
-                doc.setTextColor(...textColor);
-                doc.setFontSize(12);
-                doc.text('This certifies that', 148.5, 85, { align: 'center' });
-                
-                doc.setFillColor(186, 85, 211);
-                doc.rect(70, 90, 157, 15, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22);
-                doc.setFont(undefined, 'bold');
-                doc.text(userName, 148.5, 100, { align: 'center' });
-                
-                doc.setTextColor(...textColor);
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'normal');
-                doc.text('has successfully completed the Social Engineering Awareness Week training', 148.5, 115, { align: 'center' });
-                doc.text('and demonstrated excellent ability to detect manipulation tactics.', 148.5, 122, { align: 'center' });
-                
-                doc.setFillColor(236, 240, 241);
-                doc.rect(40, 130, 217, 35, 'F');
-                doc.setDrawColor(...accentColor);
-                doc.setLineWidth(0.5);
-                doc.rect(40, 130, 217, 35);
-                
-                doc.setTextColor(...primaryColor);
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Performance Summary:', 50, 140);
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(10);
-                doc.text(`Quiz Accuracy: ${accuracy}% (${correctAnswers}/${totalQuestions})`, 50, 148);
-                doc.text(`Total Score: ${userScore} points`, 50, 155);
-                doc.text(`Security Level: ${currentLevel.name}`, 170, 148);
-                doc.text(`Completion Date: ${currentDate}`, 170, 155);
-                
-                doc.setDrawColor(...textColor);
-                doc.setLineWidth(0.3);
-                doc.line(40, 178, 100, 178);
-                doc.line(197, 178, 257, 178);
-                doc.setFontSize(9);
-                doc.text('CyberShield Security Team', 70, 183, { align: 'center' });
-                doc.text('Issued: ' + currentDate, 227, 183, { align: 'center' });
-                doc.setFontSize(8);
-                doc.setTextColor(127, 140, 141);
-                doc.text('Powered by Packages Group - Cyber Security Division', 148.5, 193, { align: 'center' });
-                
-                doc.save(`CyberShield_SocialEngineering_Certificate_${userName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
+                window.downloadOGDCLCertificate({
+                    userName: userName,
+                    score: userScore,
+                    accuracy: accuracy,
+                    level: currentLevel.name,
+                    activity: 'Activity 4: Social Engineering Defense & Human Firewall',
+                    date: currentDate
+                });
                 showNotification(`Certificate generated for ${userName}!`, 'success');
                 
                 logAnalytics('certificate_generated', {
