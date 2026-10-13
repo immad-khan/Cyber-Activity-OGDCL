@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login – CyberShield</title>
+  <title>Admin Login – OGDCL</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -263,9 +263,9 @@
   <div class="orb orb-3"></div>
 
   <div class="card">
-    <div class="shield-icon">🛡️</div>
-    <h1>Admin Portal</h1>
-    <p class="subtitle">CyberShield Control Centre</p>
+    <img src="ogdcl-logo.png" alt="OGDCL" style="height:48px;display:block;margin:0 auto 16px;object-fit:contain;" />
+    <h1>OGDCL Admin Portal</h1>
+    <p class="subtitle">Information Security & Assessment Control</p>
     <div class="badge">🔒 Restricted Access</div>
 
     <form id="loginForm" onsubmit="handleLogin(event)">
@@ -273,7 +273,7 @@
         <label for="email">Email Address</label>
         <div class="input-wrap">
           <span class="input-icon">📧</span>
-          <input type="email" id="email" placeholder="admin@cybershield.com" autocomplete="username" required />
+          <input type="email" id="email" placeholder="admin@ogdcl.com" autocomplete="username" required />
         </div>
       </div>
 
@@ -303,7 +303,7 @@
   </div>
 
   <script>
-    const ADMIN_EMAIL    = 'admin@cybershield.com';
+    const VALID_EMAILS   = ['admin@ogdcl.com', 'admin@cybershield.com'];
     const ADMIN_PASSWORD = 'Admin@123';
     const ADMIN_TOKEN    = 'cybershield-admin-2024';
 
@@ -339,12 +339,12 @@
     function handleLogin(e) {
       e.preventDefault();
       hideError();
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
       setLoading(true);
 
       setTimeout(() => {
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        if (VALID_EMAILS.includes(email) && password === ADMIN_PASSWORD) {
           sessionStorage.setItem('adminToken', ADMIN_TOKEN);
           window.location.replace('/admin-dashboard.html');
         } else {
@@ -352,7 +352,7 @@
           showError('Invalid email or password. Please try again.');
           document.getElementById('password').value = '';
         }
-      }, 900);
+      }, 700);
     }
 
     document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', hideError));
