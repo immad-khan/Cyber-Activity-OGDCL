@@ -1,5 +1,5 @@
 // File: public/certificate.js
-// Official OGDCL Certificate Generator for CyberShield
+// Official OGDCL Certificate Generator
 
 (function (window) {
   'use strict';
