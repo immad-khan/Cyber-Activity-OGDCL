@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Engineering Week - CyberShield</title>
+    <!-- jsPDF Library for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-61N7MJQNCD');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a0f2e 50%, #4a2c6d 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Activities Dropdown */
+        .activities-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .activities-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            border: 2px solid rgba(186, 85, 211, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            color: #ba55d3;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(186, 85, 211, 0.3);
+        }
+
+        .activities-button:hover {
+            background: rgba(186, 85, 211, 0.15);
+            border-color: #ba55d3;
+            box-shadow: 0 0 25px rgba(186, 85, 211, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .activities-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 2px solid rgba(186, 85, 211, 0.3);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .activities-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 15px 25px;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(186, 85, 211, 0.2);
+            padding-left: 30px;
+        }
+
+        .dropdown-item.active {
+            background: rgba(186, 85, 211, 0.25);
+            border-left: 4px solid #ba55d3;
+        }
+
+        .dropdown-item .emoji {
+            font-size: 1.5rem;
+        }
+
+        .dropdown-item .text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 2px solid;
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes scoreGlow {
+            from { 
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+                border-color: rgba(0, 255, 255, 0.6);
+            }
+            to { 
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+                border-color: #00ffff;
+            }
+        }
+
+        .progress-container {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 120px;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(186, 85, 211, 0.15) 0%, transparent 70%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff15" stroke-width="0.8"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ba55d3, #9370db, #da70d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-icon {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            animation: maskFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes maskFloat {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 80px 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 60px;
+            color: #ba55d3;
+            text-shadow: 0 0 20px rgba(186, 85, 211, 0.5);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, #ba55d3, #9370db);
+            border-radius: 2px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 25px;
+            border: 2px solid rgba(186, 85, 211, 0.3);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .info-card:hover::before {
+            left: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(186, 85, 211, 0.3);
+            border-color: #ba55d3;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .info-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ba55d3;
+            text-shadow: 0 0 10px rgba(186, 85, 211, 0.3);
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            text-shadow: 0 0 15px rgba(186, 85, 211, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover .card-icon {
+            transform: scale(1.2) rotate(5deg);
+            text-shadow: 0 0 20px rgba(186, 85, 211, 0.8);
+        }
+
+        /* Attack Types Section */
+        .attack-types {
+            padding: 100px 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .attack-card {
+            background: linear-gradient(135deg, rgba(186, 85, 211, 0.1), rgba(147, 112, 219, 0.1));
+            padding: 40px;
+            border-radius: 30px;
+            border: 2px solid rgba(186, 85, 211, 0.4);
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+        }
+
+        .attack-card:hover {
+            transform: translateX(10px);
+            border-color: #ba55d3;
+            box-shadow: 0 10px 40px rgba(186, 85, 211, 0.3);
+        }
+
+        .attack-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .attack-content h3 {
+            color: #ba55d3;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .attack-content p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        /* Interactive Quiz */
+        .social-quiz {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 50px;
+            border-radius: 30px;
+            margin: 60px 0;
+            border: 2px solid rgba(186, 85, 211, 0.3);
+            backdrop-filter: blur(15px);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .social-quiz h3 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #ba55d3;
+        }
+
+        #quiz-question {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+        }
+        #quiz-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+        .quiz-button {
+    background: linear-gradient(45deg, #3498db, #ba55d3); /* Adjust color per page */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-size: 1.1rem;
+    font-weight: 500;
+    min-width: 300px;
+    max-width: 500px;
+    width: 100%;
+    margin: 0; /* Remove margin since we're using gap */
+}
+
+       .quiz-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    background: linear-gradient(45deg, #2980b9, #ba55d3);
+}
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            background: rgba(186, 85, 211, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(186, 85, 211, 0.3);
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: #ba55d3;
+            box-shadow: 0 15px 40px rgba(186, 85, 211, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ba55d3;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(186, 85, 211, 0.5);
+        }
+
+        .stat-card p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 60px 0;
+            text-align: center;
+            border-top: 2px solid rgba(186, 85, 211, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Floating Security Tip */
+        .floating-tip {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: rgba(186, 85, 211, 0.9);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            animation: floatAnimation 4s ease-in-out infinite;
+            box-shadow: 0 8px 25px rgba(186, 85, 211, 0.5);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(186, 85, 211, 0.7);
+        }
+
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(1deg); }
+            50% { transform: translateY(-15px) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-1deg); }
+        }
+
+        .floating-tip:hover {
+            animation-play-state: paused;
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(186, 85, 211, 0.7);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-left {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .back-button, .activities-button {
+                padding: 10px 18px;
+                font-size: 1rem;
+            }
+            
+            .activities-dropdown {
+                width: 100%;
+            }
+            
+            .activities-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .dropdown-content {
+                min-width: 100%;
+                left: 0;
+                right: 0;
+            }
+            
+            .score-display {
+                padding: 10px 20px;
+                gap: 15px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero-icon {
+                font-size: 5rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .info-card {
+                padding: 30px;
+            }
+
+            .attack-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .floating-tip {
+                bottom: 25px;
+                right: 25px;
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+            
+            .social-quiz {
+                padding: 30px;
+            }
+
+            .stats-grid {
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .quiz-button {
+        min-width: 200px;
+        font-size: 1rem;
+        padding: 12px 20px;
+    }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .quiz-button {
+                min-width: 150px;
+                margin: 8px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ba55d3, #9370db);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #9370db, #8a2be2);
+        }
+
+        /* Animations */
+        @keyframes slideInNotification {
+            from { 
+                transform: translateX(400px) scale(0.8); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes slideOutNotification {
+            from { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(400px) scale(0.8); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes levelUpAnimation {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1) rotate(5deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+
+        #userScore {
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+    </style>
+     <script defer src="https://cdn.vercel-analytics.com/v1/script.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-left">
+                    <a href="index.html" class="logo">🛡️ CyberShield</a>
+                    <a href="index.html" class="back-button">
+                        <span>Back to Home</span>
+                    </a>
+                    
+                    <!-- Activities Dropdown -->
+                    <div class="activities-dropdown">
+                        <div class="activities-button">
+                            <span>Activities</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item" onclick="window.location.href='phishing-week.html'">
+                                <span class="emoji">🎣</span>
+                                <span class="text">Phishing Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='mfa-week.html'">
+                                <span class="emoji">🔐</span>
+                                <span class="text">MFA Week</span>
+                            </div>
+                            <div class="dropdown-item active" onclick="window.location.href='social-engineering-week.html'">
+                                <span class="emoji">🎭</span>
+                                <span class="text">Social Engineering Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='privacy-week.html'">
+                                <span class="emoji">🔒</span>
+                                <span class="text">Data Privacy Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='management-messages.html'">
+                                <span class="emoji">📢</span>
+                                <span class="text">Management Messages</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-display">
+                    <div>
+                        <span id="levelIcon">🔓</span>
+                        <span id="levelName">Beginner</span>
+                    </div>
+                    <div>Score: <span id="userScore">0</span></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-icon">🎭</div>
+                <h1>Social Engineering Awareness Week</h1>
+                <p>Learn to recognize psychological manipulation tactics used by attackers to trick people into revealing confidential information or performing actions that compromise security.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">What is Social Engineering?</h2>
+                <div class="info-grid">
+                    <div class="info-card" id="se-intro" onclick="trackInteraction('se-intro')">
+                        <span class="card-icon">🧠</span>
+                        <h3>Psychological Manipulation</h3>
+                        <p>Social engineering exploits human psychology rather than technical vulnerabilities. Attackers use deception, persuasion, and manipulation to trick victims into divulging sensitive information or granting unauthorized access.</p>
+                    </div>
+                    
+                    <div class="info-card" id="se-tactics" onclick="trackInteraction('se-tactics')">
+                        <span class="card-icon">🎯</span>
+                        <h3>Common Tactics</h3>
+                        <p>Attackers use urgency, authority, fear, curiosity, and trust to manipulate victims. They impersonate trusted figures, create false scenarios, and exploit emotional vulnerabilities to achieve their goals.</p>
+                    </div>
+                    
+                    <div class="info-card" id="se-impact" onclick="trackInteraction('se-impact')">
+                        <span class="card-icon">⚠️</span>
+                        <h3>Real-World Impact</h3>
+                        <p>Social engineering attacks are responsible for major data breaches, financial fraud, and corporate espionage. They target employees at all levels and can bypass even the strongest technical security measures.</p>
+                    </div>
+                    
+                    <div class="info-card" id="se-defense" onclick="trackInteraction('se-defense')">
+                        <span class="card-icon">🛡️</span>
+                        <h3>Defense Strategies</h3>
+                        <p>Verify identities through independent channels, question unusual requests, follow security protocols, report suspicious contacts, and maintain healthy skepticism of unexpected communications.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="attack-types">
+            <div class="container">
+                <h2 class="section-title">Types of Social Engineering Attacks</h2>
+                
+                <div class="attack-card" onclick="trackInteraction('attack-pretexting')">
+                    <div class="attack-icon">📞</div>
+                    <div class="attack-content">
+                        <h3>Pretexting</h3>
+                        <p>Attackers create fabricated scenarios (pretexts) to gain trust and extract information. They might impersonate IT support, vendors, or authorities to convince victims to share credentials, financial data, or other sensitive information.</p>
+                    </div>
+                </div>
+                
+                <div class="attack-card" onclick="trackInteraction('attack-baiting')">
+                    <div class="attack-icon">💾</div>
+                    <div class="attack-content">
+                        <h3>Baiting</h3>
+                        <p>Attackers leave physical media (USB drives, CDs) in public places or offer free downloads online. When victims use these items out of curiosity, malware infects their systems, giving attackers access to sensitive data.</p>
+                    </div>
+                </div>
+                
+                <div class="attack-card" onclick="trackInteraction('attack-tailgating')">
+                    <div class="attack-icon">🚪</div>
+                    <div class="attack-content">
+                        <h3>Tailgating / Piggybacking</h3>
+                        <p>Unauthorized individuals gain physical access to restricted areas by following authorized personnel. They exploit politeness and social norms, often carrying items or appearing distressed to encourage people to hold doors open.</p>
+                    </div>
+                </div>
+                
+                <div class="attack-card" onclick="trackInteraction('attack-quid')">
+                    <div class="attack-icon">🎁</div>
+                    <div class="attack-content">
+                        <h3>Quid Pro Quo</h3>
+                        <p>Attackers offer services or benefits in exchange for information or access. Common examples include fake tech support offering to fix computer problems, or surveys offering prizes in return for personal information.</p>
+                    </div>
+                </div>
+
+                <div class="attack-card" onclick="trackInteraction('attack-impersonation')">
+                    <div class="attack-icon">👤</div>
+                    <div class="attack-content">
+                        <h3>Impersonation</h3>
+                        <p>Attackers pose as trusted individuals such as executives, IT staff, or vendors. They use this assumed identity to request sensitive information, authorize transactions, or gain access to secure systems and facilities.</p>
+                    </div>
+                </div>
+
+                <div class="attack-card" onclick="trackInteraction('attack-authority')">
+                    <div class="attack-icon">👔</div>
+                    <div class="attack-content">
+                        <h3>Authority Exploitation</h3>
+                        <p>Attackers leverage perceived authority to bypass security protocols. They might claim to be auditors, regulators, or senior executives demanding immediate compliance, exploiting people's tendency to obey authority figures.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">Social Engineering Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">98%</div>
+                        <p>Of cyberattacks rely on social engineering</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$4.7M</div>
+                        <p>Average cost of a social engineering breach</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">43%</div>
+                        <p>Of employees click on phishing emails</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2.5 min</div>
+                        <p>Average time to fall for a social engineering attack</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">Test Your Social Engineering Knowledge</h2>
+                <div class="social-quiz">
+                    <h3>Social Engineering Detection Quiz</h3>
+                    <p id="quiz-question">What is the most common social engineering tactic?</p>
+                    <div id="quiz-options">
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Physical break-ins')">Physical break-ins</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'Creating false sense of urgency')">Creating false sense of urgency</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Technical hacking')">Technical hacking</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password guessing')">Password guessing</button>
+                    </div>
+                    <div id="quiz-result"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 CyberShield - Social Engineering Awareness Week</p>
+            <p>Stay Alert | Verify Everything | Trust Your Instincts</p>
+            <p style="margin-top: 20px; opacity: 0.7;">Powered by Cyber-Security Team</p>
+        </div>
+    </footer>
+
+    <div class="floating-tip" onclick="showRandomTip()">
+        Security Tip
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        let userInteractions = {};
+        let sessionStartTime = Date.now();
+        let uniqueVisitorId = 'visitor_' + Math.random().toString(36).substr(2, 9);
+        let userScore = 0;
+        let correctAnswers = 0;
+        let totalQuestions = 0;
+        let securityLevelAchieved = 'Beginner';
+        let scrollDepth = 0;
+        let userName = '';
+
+        const SCORING = {
+            card_interaction: 10,
+            quiz_correct: 25,
+            quiz_attempt: 5,
+            floating_tip: 5,
+            attack_type: 12,
+            scroll_milestone: 5,
+            completion_bonus: 50,
+            page_visit: 5
+        };
+
+        const SECURITY_LEVELS = [
+            { name: 'Beginner', threshold: 0, color: '#ff6b6b', icon: '🔓', bgColor: 'rgba(255, 107, 107, 0.2)' },
+            { name: 'Aware', threshold: 50, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
+            { name: 'Cautious', threshold: 100, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
+            { name: 'Secure', threshold: 150, color: '#ba55d3', icon: '🔐', bgColor: 'rgba(186, 85, 211, 0.2)' },
+            { name: 'Expert', threshold: 200, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
+            { name: 'Guardian', threshold: 300, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "What is the most common social engineering tactic?",
+                options: ["Physical break-ins", "Creating false sense of urgency", "Technical hacking", "Password guessing"],
+                correct: 1,
+                explanation: "Creating a false sense of urgency is the most common tactic. Attackers pressure victims to act quickly without thinking, bypassing their normal security awareness and critical thinking."
+            },
+            {
+                question: "What should you do if someone calls claiming to be from IT and asks for your password?",
+                options: ["Give it if they sound official", "Hang up and call IT directly", "Ask them to email you", "Share it if urgent"],
+                correct: 1,
+                explanation: "Always hang up and contact IT through official channels. Legitimate IT staff never ask for passwords. Verify requests independently before sharing any information."
+            },
+            {
+                question: "What is pretexting in social engineering?",
+                options: ["Sending fake emails", "Creating a fabricated scenario to gain trust", "Installing malware", "Guessing passwords"],
+                correct: 1,
+                explanation: "Pretexting involves creating a fabricated scenario or identity to gain trust and extract information. Attackers build elaborate stories to make their requests seem legitimate."
+            },
+            {
+                question: "How should you handle an unexpected USB drive found in the parking lot?",
+                options: ["Plug it in to see what's on it", "Turn it in to security", "Keep it for personal use", "Share it with colleagues"],
+                correct: 1,
+                explanation: "Never plug in unknown USB drives - this is a common baiting attack. Turn found devices over to security. They could contain malware designed to compromise your system."
+            },
+            {
+                question: "What is tailgating in security?",
+                options: ["Following someone's car", "Following someone through a secure door", "Tracking online activity", "Copying data"],
+                correct: 1,
+                explanation: "Tailgating is when an unauthorized person follows an authorized person through a secure door or checkpoint. Always verify identity and never hold doors open for unknown individuals."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+
+        function updateScore(points, reason = '') {
+            userScore += points;
+            document.getElementById('userScore').textContent = userScore;
+            
+            const newLevel = getCurrentSecurityLevel();
+            if (newLevel.name !== securityLevelAchieved) {
+                const oldLevel = securityLevelAchieved;
+                securityLevelAchieved = newLevel.name;
+                showLevelUpNotification(oldLevel, newLevel);
+            }
+            
+            updateScoreVisual();
+            updateProgressBar();
+            animateScoreIncrease();
+            
+            logAnalytics('score_update', {
+                points: points,
+                totalScore: userScore,
+                reason: reason,
+                level: securityLevelAchieved
+            });
+        }
+
+        function getCurrentSecurityLevel() {
+            for (let i = SECURITY_LEVELS.length - 1; i >= 0; i--) {
+                if (userScore >= SECURITY_LEVELS[i].threshold) {
+                    return SECURITY_LEVELS[i];
+                }
+            }
+            return SECURITY_LEVELS[0];
+        }
+
+        function updateScoreVisual() {
+            const currentLevel = getCurrentSecurityLevel();
+            const scoreElement = document.getElementById('userScore');
+            const levelIconElement = document.getElementById('levelIcon');
+            const levelNameElement = document.getElementById('levelName');
+            const scoreDisplay = document.querySelector('.score-display');
+            
+            scoreElement.style.color = currentLevel.color;
+            scoreElement.style.textShadow = `0 0 10px ${currentLevel.color}`;
+            levelIconElement.textContent = currentLevel.icon;
+            levelNameElement.textContent = currentLevel.name;
+            levelNameElement.style.color = currentLevel.color;
+            
+            scoreDisplay.style.background = currentLevel.bgColor;
+            scoreDisplay.style.borderColor = currentLevel.color;
+        }
+
+        function updateProgressBar() {
+            const currentLevel = getCurrentSecurityLevel();
+            const nextLevelIndex = SECURITY_LEVELS.findIndex(level => level.name === currentLevel.name) + 1;
+            const progressBar = document.getElementById('progressBar');
+            
+            if (nextLevelIndex < SECURITY_LEVELS.length) {
+                const nextLevel = SECURITY_LEVELS[nextLevelIndex];
+                const progress = ((userScore - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
+                progressBar.style.width = Math.min(progress, 100) + '%';
+            } else {
+                progressBar.style.width = '100%';
+            }
+        }
+
+        function animateScoreIncrease() {
+            const scoreElement = document.getElementById('userScore');
+            scoreElement.style.transform = 'scale(1.3)';
+            scoreElement.style.transition = 'transform 0.4s ease';
+            
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 400);
+        }
+
+        function showLevelUpNotification(oldLevel, newLevel) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, ${newLevel.color}, ${newLevel.color}aa);
+                color: white;
+                padding: 40px 50px;
+                border-radius: 25px;
+                z-index: 20000;
+                text-align: center;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+                backdrop-filter: blur(20px);
+                border: 3px solid ${newLevel.color};
+                animation: levelUpAnimation 1s ease-out;
+                max-width: 450px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 5rem; margin-bottom: 20px;">${newLevel.icon}</div>
+                <h2 style="margin-bottom: 15px; font-size: 2.5rem; text-shadow: 0 0 15px rgba(255,255,255,0.8);">LEVEL UP!</h2>
+                <p style="margin-bottom: 10px; font-size: 1.2rem;">Congratulations! You've reached</p>
+                <p style="margin-bottom: 20px; font-size: 1.8rem; font-weight: bold; color: ${newLevel.color}; text-shadow: 0 0 10px rgba(255,255,255,0.5);">${newLevel.name} Level</p>
+                <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 25px;">Total Score: ${userScore} points</p>
+                <button onclick="this.parentElement.remove()" 
+                        style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                    Continue Learning
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                showNotification(`Welcome to ${newLevel.name} level! Your social engineering awareness is growing!`, 'success');
+            }, 1000);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+
+        function trackInteraction(action) {
+            if (userInteractions[action]) {
+                userInteractions[action]++;
+            } else {
+                userInteractions[action] = 1;
+            }
+            
+            let points = SCORING[action.replace('-', '_')] || SCORING.card_interaction;
+            
+            if (userInteractions[action] > 1) {
+                points = Math.max(1, Math.floor(points / userInteractions[action]));
+            }
+            
+            updateScore(points, action);
+            
+            logAnalytics(action, {
+                count: userInteractions[action],
+                timestamp: new Date().toISOString(),
+                sessionDuration: Date.now() - sessionStartTime,
+                pointsAwarded: points
+            });
+            
+            showInteractionFeedback(action, points);
+        }
+
+        function logAnalytics(event, data) {
+            const analyticsData = {
+                visitorId: uniqueVisitorId,
+                event: event,
+                data: data,
+                totalScore: userScore,
+                page: 'social-engineering-week',
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!window.sessionAnalytics) {
+                window.sessionAnalytics = [];
+            }
+            window.sessionAnalytics.push(analyticsData);
+        }
+
+        function showInteractionFeedback(action, points = 0) {
+            const messages = {
+                'se-intro': `Learning about manipulation tactics! (+${points} points)`,
+                'se-tactics': `Understanding attack methods! (+${points} points)`,
+                'se-impact': `Recognizing the threat! (+${points} points)`,
+                'se-defense': `Learning defense strategies! (+${points} points)`,
+                'attack-pretexting': `Pretexting awareness gained! (+${points} points)`,
+                'attack-baiting': `Baiting tactics learned! (+${points} points)`,
+                'attack-tailgating': `Tailgating prevention mastered! (+${points} points)`,
+                'attack-quid': `Quid pro quo identified! (+${points} points)`,
+                'attack-impersonation': `Impersonation detection improved! (+${points} points)`,
+                'attack-authority': `Authority exploitation recognized! (+${points} points)`,
+                'floating-tip': `Security tip learned! (+${points} points)`
+            };
+            
+            const message = messages[action] || `Great awareness! (+${points} points)`;
+            showNotification(message, 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                info: 'linear-gradient(45deg, #ba55d3, #9370db)',
+                success: 'linear-gradient(45deg, #96ceb4, #4ecdc4)',
+                warning: 'linear-gradient(45deg, #ffeaa7, #fab1a0)',
+                error: 'linear-gradient(45deg, #ff6b6b, #ee5a52)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 140px;
+                right: 30px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 20px;
+                z-index: 15000;
+                animation: slideInNotification 0.7s ease-out;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                max-width: 380px;
+                font-weight: 500;
+                backdrop-filter: blur(15px);
+                border: 2px solid rgba(255,255,255,0.3);
+                font-size: 0.95rem;
+                line-height: 1.4;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span style="flex: 1;">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.7; padding: 0; line-height: 1; margin-top: -2px;">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.style.animation = 'slideOutNotification 0.7s ease-in';
+                    setTimeout(() => {
+                        if (document.body.contains(notification)) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 700);
+                }
+            }, 5000);
+        }
+
+        function handleQuizAnswer(isCorrect, selectedAnswer) {
+            totalQuestions++;
+            trackInteraction('quiz-answer');
+            const resultDiv = document.getElementById('quiz-result');
+            
+            let bonusPoints = 0;
+            if (isCorrect) {
+                correctAnswers++;
+                bonusPoints = SCORING.quiz_correct;
+                updateScore(bonusPoints, 'quiz_correct');
+            }
+            
+            logAnalytics('quiz_answer', {
+                correct: isCorrect,
+                selectedAnswer: selectedAnswer,
+                question: document.getElementById('quiz-question').textContent,
+                bonusPoints: bonusPoints,
+                totalCorrect: correctAnswers,
+                totalQuestions: totalQuestions
+            });
+            
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const currentQuestion = quizQuestions[currentQuizIndex];
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `
+                    <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">✅ +${bonusPoints} points!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Excellent! You spotted the manipulation!</h4>
+                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
+                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
+                        </div>
+                    </div>
+                `;
+                showNotification(`Perfect! You can detect social engineering! (+${bonusPoints} bonus points)`, 'success');
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="color: #ffd93d; margin-top: 30px; padding: 25px; background: rgba(255, 217, 61, 0.15); border-radius: 20px; border: 2px solid rgba(255, 217, 61, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📚 Keep learning!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Good try! Let's learn together!</h4>
+                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
+                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
+                        </div>
+                    </div>
+                `;
+                showNotification('Great effort! Detection skills improve with practice!', 'warning');
+            }
+            
+            if (totalQuestions >= quizQuestions.length) {
+                setTimeout(() => {
+                    showQuizCompletion();
+                }, 3000);
+            } else {
+                setTimeout(showNewQuizQuestion, 4000);
+            }
+        }
+
+        function showNewQuizQuestion() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+            const quiz = quizQuestions[currentQuizIndex];
+            
+            document.getElementById('quiz-question').textContent = quiz.question;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            
+            quiz.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-button';
+                button.textContent = option;
+                button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
+                optionsDiv.appendChild(button);
+            });
+            
+            document.getElementById('quiz-result').innerHTML = '';
+        }
+
+        function showQuizCompletion() {
+            const quizContainer = document.querySelector('.social-quiz');
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const currentLevel = getCurrentSecurityLevel();
+            
+            quizContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
+                    <h2 style="color: #ba55d3; margin-bottom: 20px; font-size: 2.5rem;">Social Engineering Quiz Complete!</h2>
+                    <div style="background: rgba(186, 85, 211, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
+                        <h3 style="color: #ba55d3; margin-bottom: 15px;">Your Performance</h3>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions Answered: ${totalQuestions}/${quizQuestions.length}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct Answers: ${correctAnswers}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
+                        <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Current Level: ${currentLevel.name}</p>
+                        <p style="font-size: 1.6rem; font-weight: bold; color: #ba55d3; margin-top: 15px;">Total Score: ${userScore} points</p>
+                    </div>
+                    <div style="margin-top: 30px;">
+                        <input type="text" id="userName" placeholder="Enter your name for certificate" 
+                               style="padding: 15px 20px; border: 2px solid #ba55d3; border-radius: 25px; background: rgba(186, 85, 211, 0.1); color: white; font-size: 1.1rem; text-align: center; margin-bottom: 20px; width: 100%; max-width: 300px;" />
+                        <br>
+                        <button onclick="generateCertificate()" 
+                                style="background: linear-gradient(45deg, #ba55d3, #9370db); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            Generate PDF Certificate
+                        </button>
+                        <button onclick="resetQuiz()" 
+                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            Retake Quiz
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function generateCertificate() {
+    const nameInput = document.getElementById('userName');
+    userName = nameInput.value.trim();
+    
+    if (!userName) {
+        showNotification('Please enter your name to generate the certificate!', 'warning');
+        nameInput.focus();
+        return;
+    }
+    
+    const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+    const currentLevel = getCurrentSecurityLevel();
+    const currentDate = new Date().toLocaleDateString();
+    
+    // Save to Firebase - KEEP ONLY THIS ONE
+    try {
+        showNotification('Saving your progress to database...', 'info');
+        
+        const response = await fetch('/api/save-username', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                userName, 
+                score: userScore, 
+                level: currentLevel.name,
+                accuracy, 
+                date: currentDate, 
+                correctAnswers, 
+                totalQuestions,
+                course: 'Social Engineering Week'
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showNotification('Your progress has been saved!', 'success');
+        }
+    } catch (error) {
+        console.error('Firebase error:', error);
+    }
+    
+    showNotification('Generating PDF certificate...', 'info');            
+            try {
+                let logoData = null;
+                try {
+                    const response = await fetch('/logo.png');
+                    const blob = await response.blob();
+                    logoData = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (e) {
+                    console.warn('Logo not loaded:', e);
+                }
+                
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                
+                const primaryColor = [44, 62, 80];
+                const accentColor = [186, 85, 211];
+                const textColor = [52, 73, 94];
+                
+                doc.setFillColor(245, 247, 250);
+                doc.rect(0, 0, 297, 210, 'F');
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(3);
+                doc.rect(10, 10, 277, 190);
+                doc.setDrawColor(...accentColor);
+                doc.setLineWidth(0.5);
+                doc.rect(15, 15, 267, 180);
+                
+                if (logoData) {
+                    try {
+                        doc.addImage(logoData, 'PNG', 133.5, 22, 30, 30);
+                    } catch(e) { 
+                        console.warn('Logo add failed:', e); 
+                    }
+                }
+                
+                doc.setTextColor(...primaryColor);
+                doc.setFontSize(28);
+                doc.setFont(undefined, 'bold');
+                doc.text('CyberShield - Social Engineering Week', 148.5, 60, { align: 'center' });
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'normal');
+                doc.text('Certificate of Social Engineering Awareness', 148.5, 70, { align: 'center' });
+                
+                doc.setTextColor(...textColor);
+                doc.setFontSize(12);
+                doc.text('This certifies that', 148.5, 85, { align: 'center' });
+                
+                doc.setFillColor(186, 85, 211);
+                doc.rect(70, 90, 157, 15, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text(userName, 148.5, 100, { align: 'center' });
+                
+                doc.setTextColor(...textColor);
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'normal');
+                doc.text('has successfully completed the Social Engineering Awareness Week training', 148.5, 115, { align: 'center' });
+                doc.text('and demonstrated excellent ability to detect manipulation tactics.', 148.5, 122, { align: 'center' });
+                
+                doc.setFillColor(236, 240, 241);
+                doc.rect(40, 130, 217, 35, 'F');
+                doc.setDrawColor(...accentColor);
+                doc.setLineWidth(0.5);
+                doc.rect(40, 130, 217, 35);
+                
+                doc.setTextColor(...primaryColor);
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Performance Summary:', 50, 140);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Quiz Accuracy: ${accuracy}% (${correctAnswers}/${totalQuestions})`, 50, 148);
+                doc.text(`Total Score: ${userScore} points`, 50, 155);
+                doc.text(`Security Level: ${currentLevel.name}`, 170, 148);
+                doc.text(`Completion Date: ${currentDate}`, 170, 155);
+                
+                doc.setDrawColor(...textColor);
+                doc.setLineWidth(0.3);
+                doc.line(40, 178, 100, 178);
+                doc.line(197, 178, 257, 178);
+                doc.setFontSize(9);
+                doc.text('CyberShield Security Team', 70, 183, { align: 'center' });
+                doc.text('Issued: ' + currentDate, 227, 183, { align: 'center' });
+                doc.setFontSize(8);
+                doc.setTextColor(127, 140, 141);
+                doc.text('Powered by Packages Group - Cyber Security Division', 148.5, 193, { align: 'center' });
+                
+                doc.save(`CyberShield_SocialEngineering_Certificate_${userName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
+                showNotification(`Certificate generated for ${userName}!`, 'success');
+                
+                logAnalytics('certificate_generated', {
+                    userName, finalScore: userScore, accuracy, level: currentLevel.name, date: currentDate, format: 'PDF'
+                });
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Error generating PDF certificate. Please try again.', 'error');
+            }
+        }
+
+        function resetQuiz() {
+            if (confirm('Are you sure you want to retake the quiz? This will reset your quiz progress.')) {
+                currentQuizIndex = 0;
+                correctAnswers = 0;
+                totalQuestions = 0;
+                
+                const quizContainer = document.querySelector('.social-quiz');
+                quizContainer.innerHTML = `
+                    <h3>Social Engineering Detection Quiz</h3>
+                    <p id="quiz-question">What is the most common social engineering tactic?</p>
+                    <div id="quiz-options">
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Physical break-ins')">Physical break-ins</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'Creating false sense of urgency')">Creating false sense of urgency</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Technical hacking')">Technical hacking</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password guessing')">Password guessing</button>
+                    </div>
+                    <div id="quiz-result"></div>
+                `;
+                
+                showNotification('Quiz reset! Test your social engineering detection skills again!', 'info');
+                logAnalytics('quiz_reset', { timestamp: new Date().toISOString() });
+            }
+        }
+
+        const socialTips = [
+            'Always verify the identity of people requesting sensitive information through independent channels.',
+            'Be suspicious of urgent requests - attackers create artificial time pressure to bypass your judgment.',
+            'Never share passwords, even with people claiming to be IT support or management.',
+            'Question authority - verify requests from executives or officials before complying.',
+            'Don\'t click on links or download attachments from unexpected emails, even if they appear legitimate.',
+            'Be cautious of too-good-to-be-true offers or prizes - they\'re often social engineering traps.',
+            'Report suspicious contacts or requests to your security team immediately.',
+            'Never plug in USB drives or devices found in public places - they could contain malware.',
+            'Verify physical access requests - don\'t hold doors open for people you don\'t recognize.',
+            'Trust your instincts - if something feels off, it probably is.',
+            'Limit personal information shared on social media - attackers use it for targeted attacks.',
+            'Use different passwords for different accounts to limit damage from compromised credentials.',
+            'Be wary of callers who claim to know personal information about you - it could be pretexting.',
+            'Question unexpected requests to transfer money or make purchases, even from known contacts.',
+            'Regular security training helps you recognize evolving social engineering tactics.'
+        ];
+
+        let lastTipIndex = -1;
+
+        function showRandomTip() {
+            trackInteraction('floating-tip');
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * socialTips.length);
+            } while (randomIndex === lastTipIndex && socialTips.length > 1);
+            
+            lastTipIndex = randomIndex;
+            const randomTip = socialTips[randomIndex];
+            showNotification(randomTip, 'info');
+        }
+
+        window.addEventListener('scroll', function() {
+            const winHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const trackLength = docHeight - winHeight;
+            const pctScrolled = Math.floor(scrollTop / trackLength * 100);
+            
+            if (pctScrolled > scrollDepth) {
+                scrollDepth = pctScrolled;
+                
+                if (scrollDepth >= 25 && !window.scroll25) {
+                    window.scroll25 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_25');
+                    logAnalytics('scroll_milestone', { depth: 25 });
+                }
+                if (scrollDepth >= 50 && !window.scroll50) {
+                    window.scroll50 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_50');
+                    logAnalytics('scroll_milestone', { depth: 50 });
+                }
+                if (scrollDepth >= 75 && !window.scroll75) {
+                    window.scroll75 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_75');
+                    logAnalytics('scroll_milestone', { depth: 75 });
+                    showNotification('Explorer Badge! You have discovered most social engineering content! (+' + SCORING.scroll_milestone + ' points)', 'success');
+                }
+            }
+        });
+
+        window.addEventListener('load', function() {
+            updateScore(SCORING.page_visit, 'page_visit');
+            updateScoreVisual();
+            updateProgressBar();
+            
+            showNotification('Welcome to Social Engineering Awareness Week! Learn to detect manipulation!', 'success');
+            
+            setTimeout(() => {
+                showNotification('Click on attack types to learn and earn points!', 'info');
+            }, 10000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            logAnalytics('session_end', {
+                totalScore: userScore,
+                sessionDuration: Date.now() - sessionStartTime,
+                scrollDepth: scrollDepth,
+                completedActions: Object.keys(userInteractions).length,
+                securityLevel: securityLevelAchieved,
+                quizAccuracy: totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
+            });
+        });
+    </script>
+</body>
+</html>

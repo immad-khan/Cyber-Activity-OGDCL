@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Messages - CyberShield</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-61N7MJQNCD');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Activities Dropdown */
+        .activities-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .activities-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .activities-button:hover {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .activities-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .activities-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 15px 25px;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            padding-left: 30px;
+        }
+
+        .dropdown-item.active {
+            background: rgba(255, 215, 0, 0.25);
+            border-left: 4px solid #ffd700;
+        }
+
+        .dropdown-item .emoji {
+            font-size: 1.5rem;
+        }
+
+        .dropdown-item .text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 120px;
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff15" stroke-width="0.8"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffc107);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: megaphoneFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes megaphoneFloat {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Video Section */
+        .video-section {
+            padding: 60px 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, #ffd700, #ffc107);
+            border-radius: 2px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .video-card:hover::before {
+            left: 100%;
+        }
+
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .video-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .video-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .video-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Info Section */
+        .info-section {
+            padding: 80px 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.5s ease;
+            text-align: center;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .info-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .info-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 60px 0;
+            text-align: center;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-left {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .back-button, .activities-button {
+                padding: 10px 18px;
+                font-size: 1rem;
+            }
+            
+            .activities-dropdown {
+                width: 100%;
+            }
+            
+            .activities-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .dropdown-content {
+                min-width: 100%;
+                left: 0;
+                right: 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-icon {
+                font-size: 4rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .video-card {
+                padding: 20px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ffd700, #ffc107);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ffc107, #ffb300);
+        }
+
+        /* Placeholder for missing video */
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffd700;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .video-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .video-placeholder p {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .video-placeholder small {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+    </style>
+     <script defer src="https://cdn.vercel-analytics.com/v1/script.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="nav-left">
+                    <a href="index.html" class="logo">🛡️ CyberShield</a>
+                    <a href="index.html" class="back-button">
+                        <span>Back to Home</span>
+                    </a>
+                    
+                    <!-- Activities Dropdown -->
+                    <div class="activities-dropdown">
+                        <div class="activities-button">
+                            <span>Activities</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item" onclick="window.location.href='phishing-week.html'">
+                                <span class="emoji">🎣</span>
+                                <span class="text">Phishing Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='mfa-week.html'">
+                                <span class="emoji">🔐</span>
+                                <span class="text">MFA Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='social-engineering-week.html'">
+                                <span class="emoji">🎭</span>
+                                <span class="text">Social Engineering Week</span>
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='privacy-week.html'">
+                                <span class="emoji">🔒</span>
+                                <span class="text">Data Privacy Week</span>
+                            </div>
+                            <div class="dropdown-item active" onclick="window.location.href='management-messages.html'">
+                                <span class="emoji">📢</span>
+                                <span class="text">Management Messages</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-icon">📢</div>
+                <h1>Management Messages</h1>
+                <p>Important security updates and messages from leadership about our cybersecurity initiatives, policies, and organizational commitment to digital safety.</p>
+            </div>
+        </section>
+
+        <section class="video-section">
+            <div class="container">
+                <h2 class="section-title">Latest Security Messages</h2>
+                <div class="video-grid">
+                    <!-- Video Card 1 -->
+                    <div class="video-card">
+                        <h3>CEO Security Update - Q1 2025</h3>
+                        <p>A message from our CEO about cybersecurity priorities and organizational commitment to protecting our digital assets.</p>
+                        <div class="video-meta">
+                            <span>📅 January 2025</span>
+                            <span>⏱️ 5:30</span>
+                        </div>
+                        <div class="video-container">
+                            <!-- Replace with actual video file -->
+                            <video controls>
+                                <source src="videos/ceo-message-q1-2025.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <!-- Placeholder shown when video is missing -->
+                            <div class="video-placeholder">
+                                <div class="video-placeholder-icon">🎥</div>
+                                <p>Video will be available soon</p>
+                                <small>Upload your MP4 video to: videos/ceo-message-q1-2025.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Card 2 -->
+                    <div class="video-card">
+                        <h3>CISO Security Briefing</h3>
+                        <p>Our Chief Information Security Officer discusses current threat landscape and best practices for staying secure.</p>
+                        <div class="video-meta">
+                            <span>📅 December 2024</span>
+                            <span>⏱️ 8:15</span>
+                        </div>
+                        <div class="video-container">
+                            <video controls>
+                                <source src="videos/ciso-briefing.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="video-placeholder-icon">🎥</div>
+                                <p>Video will be available soon</p>
+                                <small>Upload your MP4 video to: videos/ciso-briefing.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Card 3 -->
+                    <div class="video-card">
+                        <h3>New Security Policy Announcement</h3>
+                        <p>Important updates to our security policies and what they mean for all employees going forward.</p>
+                        <div class="video-meta">
+                            <span>📅 November 2024</span>
+                            <span>⏱️ 6:45</span>
+                        </div>
+                        <div class="video-container">
+                            <video controls>
+                                <source src="videos/policy-announcement.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="video-placeholder-icon">🎥</div>
+                                <p>Video will be available soon</p>
+                                <small>Upload your MP4 video to: videos/policy-announcement.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Card 4 -->
+                    <div class="video-card">
+                        <h3>Quarterly Security Review</h3>
+                        <p>Comprehensive review of security incidents, achievements, and goals for the upcoming quarter.</p>
+                        <div class="video-meta">
+                            <span>📅 October 2024</span>
+                            <span>⏱️ 12:20</span>
+                        </div>
+                        <div class="video-container">
+                            <video controls>
+                                <source src="videos/quarterly-review.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-placeholder">
+                                <div class="video-placeholder-icon">🎥</div>
+                                <p>Video will be available soon</p>
+                                <small>Upload your MP4 video to: videos/quarterly-review.mp4</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <div class="container">
+                <h2 class="section-title">Why Management Messages Matter</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <span class="info-icon">🎯</span>
+                        <h3>Leadership Commitment</h3>
+                        <p>Direct messages from leadership demonstrate organizational commitment to cybersecurity and set the tone for security culture.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-icon">📋</span>
+                        <h3>Policy Updates</h3>
+                        <p>Stay informed about new security policies, procedures, and organizational changes that affect your daily work.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-icon">🔍</span>
+                        <h3>Threat Awareness</h3>
+                        <p>Learn about current threats, incidents, and emerging security challenges facing our organization.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <span class="info-icon">🤝</span>
+                        <h3>Team Engagement</h3>
+                        <p>Foster a security-first culture through transparent communication and shared responsibility for protecting our assets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 CyberShield - Management Messages</p>
+            <p>Stay Informed | Stay Secure | Stay Connected</p>
+            <p style="margin-top: 20px; opacity: 0.7;">Powered by Cyber-Security Team</p>
+        </div>
+    </footer>
+
+    <script>
+        // Hide video placeholders when video loads successfully
+        document.addEventListener('DOMContentLoaded', function() {
+            const videos = document.querySelectorAll('video');
+            
+            videos.forEach(video => {
+                video.addEventListener('loadeddata', function() {
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder && placeholder.classList.contains('video-placeholder')) {
+                        placeholder.style.display = 'none';
+                    }
+                });
+                
+                video.addEventListener('error', function() {
+                    const placeholder = this.nextElementSibling;
+                    if (placeholder && placeholder.classList.contains('video-placeholder')) {
+                        placeholder.style.display = 'flex';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

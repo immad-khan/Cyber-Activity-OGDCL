@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Data to Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 { 
+            color: #667eea; 
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .loading { background: #fff3cd; color: #856404; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { 
+            background: #e7f3ff; 
+            color: #004085; 
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .info strong { display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Data Extractor</h1>
+        <p>Export Firebase data to Excel</p>
+        
+        <button onclick="fetchAndDownload()" id="downloadBtn">
+            Download Excel File
+        </button>
+        
+        <div id="status"></div>
+
+        <div class="info">
+            <strong>What you'll get:</strong>
+            • All user data from Firebase<br>
+            • Formatted Excel spreadsheet<br>
+            • Name, Score, Level, Accuracy, etc.
+        </div>
+    </div>
+
+    <script>
+        const API_ENDPOINT = '/api/get-users';
+
+        async function fetchAndDownload() {
+            const btn = document.getElementById('downloadBtn');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            status.innerHTML = '<div class="status loading">⏳ Fetching data from Firebase...</div>';
+
+            try {
+                const response = await fetch(API_ENDPOINT);
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to fetch data');
+                }
+
+                const data = result.data || [];
+
+                if (data.length === 0) {
+                    status.innerHTML = '<div class="status error">❌ No data found in database</div>';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Convert to Excel
+                const worksheet = XLSX.utils.json_to_sheet(data.map(user => ({
+                    'Name': user.userName || '',
+                    'Total Score': user.score || 0,
+                    'Level': user.level || '',
+                    'Video Marks': user.videoMarks || 0,
+                    'Quiz Marks': user.quizMarks || 0,
+                    'Accuracy %': user.accuracy || 0,
+                    'Video Completed': user.videoCompleted ? 'Yes' : 'No',
+                    'Correct Answers': user.correctAnswers || 0,
+                    'Total Questions': user.totalQuestions || 0,
+                    'Date': user.date || '',
+                    'Document ID': user.id || ''
+                })));
+
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Users Data');
+
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().split('T')[0];
+                const filename = `CyberSecurity_Data_${timestamp}.xlsx`;
+
+                // Download
+                XLSX.writeFile(workbook, filename);
+
+                status.innerHTML = `<div class="status success">✅ Success! Downloaded ${data.length} records</div>`;
+                btn.disabled = false;
+
+            } catch (error) {
+                console.error('Error:', error);
+                status.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

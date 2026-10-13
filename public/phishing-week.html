@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 1: The Executive Target - Packages-Cybersecurity</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-61N7MJQNCD');
+    </script>
+
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #2d1b69 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .logo a {
+            text-decoration: none;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            position: relative;
+        }
+
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            margin: 4px 0;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        .weeks-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .week-button {
+            padding: 12px 28px;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .week-button:hover:not(.locked) {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.4), rgba(255, 0, 255, 0.4));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .week-button.active {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-color: #ffffff;
+            box-shadow: 0 8px 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .week-button.locked {
+            background: rgba(100, 100, 100, 0.3);
+            border: 2px solid rgba(150, 150, 150, 0.4);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 2px solid;
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        @keyframes scoreGlow {
+            from {
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+                border-color: rgba(0, 255, 255, 0.6);
+            }
+
+            to {
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+                border-color: #00ffff;
+            }
+        }
+
+        .progress-container {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        .hero {
+            margin-top: 120px;
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(255, 0, 0, 0.15) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff0000, #ff5252);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: calc(100vh - 300px);
+        }
+
+        .study-section,
+        .quiz-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .study-section::-webkit-scrollbar,
+        .quiz-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .study-section::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 4px;
+        }
+
+        .quiz-section::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b6b, #ff00ff);
+            border-radius: 4px;
+        }
+
+        .quiz-section {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #00ffff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .quiz-section h2 {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            background: #000;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        .marks-display {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .marks-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ff0000);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .learning-points {
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .learning-points h3 {
+            color: #4ecdc4;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .learning-points ul {
+            margin-left: 18px;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .learning-points li {
+            margin-bottom: 10px;
+        }
+
+        .learning-points strong {
+            color: #00ffff;
+        }
+
+        #quiz-question {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        #quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .quiz-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .quiz-button:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
+            background: linear-gradient(45deg, #26c6da, #42a5f5);
+        }
+
+        .name-input-section {
+            background: rgba(255, 107, 107, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .name-input-section p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .name-input-section input {
+            padding: 15px 20px;
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            background: rgba(255, 107, 107, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .name-input-section input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .user-name-display {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-name-display p {
+            margin: 0;
+        }
+
+        .user-name-display strong {
+            color: #4ecdc4;
+        }
+
+        @keyframes modalAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0.7);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInNotification {
+            from {
+                transform: translateX(400px) scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes levelUpAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .weeks-buttons {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 280px;
+                max-width: 80%;
+                height: calc(100vh - 80px);
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 30px 20px;
+                gap: 15px;
+                transition: left 0.4s ease;
+                border-right: 2px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+                overflow-y: auto;
+                z-index: 999;
+            }
+
+            .weeks-buttons.active {
+                left: 0;
+            }
+
+            .week-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .section-title,
+            .quiz-section h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .score-display {
+                flex-direction: column;
+                gap: 8px;
+                font-size: 0.9rem;
+            }
+
+            .study-section,
+            .quiz-section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <nav class="nav">
+                <div class="logo"><a href="index.html">Packages-Cybersecurity</a></div>
+
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="weeks-buttons" id="weekMenu">
+                    <a href="phishing-week.html" class="week-button ">Activity 1</a>
+                    <a href="mfa-week.html" class="week-button ">Activity 2</a>
+                    <a href="privacy-week.html" class="week-button">Activity 3</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 4</a>
+                </div>
+
+                <div class="score-display">
+                    <div>
+                        <span id="levelIcon">🔓</span>
+                        <span id="levelName">Beginner</span>
+                    </div>
+                    <div>Score: <span id="userScore">0</span>/150</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Activity 1: The Executive Target</h1>
+        <p>When You Lead, You're on the Front Line.</p>
+    </section>
+
+    <div class="content-wrapper">
+        <div class="study-section">
+            <h2 class="section-title">Executive Threat Landscape</h2>
+
+            <div class="video-container">
+                <video id="trainingVideo" controls controlsList="nodownload">
+                    <source src="./videos/phishing-awareness.mp4" type="video/mp4">
+                    <source src="videos/phishing-awareness.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="marks-display">
+                <span class="marks-badge">Video: 50 marks</span>
+                <span class="marks-badge">Quiz: 100 marks</span>
+            </div>
+
+            <div class="learning-points">
+                <h3>Key Learning Points</h3>
+                <ul>
+                    <li><strong>Business Email Compromise:</strong> Attackers impersonate executives to request wire
+                        transfers. Always verify via phone.</li>
+                    <li><strong>AI Deepfakes:</strong> Voice and video can be faked. Establish verification codes for
+                        sensitive requests.</li>
+                    <li><strong>Credential Theft:</strong> Use hardware MFA keys and unique passwords. Never reuse
+                        credentials.</li>
+                    <li><strong>Executive Risk:</strong> 71% of targeted attacks focus on C-level. You are 4.6x more
+                        likely to be targeted.</li>
+                    <li><strong>Verification Protocol:</strong> When in doubt, call back using a known number before
+                        acting on requests.</li>
+                    <li><strong>Red Flags:</strong> Unexpected MFA prompts, urgent financial requests, poor video
+                        quality, or unusual login alerts.</li>
+                    <li><strong>Best Practice:</strong> Separate work and personal accounts. Use VPN on public networks.
+                    </li>
+                    <li><strong>Cost of Breach:</strong> Average executive account compromise costs $3.9M. Your security
+                        protects the organization.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <h2>Executive Security Quiz (100 marks)</h2>
+
+            <div id="name-input-section" class="name-input-section">
+                <p>Enter your name to begin the assessment.</p>
+                <div>
+                    <input type="text" id="userNameStart" placeholder="Enter your full name" />
+                    <button onclick="startQuiz()" class="start-button">Start Quiz</button>
+                </div>
+            </div>
+
+            <div id="quiz-content" style="display: none;">
+                <div class="user-name-display">
+                    <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+                </div>
+                <p id="quiz-question"></p>
+                <div id="quiz-options"></div>
+                <div id="quiz-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_ENDPOINT = '/api/save-username';
+
+        const SCORING = {
+            video_completion: 50,
+            quiz_correct: 20
+        };
+
+        const SECURITY_LEVELS = [
+            { name: 'Beginner', threshold: 0, color: '#ff6b6b', icon: '🔓', bgColor: 'rgba(255, 107, 107, 0.2)' },
+            { name: 'Aware', threshold: 30, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
+            { name: 'Cautious', threshold: 60, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
+            { name: 'Secure', threshold: 90, color: '#4ecdc4', icon: '🔐', bgColor: 'rgba(78, 205, 196, 0.2)' },
+            { name: 'Expert', threshold: 120, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
+            { name: 'Guardian', threshold: 150, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
+                options: [
+                    "Process immediately",
+                    "Reply to email",
+                    "Call CEO using known number",
+                    "Forward to finance"
+                ],
+                correct: 2,
+                explanation: "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
+            },
+            {
+                question: "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
+                options: [
+                    "Approve it",
+                    "Ignore it",
+                    "Deny and report to IT security",
+                    "Approve and change password later"
+                ],
+                correct: 2,
+                explanation: "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
+            },
+            {
+                question: "A LinkedIn connection requests your work email. What should you do?",
+                options: [
+                    "Share it",
+                    "Share personal email instead",
+                    "Politely decline",
+                    "Share but ask not to spam"
+                ],
+                correct: 2,
+                explanation: "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
+            },
+            {
+                question: "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
+                options: [
+                    "Provide credentials",
+                    "Ask for email request",
+                    "End call and verify through another channel",
+                    "Share screen instead"
+                ],
+                correct: 2,
+                explanation: "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
+            },
+            {
+                question: "What's the most secure type of multi-factor authentication for executives?",
+                options: [
+                    "SMS codes",
+                    "Email codes",
+                    "Hardware security keys",
+                    "Authenticator app"
+                ],
+                correct: 2,
+                explanation: "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
+            }
+        ];
+
+        // Global Variables
+        let userScore = 0;
+        let correctAnswers = 0;
+        let totalQuestions = 0;
+        let currentQuizIndex = 0;
+        let securityLevelAchieved = 'Beginner';
+        let currentUserName = '';
+        let videoWatched = false;
+
+        // Toggle Mobile Menu
+        function toggleMenu() {
+            document.querySelector('.hamburger').classList.toggle('active');
+            document.getElementById('weekMenu').classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function (event) {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('weekMenu');
+            const isClickInside = hamburger.contains(event.target) || menu.contains(event.target);
+
+            if (!isClickInside && menu.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                menu.classList.remove('active');
+            }
+        });
+
+        // Start Quiz Function
+        function startQuiz() {
+            const nameInput = document.getElementById('userNameStart');
+            const userName = nameInput.value.trim();
+
+            if (!userName || userName.length < 2) {
+                showNotification('Please enter a valid name (at least 2 characters)!', 'warning');
+                nameInput.focus();
+                return;
+            }
+
+            currentUserName = userName;
+            document.getElementById('name-input-section').style.display = 'none';
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('displayUserName').textContent = userName;
+
+            showNewQuizQuestion();
+            showNotification(`Welcome ${userName}! Each question is worth 20 marks!`, 'success');
+
+            // Track quiz start in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_start', {
+                    'event_category': 'engagement',
+                    'event_label': 'Activity 1 Quiz Started',
+                    'user_name': userName
+                });
+            }
+        }
+
+        // Save to Database
+        async function saveToDatabase() {
+            try {
+                const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+
+                const payload = {
+                    userName: currentUserName,
+                    score: userScore,
+                    level: securityLevelAchieved,
+                    accuracy,
+                    date: new Date().toLocaleDateString(),
+                    videoCompleted: videoWatched,
+                    videoMarks: videoWatched ? 50 : 0,
+                    quizMarks: correctAnswers * 20,
+                    correctAnswers,
+                    totalQuestions,
+                    activity: 'Activity 1: The Executive Target'
+                };
+
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    console.log('Data saved:', data);
+                    showNotification('Your progress has been saved to database!', 'success');
+
+                    // Track save success in Google Analytics
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'data_saved', {
+                            'event_category': 'completion',
+                            'event_label': 'Activity 1 Completed',
+                            'value': userScore
+                        });
+                    }
+
+                    return data;
+                } else {
+                    console.error('Error saving:', data);
+                    showNotification('Could not save to database', 'warning');
+                    return null;
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                showNotification('Network error. Data not saved.', 'error');
+                return null;
+            }
+        }
+
+        // Video Completion Handler
+        window.addEventListener('load', function () {
+            const video = document.getElementById('trainingVideo');
+
+            if (video) {
+                video.addEventListener('ended', function () {
+                    if (!videoWatched) {
+                        videoWatched = true;
+                        updateScore(SCORING.video_completion, 'video_completed');
+                        showNotification('Video Complete! You earned 50 marks!', 'success');
+                        celebrateVideoCompletion();
+
+                        if (currentUserName) {
+                            saveToDatabase();
+                        }
+
+                        // Track video completion in Google Analytics
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'video_complete', {
+                                'event_category': 'engagement',
+                                'event_label': 'Activity 1 Video Completed'
+                            });
+                        }
+                    }
+                });
+            }
+
+            updateScoreVisual();
+            updateProgressBar();
+            showNotification('Welcome! Watch the video (50 marks) and take the quiz (100 marks)!', 'success');
+        });
+
+        // Celebrate Video Completion
+        function celebrateVideoCompletion() {
+            const celebration = document.createElement('div');
+            celebration.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, rgba(78, 205, 196, 0.95), rgba(69, 183, 209, 0.95));
+                color: white;
+                padding: 40px 50px;
+                border-radius: 25px;
+                z-index: 20000;text-align: center;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.7);
+                backdrop-filter: blur(20px);
+                border: 3px solid #4ecdc4;
+                animation: modalAppear 0.5s ease-out;
+                max-width: 450px;
+            `;
+
+            celebration.innerHTML = `
+                <div style="font-size: 5rem; margin-bottom: 20px;">🎓</div>
+                <h2 style="margin-bottom: 15px; font-size: 2rem;">Training Complete!</h2>
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 15px; border-radius: 15px; margin: 20px 0;">
+                    <p style="font-size: 1.8rem; font-weight: bold; margin: 0;">+50 Marks</p>
+                </div>
+                <p style="font-size: 0.95rem; opacity: 0.9;">Now take the quiz to earn 100 more marks!</p>
+                <button onclick="this.parentElement.remove()" 
+                        style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600; margin-top: 15px;">
+                    Continue
+                </button>
+            `;
+
+            document.body.appendChild(celebration);
+
+            setTimeout(() => {
+                if (document.body.contains(celebration)) {
+                    celebration.remove();
+                }
+            }, 8000);
+        }
+
+        // Update Score
+        function updateScore(points) {
+            userScore += points;
+            document.getElementById('userScore').textContent = userScore;
+
+            const newLevel = getCurrentSecurityLevel();
+            if (newLevel.name !== securityLevelAchieved) {
+                const oldLevel = securityLevelAchieved;
+                securityLevelAchieved = newLevel.name;
+                showLevelUpNotification(oldLevel, newLevel);
+            }
+
+            updateScoreVisual();
+            updateProgressBar();
+            animateScoreIncrease();
+        }
+
+        // Get Current Security Level
+        function getCurrentSecurityLevel() {
+            for (let i = SECURITY_LEVELS.length - 1; i >= 0; i--) {
+                if (userScore >= SECURITY_LEVELS[i].threshold) {
+                    return SECURITY_LEVELS[i];
+                }
+            }
+            return SECURITY_LEVELS[0];
+        }
+
+        // Update Score Visual
+        function updateScoreVisual() {
+            const currentLevel = getCurrentSecurityLevel();
+            const scoreElement = document.getElementById('userScore');
+            const levelIconElement = document.getElementById('levelIcon');
+            const levelNameElement = document.getElementById('levelName');
+            const scoreDisplay = document.querySelector('.score-display');
+
+            scoreElement.style.color = currentLevel.color;
+            scoreElement.style.textShadow = `0 0 10px ${currentLevel.color}`;
+            levelIconElement.textContent = currentLevel.icon;
+            levelNameElement.textContent = currentLevel.name;
+            levelNameElement.style.color = currentLevel.color;
+
+            scoreDisplay.style.background = currentLevel.bgColor;
+            scoreDisplay.style.borderColor = currentLevel.color;
+        }
+
+        // Update Progress Bar
+        function updateProgressBar() {
+            const currentLevel = getCurrentSecurityLevel();
+            const nextLevelIndex = SECURITY_LEVELS.findIndex(level => level.name === currentLevel.name) + 1;
+            const progressBar = document.getElementById('progressBar');
+
+            if (nextLevelIndex < SECURITY_LEVELS.length) {
+                const nextLevel = SECURITY_LEVELS[nextLevelIndex];
+                const progress = ((userScore - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
+                progressBar.style.width = Math.min(progress, 100) + '%';
+            } else {
+                progressBar.style.width = '100%';
+            }
+        }
+
+        // Animate Score Increase
+        function animateScoreIncrease() {
+            const scoreElement = document.getElementById('userScore');
+            scoreElement.style.transform = 'scale(1.3)';
+            scoreElement.style.transition = 'transform 0.4s ease';
+
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 400);
+        }
+
+        // Show Level Up Notification
+        function showLevelUpNotification(oldLevel, newLevel) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, ${newLevel.color}, ${newLevel.color}aa);
+                color: white;
+                padding: 40px 50px;
+                border-radius: 25px;
+                z-index: 20000;
+                text-align: center;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+                backdrop-filter: blur(20px);
+                border: 3px solid ${newLevel.color};
+                animation: levelUpAnimation 1s ease-out;
+                max-width: 450px;
+            `;
+
+            notification.innerHTML = `
+                <div style="font-size: 5rem; margin-bottom: 20px;">${newLevel.icon}</div>
+                <h2 style="margin-bottom: 15px; font-size: 2.5rem;">LEVEL UP!</h2>
+                <p style="margin-bottom: 10px; font-size: 1.2rem;">You've reached</p>
+                <p style="margin-bottom: 20px; font-size: 1.8rem; font-weight: bold;">${newLevel.name} Level</p>
+                <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 25px;">Total Score: ${userScore}/150 marks</p>
+                <button onclick="this.parentElement.remove()" 
+                        style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600;">
+                    Continue Learning
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Track level up in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'level_up', {
+                    'event_category': 'achievement',
+                    'event_label': newLevel.name,
+                    'value': userScore
+                });
+            }
+
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const colors = {
+                info: 'linear-gradient(45deg, #4ecdc4, #45b7d1)',
+                success: 'linear-gradient(45deg, #96ceb4, #4ecdc4)',
+                warning: 'linear-gradient(45deg, #ffeaa7, #fab1a0)',
+                error: 'linear-gradient(45deg, #ff6b6b, #ee5a52)'
+            };
+
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 140px;
+                right: 30px;
+                background: ${colors[type]};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 20px;
+                z-index: 15000;
+                animation: slideInNotification 0.7s ease-out;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                max-width: 380px;
+                font-weight: 500;
+                backdrop-filter: blur(15px);
+                border: 2px solid rgba(255,255,255,0.3);
+                font-size: 0.95rem;
+            `;
+
+            notification.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span style="flex: 1;">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.7; padding: 0;">×</button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Handle Quiz Answer
+        function handleQuizAnswer(isCorrect) {
+            totalQuestions++;
+            const resultDiv = document.getElementById('quiz-result');
+            let bonusPoints = 0;
+
+            if (isCorrect) {
+                correctAnswers++;
+                bonusPoints = SCORING.quiz_correct;
+                updateScore(bonusPoints);
+            }
+
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const currentQuestion = quizQuestions[currentQuizIndex];
+
+            if (isCorrect) {
+                resultDiv.innerHTML = `
+                    <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">✅ +${bonusPoints} marks!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Excellent! Outstanding security knowledge!</h4>
+                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
+                            📊 Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}% | Marks: ${userScore}/150
+                        </div>
+                    </div>
+                `;
+                showNotification(`Correct! +${bonusPoints} marks earned!`, 'success');
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="color: #ffd93d; margin-top: 30px; padding: 25px; background: rgba(255, 217, 61, 0.15); border-radius: 20px; border: 2px solid rgba(255, 217, 61, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📚 Keep learning!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Good effort! Let's learn together!</h4>
+                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
+                            📊 Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}% | Marks: ${userScore}/150
+                        </div>
+                    </div>
+                `;
+                showNotification('Review the explanation and keep learning!', 'warning');
+            }
+
+            // Track quiz answer in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_answer', {
+                    'event_category': 'engagement',
+                    'event_label': isCorrect ? 'Correct' : 'Incorrect',
+                    'value': isCorrect ? bonusPoints : 0
+                });
+            }
+
+            if (totalQuestions >= quizQuestions.length) {
+                setTimeout(() => {
+                    showQuizCompletion();
+                }, 3000);
+            } else {
+                setTimeout(showNewQuizQuestion, 4000);
+            }
+        }
+
+        // Show New Quiz Question
+        function showNewQuizQuestion() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+            const quiz = quizQuestions[currentQuizIndex];
+
+            document.getElementById('quiz-question').textContent = quiz.question;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+
+            const labels = ['A', 'B', 'C', 'D'];
+
+            quiz.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-button';
+                button.textContent = `${labels[index]}) ${option}`;
+                button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
+                optionsDiv.appendChild(button);
+            });
+
+            document.getElementById('quiz-result').innerHTML = '';
+        }
+
+        // Show Quiz Completion
+        function showQuizCompletion() {
+            const quizSection = document.querySelector('.quiz-section');
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const currentLevel = getCurrentSecurityLevel();
+            const quizMarks = correctAnswers * SCORING.quiz_correct;
+            const videoMarks = videoWatched ? SCORING.video_completion : 0;
+
+            saveToDatabase();
+
+            quizSection.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
+                    <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 2.5rem;">Activity 1 Complete!</h2>
+                    
+                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
+                        <h3 style="color: #4ecdc4; margin-bottom: 15px;">Your Performance</h3>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Quiz Questions: ${totalQuestions}/${quizQuestions.length}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct Answers: ${correctAnswers}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
+                        
+                        <div style="margin: 20px 0; padding: 20px; background: rgba(78, 205, 196, 0.1); border-radius: 15px;">
+                            <p style="font-size: 1.1rem; margin-bottom: 8px;">Video Marks: ${videoMarks}/50</p>
+                            <p style="font-size: 1.1rem; margin-bottom: 8px;">Quiz Marks: ${quizMarks}/100</p>
+                            <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Total: ${userScore}/150 marks</p>
+                        </div>
+                        
+                        <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button onclick="generateCertificate()" 
+                                style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            📄 Generate Certificate
+                        </button>
+                        <button onclick="resetQuiz()" 
+                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            🔄 Retake Quiz
+                        </button>
+                    </div>
+                    
+                    <p style="margin-top: 20px; color: #4ecdc4; font-size: 0.9rem;">✅ Your results have been saved to the database</p>
+                </div>
+            `;
+
+            // Track quiz completion in Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_complete', {
+                    'event_category': 'completion',
+                    'event_label': 'Activity 1 Quiz Completed',
+                    'value': userScore
+                });
+            }
+        }
+
+        // Generate Certificate
+        async function generateCertificate() {
+            const userName = currentUserName;
+
+            if (!userName) {
+                showNotification('Error: No user name found. Please retake the quiz.', 'error');
+                return;
+            }
+
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const currentLevel = getCurrentSecurityLevel();
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const quizMarks = correctAnswers * SCORING.quiz_correct;
+            const videoMarks = videoWatched ? SCORING.video_completion : 0;
+
+            showNotification('Generating PDF certificate...', 'info');
+
+            try {
+                if (typeof window.jspdf === 'undefined') {
+                    throw new Error('jsPDF library not loaded');
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+                // Background
+                doc.setFillColor(245, 247, 250);
+                doc.rect(0, 0, 297, 210, 'F');
+
+                // Outer Border
+                doc.setDrawColor(44, 62, 80);
+                doc.setLineWidth(3);
+                doc.rect(10, 10, 277, 190);
+
+                // Inner Border
+                doc.setDrawColor(255, 107, 107);
+                doc.setLineWidth(0.5);
+                doc.rect(15, 15, 267, 180);
+
+                // Title
+                doc.setTextColor(44, 62, 80);
+                doc.setFontSize(28);
+                doc.setFont(undefined, 'bold');
+                doc.text('Packages-Cybersecurity', 148.5, 60, { align: 'center' });
+
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'normal');
+                doc.text('Certificate of Executive Security Awareness - Activity 1', 148.5, 70, { align: 'center' });
+
+                // Certifies text
+                doc.setTextColor(52, 73, 94);
+                doc.setFontSize(12);
+                doc.text('This certifies that', 148.5, 85, { align: 'center' });
+
+                // Name Box
+                doc.setFillColor(255, 107, 107);
+                doc.rect(70, 90, 157, 15, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text(userName, 148.5, 100, { align: 'center' });
+
+                // Achievement text
+                doc.setTextColor(52, 73, 94);
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'normal');
+                doc.text('has successfully completed Activity 1: The Executive Target', 148.5, 115, { align: 'center' });
+                doc.text('and demonstrated understanding of executive-level cybersecurity threats.', 148.5, 122, { align: 'center' });
+
+                // Performance Summary Box
+                doc.setFillColor(236, 240, 241);
+                doc.rect(40, 130, 217, 35, 'F');
+                doc.setDrawColor(255, 107, 107);
+                doc.setLineWidth(0.5);
+                doc.rect(40, 130, 217, 35);
+
+                // Performance Details
+                doc.setTextColor(44, 62, 80);
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Performance Summary:', 50, 140);
+
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Quiz: ${quizMarks}/100 marks (${accuracy}% accuracy)`, 50, 148);
+                doc.text(`Video: ${videoMarks}/50 marks`, 50, 155);
+                doc.text(`Total Score: ${userScore}/150 marks`, 170, 148);
+                doc.text(`Security Level: ${currentLevel.name}`, 170, 155);
+
+                // Signature Lines
+                doc.setDrawColor(52, 73, 94);
+                doc.setLineWidth(0.3);
+                doc.line(40, 178, 100, 178);
+                doc.line(197, 178, 257, 178);
+
+                doc.setFontSize(9);
+                doc.text('Packages-Cybersecurity Team', 70, 183, { align: 'center' });
+                doc.text('Issued: ' + currentDate, 227, 183, { align: 'center' });
+
+                // Footer
+                doc.setFontSize(8);
+                doc.setTextColor(127, 140, 141);
+                doc.text('Powered by Packages Group - Cyber Security Division', 148.5, 193, { align: 'center' });
+
+                // Save PDF
+                const safeFileName = userName.replace(/[^a-zA-Z0-9]/g, '_');
+                doc.save(`Packages_Cybersecurity_Activity1_${safeFileName}.pdf`);
+
+                showNotification(`Certificate generated for ${userName}!`, 'success');
+
+                // Track certificate generation in Google Analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'certificate_generated', {
+                        'event_category': 'completion',
+                        'event_label': 'Activity 1 Certificate',
+                        'value': userScore
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Error generating certificate. Please try again.', 'error');
+            }
+        }
+
+        // Reset Quiz
+        function resetQuiz() {
+            if (confirm('Are you sure you want to retake the quiz? This will reset your quiz score (video score will remain).')) {
+                const quizPointsToDeduct = correctAnswers * SCORING.quiz_correct;
+                userScore -= quizPointsToDeduct;
+
+                if (userScore < 0) userScore = 0;
+
+                document.getElementById('userScore').textContent = userScore;
+
+                currentQuizIndex = 0;
+                correctAnswers = 0;
+                totalQuestions = 0;
+
+                const newLevel = getCurrentSecurityLevel();
+                if (newLevel.name !== securityLevelAchieved) {
+                    securityLevelAchieved = newLevel.name;
+                    updateScoreVisual();
+                }
+
+                updateProgressBar();
+
+                const quizSection = document.querySelector('.quiz-section');
+                quizSection.innerHTML = `
+                    <h2>Executive Security Quiz (100 marks)</h2>
+                    
+                    <div id="name-input-section" class="name-input-section">
+                        <p>Enter your name to begin the assessment.</p>
+                        <div>
+                            <input type="text" id="userNameStart" placeholder="Enter your full name" value="${currentUserName}" />
+                            <button onclick="startQuiz()" class="start-button">Start Quiz</button>
+                        </div>
+                    </div>
+                    
+                    <div id="quiz-content" style="display: none;">
+                        <div class="user-name-display">
+                            <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+                        </div>
+                        <p id="quiz-question"></p>
+                        <div id="quiz-options"></div>
+                        <div id="quiz-result"></div>
+                    </div>
+                `;
+
+                if (quizPointsToDeduct > 0) {
+                    showNotification(`Quiz reset! ${quizPointsToDeduct} marks deducted. Video marks preserved.`, 'info');
+                } else {
+                    showNotification('Quiz reset! Start again.', 'info');
+                }
+
+                // Track quiz reset in Google Analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'quiz_reset', {
+                        'event_category': 'engagement',
+                        'event_label': 'Activity 1 Quiz Reset'
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

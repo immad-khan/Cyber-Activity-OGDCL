@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packages-Cybersecurity - Stay Safe Online</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #2d1b69 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            position: relative;
+        }
+
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            margin: 4px 0;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        .weeks-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .week-button {
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .week-button:hover:not(.locked) {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3), rgba(255, 107, 107, 0.3));
+            border-color: rgba(0, 255, 255, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .week-button.active {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-color: #ffffff;
+            box-shadow: 0 8px 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .week-button.locked {
+            background: rgba(100, 100, 100, 0.3);
+            border: 2px solid rgba(150, 150, 150, 0.4);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 2px solid;
+            animation: scoreGlow 2s ease-in-out infinite alternate;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        @keyframes scoreGlow {
+            from { 
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+                border-color: rgba(0, 255, 255, 0.6);
+            }
+            to { 
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+                border-color: #00ffff;
+            }
+        }
+
+        .progress-container {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 2px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        .hero {
+            margin-top: 120px;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff15" stroke-width="0.8"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 4s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(255, 107, 107, 0.6);
+            background: linear-gradient(45deg, #ff5252, #26c6da, #42a5f5);
+        }
+
+        .security-tips {
+            padding: 100px 0;
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .security-tips::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 80px;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 2px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .tip-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 25px;
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tip-card.completed {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.15);
+        }
+
+        .tip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .tip-card:hover::before {
+            left: 100%;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .tip-icon {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            color: #ff6b6b;
+            display: block;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover .tip-icon {
+            transform: scale(1.2) rotate(5deg);
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+        }
+
+        .tip-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .tip-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        .threat-alert {
+            background: rgba(255, 107, 107, 0.15);
+            border: 3px solid #ff6b6b;
+            padding: 80px 40px;
+            text-align: center;
+            margin: 80px 0;
+            border-radius: 30px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-icon {
+            font-size: 5rem;
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            animation: warningPulse 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .threat-alert h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+
+        .threat-alert p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            border-color: #4ecdc4;
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.2);
+        }
+
+        .stat-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .stat-item p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .interactive-section {
+            padding: 100px 0;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(69, 183, 209, 0.1) 0%, transparent 70%);
+        }
+
+        .security-quiz {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 50px;
+            border-radius: 30px;
+            margin: 60px 0;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .security-quiz h3 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #00ffff;
+        }
+
+        #quiz-question {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+        }
+
+        #quiz-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .quiz-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-width: 300px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .quiz-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+            background: linear-gradient(45deg, #26c6da, #42a5f5);
+        }
+
+        #quiz-result {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 60px 0;
+            text-align: center;
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .floating-tip {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            animation: floatAnimation 4s ease-in-out infinite;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 107, 107, 0.7);
+        }
+
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(1deg); }
+            50% { transform: translateY(-15px) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-1deg); }
+        }
+
+        .floating-tip:hover {
+            animation-play-state: paused;
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.7);
+        }
+
+        .lock-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.95), rgba(255, 107, 107, 0.85));
+            color: white;
+            padding: 40px 50px;
+            border-radius: 25px;
+            z-index: 20000;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border: 3px solid #ff6b6b;
+            animation: modalAppear 0.5s ease-out;
+            max-width: 450px;
+        }
+
+        @keyframes modalAppear {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.7); 
+                opacity: 0; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        .lock-modal button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        @keyframes slideInNotification {
+            from { 
+                transform: translateX(400px) scale(0.8); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes levelUpAnimation {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1) rotate(5deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            
+            .weeks-buttons {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .weeks-buttons {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 300px;
+                max-width: 80%;
+                height: calc(100vh - 80px);
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 30px 20px;
+                gap: 15px;
+                transition: left 0.4s ease;
+                border-right: 2px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+                overflow-y: auto;
+                z-index: 999;
+            }
+
+            .weeks-buttons.active {
+                left: 0;
+            }
+
+            .week-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 15px;
+            }
+            
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .score-display {
+                flex-direction: column;
+                text-align: center;
+                width: auto;
+                padding: 10px 15px;
+                gap: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .tips-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .tip-card {
+                padding: 30px;
+            }
+            
+            .floating-tip {
+                bottom: 25px;
+                right: 25px;
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+            
+            .stats-grid {
+                gap: 30px;
+            }
+            
+            .security-quiz {
+                padding: 30px;
+            }
+
+            .quiz-button {
+                min-width: 200px;
+                font-size: 1rem;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .quiz-button {
+                min-width: 180px;
+            }
+            
+            .score-display {
+                font-size: 0.9rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #26c6da, #e91e63);
+        }
+
+        #userScore {
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <nav class="nav">
+                <div class="logo"><a href="index.html">Packages-Cybersecurity</a></div>
+                
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="weeks-buttons" id="weekMenu">
+                    <a href="phishing-week.html" class="week-button">
+                        <span class="text">
+                            <span class="week-num">Activity 1</span>
+                        </span>
+                    </a>
+                    
+                    <a href="mfa-week.html" class="week-button ">
+                        <span class="text">
+                            <span class="week-num">Activity 2</span>
+                        </span>
+                    </a>
+                    
+                    <a href="privacy-week.html" class="week-button">
+                        <span class="text">
+                            <span class="week-num">Activity 3</span>
+                        </span>
+                    </a>
+                    
+                    <a href="social-engineering-week.html" class="week-button">
+                        <span class="text">
+                            <span class="week-num">Activity 4</span>
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="score-display">
+                    <div>
+                        <span id="levelIcon">🔓</span>
+                        <span id="levelName">Beginner</span>
+                    </div>
+                    <div>Score: <span id="userScore">0</span></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Stay Safe in the Digital World</h1>
+                <p>Your security is our priority. Learn essential cybersecurity practices to protect yourself online and safeguard your digital life.</p>
+                <button class="cta-button" onclick="trackInteraction('hero-button')">Start Learning Now</button>
+            </div>
+        </section>
+
+        <section class="security-tips">
+            <div class="container">
+                <h2 class="section-title">Essential Security Tips</h2>
+                <div class="tips-grid">
+                    <div class="tip-card" id="password-tip" onclick="trackInteraction('password-tip')">
+                        <div class="tip-icon">🔐</div>
+                        <h3>Strong Passwords</h3>
+                        <p>Use unique, complex passwords with at least 12 characters. Include uppercase, lowercase, numbers, and symbols. Never reuse passwords across multiple accounts. Consider using a password manager.</p>
+                    </div>
+                    
+                    <div class="tip-card" id="2fa-tip" onclick="trackInteraction('2fa-tip')">
+                        <div class="tip-icon">📱</div>
+                        <h3>Two-Factor Authentication</h3>
+                        <p>Enable 2FA on all your important accounts. This adds an extra layer of security that makes it much harder for attackers to access your accounts, even if they have your password.</p>
+                    </div>
+                    
+                    <div class="tip-card" id="phishing-tip" onclick="trackInteraction('phishing-tip')">
+                        <div class="tip-icon">🎣</div>
+                        <h3>Recognize Phishing</h3>
+                        <p>Be suspicious of unexpected emails asking for personal information. Check sender addresses carefully and never click suspicious links or download unexpected attachments from unknown sources.</p>
+                    </div>
+                    
+                    <div class="tip-card" id="update-tip" onclick="trackInteraction('update-tip')">
+                        <div class="tip-icon">🔄</div>
+                        <h3>Keep Software Updated</h3>
+                        <p>Regularly update your operating system, browsers, and applications. Security patches often fix vulnerabilities that hackers could exploit to gain unauthorized access.</p>
+                    </div>
+                    
+                    <div class="tip-card" id="wifi-tip" onclick="trackInteraction('wifi-tip')">
+                        <div class="tip-icon">📶</div>
+                        <h3>Secure Wi-Fi Practices</h3>
+                        <p>Avoid public Wi-Fi for sensitive activities. Use a VPN when necessary and ensure your home Wi-Fi uses WPA3 encryption. Be cautious of fake hotspots in public places.</p>
+                    </div>
+                    
+                    <div class="tip-card" id="backup-tip" onclick="trackInteraction('backup-tip')">
+                        <div class="tip-icon">💾</div>
+                        <h3>Regular Backups</h3>
+                        <p>Backup your important data regularly to multiple locations. This protects you from ransomware attacks, hardware failures, and accidental data loss. Test your backups periodically.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="threat-alert">
+            <div class="container">
+                <div class="alert-icon">⚠️</div>
+                <h2>Current Threat Level: ELEVATED</h2>
+                <p>Recent increase in sophisticated phishing attacks targeting social media and banking credentials. Cybercriminals are using AI-generated content to create more convincing scams. Stay vigilant and verify all unexpected communications through official channels.</p>
+                <button class="cta-button" onclick="trackInteraction('threat-alert-button')">Learn More About Current Threats</button>
+            </div>
+        </section>
+
+        <section class="stats-section">
+            <div class="container">
+                <h2 class="section-title">Cybersecurity Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <p>of successful cyber breaches are due to human error</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">$4.8M</div>
+                        <p>average cost of a data breach in 2024</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3.2B</div>
+                        <p>phishing emails sent daily worldwide</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">43%</div>
+                        <p>of cyber attacks target small businesses</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="interactive-section">
+            <div class="container">
+                <h2 class="section-title">Test Your Knowledge</h2>
+                <div class="security-quiz">
+                    <h3>Quick Security Quiz</h3>
+                    <p id="quiz-question">Which of these makes the strongest password?</p>
+                    <div id="quiz-options">
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'mypassword')">mypassword</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, '123456789')">123456789</button>
+                    </div>
+                    <div id="quiz-result"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Packages-Cybersecurity. Protecting your digital life, one tip at a time.</p>
+            <p>🛡️ Stay Safe | 🔐 Stay Secure | 🌐 Stay Connected</p>
+            <p style="margin-top: 20px; opacity: 0.7;">Powered by Packages Group - Cyber Security Division</p>
+        </div>
+    </footer>
+
+    <div class="floating-tip" onclick="showRandomTip()">
+        💡 Security Tip
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        let userInteractions = {};
+        let sessionStartTime = Date.now();
+        let uniqueVisitorId = 'visitor_' + Math.random().toString(36).substr(2, 9);
+        let userScore = 0;
+        let correctAnswers = 0;
+        let totalQuestions = 0;
+        let securityLevelAchieved = 'Beginner';
+        let scrollDepth = 0;
+
+        const SCORING = {
+            tip_interaction: 10,
+            quiz_correct: 25,
+            quiz_attempt: 5,
+            floating_tip: 5,
+            hero_button: 10,
+            threat_alert_button: 10,
+            scroll_milestone: 5,
+            time_bonus_per_minute: 2,
+            completion_bonus: 50,
+            page_visit: 5,
+            week1_button: 15
+        };
+
+        const SECURITY_LEVELS = [
+            { name: 'Beginner', threshold: 0, color: '#ff6b6b', icon: '🔓', bgColor: 'rgba(255, 107, 107, 0.2)' },
+            { name: 'Aware', threshold: 50, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
+            { name: 'Cautious', threshold: 100, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
+            { name: 'Secure', threshold: 150, color: '#4ecdc4', icon: '🔐', bgColor: 'rgba(78, 205, 196, 0.2)' },
+            { name: 'Expert', threshold: 200, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
+            { name: 'Guardian', threshold: 300, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "Which of these makes the strongest password?",
+                options: ["Password123", "mypassword", "M7$kL9#pR2@qN8!", "123456789"],
+                correct: 2,
+                explanation: "Complex passwords with mixed characters, symbols, and adequate length are exponentially more secure and virtually impossible to crack through brute force attacks."
+            },
+            {
+                question: "What is the safest way to connect to public Wi-Fi?",
+                options: ["Connect directly", "Use a VPN", "Share your hotspot", "Disable firewall"],
+                correct: 1,
+                explanation: "A VPN encrypts your internet traffic, protecting your data from potential eavesdroppers on public networks."
+            },
+            {
+                question: "How often should you update your software?",
+                options: ["Never", "Once a year", "When prompted/available", "Only when broken"],
+                correct: 2,
+                explanation: "Regular updates patch security vulnerabilities that hackers could exploit to gain unauthorized access to your system."
+            },
+            {
+                question: "What should you do with suspicious emails?",
+                options: ["Click all links", "Forward to friends", "Delete and report", "Reply with info"],
+                correct: 2,
+                explanation: "Deleting suspicious emails and reporting them helps protect you and others from potential phishing attacks."
+            },
+            {
+                question: "What makes two-factor authentication effective?",
+                options: ["Uses two passwords", "Requires something you know + something you have", "Takes twice as long", "Works on two devices"],
+                correct: 1,
+                explanation: "2FA combines something you know (password) with something you have (phone/token), making unauthorized access extremely difficult."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+
+        function toggleMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('weekMenu');
+            hamburger.classList.toggle('active');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('weekMenu');
+            const isClickInside = hamburger.contains(event.target) || menu.contains(event.target);
+            
+            if (!isClickInside && menu.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                menu.classList.remove('active');
+            }
+        });
+
+        function showLockedModal(event, weekName) {
+            event.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'lock-modal';
+            modal.innerHTML = `
+                <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+                <h2>Week Locked!</h2>
+                <p><strong>${weekName}</strong> is currently locked. Complete Week 1 first to unlock the next week's content!</p>
+                <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 15px;">Keep learning and earning points to progress through all cybersecurity modules.</p>
+                <button onclick="this.parentElement.remove()">Got It!</button>
+            `;
+            document.body.appendChild(modal);
+            setTimeout(() => {
+                if (document.body.contains(modal)) {
+                    modal.remove();
+                }
+            }, 8000);
+            showNotification(`${weekName} is locked! Complete Week 1 to unlock more content.`, 'warning');
+        }
+
+        function updateScore(points, reason = '') {
+            userScore += points;
+            document.getElementById('userScore').textContent = userScore;
+            
+            const newLevel = getCurrentSecurityLevel();
+            if (newLevel.name !== securityLevelAchieved) {
+                const oldLevel = securityLevelAchieved;
+                securityLevelAchieved = newLevel.name;
+                showLevelUpNotification(oldLevel, newLevel);
+            }
+            
+            updateScoreVisual();
+            updateProgressBar();
+            animateScoreIncrease();
+            
+            logAnalytics('score_update', {
+                points: points,
+                totalScore: userScore,
+                reason: reason,
+                level: securityLevelAchieved
+            });
+        }
+
+        function getCurrentSecurityLevel() {
+            for (let i = SECURITY_LEVELS.length - 1; i >= 0; i--) {
+                if (userScore >= SECURITY_LEVELS[i].threshold) {
+                    return SECURITY_LEVELS[i];
+                }
+            }
+            return SECURITY_LEVELS[0];
+        }
+
+        function updateScoreVisual() {
+            const currentLevel = getCurrentSecurityLevel();
+            const scoreElement = document.getElementById('userScore');
+            const levelIconElement = document.getElementById('levelIcon');
+            const levelNameElement = document.getElementById('levelName');
+            const scoreDisplay = document.querySelector('.score-display');
+            
+            scoreElement.style.color = currentLevel.color;
+            scoreElement.style.textShadow = `0 0 10px ${currentLevel.color}`;
+            levelIconElement.textContent = currentLevel.icon;
+            levelNameElement.textContent = currentLevel.name;
+            levelNameElement.style.color = currentLevel.color;
+            
+            scoreDisplay.style.background = currentLevel.bgColor;
+            scoreDisplay.style.borderColor = currentLevel.color;
+        }
+
+        function updateProgressBar() {
+            const currentLevel = getCurrentSecurityLevel();
+            const nextLevelIndex = SECURITY_LEVELS.findIndex(level => level.name === currentLevel.name) + 1;
+            const progressBar = document.getElementById('progressBar');
+            
+            if (nextLevelIndex < SECURITY_LEVELS.length) {
+                const nextLevel = SECURITY_LEVELS[nextLevelIndex];
+                const progress = ((userScore - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
+                progressBar.style.width = Math.min(progress, 100) + '%';
+            } else {
+                progressBar.style.width = '100%';
+            }
+        }
+
+        function animateScoreIncrease() {
+            const scoreElement = document.getElementById('userScore');
+            scoreElement.style.transform = 'scale(1.3)';
+            scoreElement.style.transition = 'transform 0.4s ease';
+            
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 400);
+        }
+
+        function showLevelUpNotification(oldLevel, newLevel) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, ${newLevel.color}, ${newLevel.color}aa);
+                color: white;
+                padding: 40px 50px;
+                border-radius: 25px;
+                z-index: 20000;
+                text-align: center;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+                backdrop-filter: blur(20px);
+                border: 3px solid ${newLevel.color};
+                animation: levelUpAnimation 1s ease-out;
+                max-width: 450px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 5rem; margin-bottom: 20px;">${newLevel.icon}</div>
+                <h2 style="margin-bottom: 15px; font-size: 2.5rem;">LEVEL UP!</h2>
+                <p style="margin-bottom: 10px; font-size: 1.2rem;">Congratulations! You've reached</p>
+                <p style="margin-bottom: 20px; font-size: 1.8rem; font-weight: bold;">${newLevel.name} Level</p>
+                <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 25px;">Total Score: ${userScore} points</p>
+                <button onclick="this.parentElement.remove()" 
+                        style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600;">
+                    Continue Learning
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                showNotification(`Welcome to ${newLevel.name} level! Your cybersecurity knowledge is growing!`, 'success');
+            }, 1000);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+
+        function trackInteraction(action) {
+            if (userInteractions[action]) {
+                showNotification('You already earned points for this!', 'info');
+                return;
+            }
+            
+            userInteractions[action] = 1;
+            
+            if (action.includes('tip')) {
+                const tipCard = document.getElementById(action);
+                if (tipCard) {
+                    tipCard.classList.add('completed');
+                }
+            }
+            
+            let points = SCORING[action.replace('-', '_')] || SCORING.tip_interaction;
+            
+            updateScore(points, action);
+            
+            logAnalytics(action, {
+                count: userInteractions[action],
+                timestamp: new Date().toISOString(),
+                sessionDuration: Date.now() - sessionStartTime,
+                pointsAwarded: points
+            });
+            
+            showInteractionFeedback(action, points);
+            checkCompletionBonus();
+        }
+
+        function logAnalytics(event, data) {
+            const analyticsData = {
+                visitorId: uniqueVisitorId,
+                event: event,
+                data: data,
+                totalScore: userScore,
+                userAgent: navigator.userAgent,
+                screenResolution: screen.width + 'x' + screen.height,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!window.sessionAnalytics) {
+                window.sessionAnalytics = [];
+            }
+            window.sessionAnalytics.push(analyticsData);
+        }
+
+        function showInteractionFeedback(action, points = 0) {
+            const messages = {
+                'hero-button': `Ready to learn! Your cybersecurity journey begins! (+${points} points)`,
+                'password-tip': `Excellent! Strong passwords are your first defense! (+${points} points)`,
+                '2fa-tip': `Smart! 2FA blocks 99.9% of automated attacks! (+${points} points)`,
+                'phishing-tip': `Great awareness! Phishing is the #1 attack vector! (+${points} points)`,
+                'update-tip': `Perfect! Patched systems stop most exploits! (+${points} points)`,
+                'wifi-tip': `Wise choice! Public WiFi can be dangerous! (+${points} points)`,
+                'backup-tip': `Essential! Backups defeat ransomware! (+${points} points)`,
+                'threat-alert-button': `Stay informed about current threats! (+${points} points)`,
+                'floating-tip': `Active learning - excellent security habit! (+${points} points)`
+            };
+            
+            const message = messages[action] || `Learning through exploration! (+${points} points)`;
+            showNotification(message, 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                info: 'linear-gradient(45deg, #4ecdc4, #45b7d1)',
+                success: 'linear-gradient(45deg, #96ceb4, #4ecdc4)',
+                warning: 'linear-gradient(45deg, #ffeaa7, #fab1a0)',
+                error: 'linear-gradient(45deg, #ff6b6b, #ee5a52)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 140px;
+                right: 30px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 20px 30px;
+                border-radius: 20px;
+                z-index: 15000;
+                animation: slideInNotification 0.7s ease-out;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                max-width: 380px;
+                font-weight: 500;
+                backdrop-filter: blur(15px);
+                border: 2px solid rgba(255,255,255,0.3);
+                font-size: 0.95rem;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span style="flex: 1;">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.7; padding: 0;">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        function handleQuizAnswer(isCorrect, selectedAnswer) {
+            totalQuestions++;
+            const resultDiv = document.getElementById('quiz-result');
+            
+            let bonusPoints = 0;
+            if (isCorrect) {
+                correctAnswers++;
+                bonusPoints = SCORING.quiz_correct;
+                updateScore(bonusPoints, 'quiz_correct');
+            }
+            
+            logAnalytics('quiz_answer', {
+                correct: isCorrect,
+                selectedAnswer: selectedAnswer,
+                bonusPoints: bonusPoints,
+                totalCorrect: correctAnswers,
+                totalQuestions: totalQuestions
+            });
+            
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const currentQuestion = quizQuestions[currentQuizIndex];
+            
+            if (isCorrect) {
+                resultDiv.innerHTML = `
+                    <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">✅ +${bonusPoints} points!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Perfect! Outstanding security knowledge!</h4>
+                        <p>${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
+                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
+                        </div>
+                    </div>
+                `;
+                showNotification(`Outstanding! (+${bonusPoints} points)`, 'success');
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="color: #ffd93d; margin-top: 30px; padding: 25px; background: rgba(255, 217, 61, 0.15); border-radius: 20px; border: 2px solid rgba(255, 217, 61, 0.4);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📚 Keep learning!</div>
+                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Good effort!</h4>
+                        <p>${currentQuestion.explanation}</p>
+                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
+                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
+                        </div>
+                    </div>
+                `;
+                showNotification('Great attempt! Keep learning!', 'warning');
+            }
+            
+            if (totalQuestions >= quizQuestions.length) {
+                setTimeout(() => {
+                    showQuizCompletion();
+                }, 3000);
+            } else {
+                setTimeout(showNewQuizQuestion, 4000);
+            }
+        }
+
+        function showNewQuizQuestion() {
+            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+            const quiz = quizQuestions[currentQuizIndex];
+            
+            document.getElementById('quiz-question').textContent = quiz.question;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            
+            quiz.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'quiz-button';
+                button.textContent = option;
+                button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
+                optionsDiv.appendChild(button);
+            });
+            
+            document.getElementById('quiz-result').innerHTML = '';
+        }
+
+        function showQuizCompletion() {
+            const quizContainer = document.querySelector('.security-quiz');
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const currentLevel = getCurrentSecurityLevel();
+            
+            quizContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
+                    <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 2.5rem;">Quiz Complete!</h2>
+                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
+                        <h3 style="color: #4ecdc4; margin-bottom: 15px;">Your Performance</h3>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions: ${totalQuestions}/${quizQuestions.length}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
+                        <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
+                        <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Score: ${userScore} points</p>
+                    </div>
+                    <div style="margin-top: 30px;">
+                        <input type="text" id="userName" placeholder="Enter your name for certificate" 
+                               style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.1rem; text-align: center; margin-bottom: 20px; width: 100%; max-width: 300px;" />
+                        <br>
+                        <button onclick="generateCertificate()" 
+                                style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            Generate PDF Certificate
+                        </button>
+                        <button onclick="resetQuiz()" 
+                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin: 10px;">
+                            Retake Quiz
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function generateCertificate() {
+            const nameInput = document.getElementById('userName');
+            const enteredName = nameInput.value.trim();
+            
+            if (!enteredName) {
+                showNotification('Please enter your name!', 'warning');
+                nameInput.focus();
+                return;
+            }
+            
+            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const currentLevel = getCurrentSecurityLevel();
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            showNotification('Generating certificate...', 'info');
+
+            try {
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                
+                doc.setFillColor(245, 247, 250);
+                doc.rect(0, 0, 297, 210, 'F');
+                
+                doc.setDrawColor(44, 62, 80);
+                doc.setLineWidth(3);
+                doc.rect(10, 10, 277, 190);
+                doc.setDrawColor(52, 152, 219);
+                doc.setLineWidth(0.5);
+                doc.rect(15, 15, 267, 180);
+                
+                doc.setTextColor(44, 62, 80);
+                doc.setFontSize(28);
+                doc.setFont(undefined, 'bold');
+                doc.text('Packages-Cybersecurity', 148.5, 70, { align: 'center' });
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'normal');
+                doc.text('Certificate of Cybersecurity Awareness', 148.5, 80, { align: 'center' });
+                
+                doc.setTextColor(52, 73, 94);
+                doc.setFontSize(12);
+                doc.text('This certifies that', 148.5, 95, { align: 'center' });
+                
+                doc.setFillColor(52, 152, 219);
+                doc.rect(70, 100, 157, 15, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.text(enteredName, 148.5, 110, { align: 'center' });
+                
+                doc.setTextColor(52, 73, 94);
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'normal');
+                doc.text('has successfully completed the Packages-Cybersecurity awareness program', 148.5, 125, { align: 'center' });
+                doc.text('and demonstrated excellent understanding of digital security practices.', 148.5, 132, { align: 'center' });
+                
+                doc.setFillColor(236, 240, 241);
+                doc.rect(40, 140, 217, 35, 'F');
+                doc.setDrawColor(52, 152, 219);
+                doc.setLineWidth(0.5);
+                doc.rect(40, 140, 217, 35);
+                
+                doc.setTextColor(44, 62, 80);
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Performance Summary:', 50, 150);
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                doc.text(`Quiz Accuracy: ${accuracy}% (${correctAnswers}/${totalQuestions})`, 50, 158);
+                doc.text(`Total Score: ${userScore} points`, 50, 165);
+                doc.text(`Security Level: ${currentLevel.name}`, 170, 158);
+                doc.text(`Completion Date: ${currentDate}`, 170, 165);
+                
+                doc.setDrawColor(52, 73, 94);
+                doc.setLineWidth(0.3);
+                doc.line(40, 185, 100, 185);
+                doc.line(197, 185, 257, 185);
+                doc.setFontSize(9);
+                doc.text('Packages-Cybersecurity Team', 70, 190, { align: 'center' });
+                doc.text('Issued: ' + currentDate, 227, 190, { align: 'center' });
+                doc.setFontSize(8);
+                doc.setTextColor(127, 140, 141);
+                doc.text('Powered by Packages Group - Cyber Security Division', 148.5, 200, { align: 'center' });
+                
+                const safeFileName = enteredName.replace(/[^a-zA-Z0-9]/g, '_');
+                doc.save(`Packages_Cybersecurity_Certificate_${safeFileName}.pdf`);
+                showNotification(`Certificate generated for ${enteredName}!`, 'success');
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Error generating certificate. Please try again.', 'error');
+            }
+        }
+
+        function resetQuiz() {
+            if (confirm('Are you sure you want to retake the quiz?')) {
+                currentQuizIndex = 0;
+                correctAnswers = 0;
+                totalQuestions = 0;
+                
+                const quizContainer = document.querySelector('.security-quiz');
+                quizContainer.innerHTML = `
+                    <h3>Quick Security Quiz</h3>
+                    <p id="quiz-question">Which of these makes the strongest password?</p>
+                    <div id="quiz-options">
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'mypassword')">mypassword</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
+                        <button class="quiz-button" onclick="handleQuizAnswer(false, '123456789')">123456789</button>
+                    </div>
+                    <div id="quiz-result"></div>
+                `;
+                
+                showNotification('Quiz reset! Start fresh!', 'info');
+            }
+        }
+
+        const securityTips = [
+            'Use a password manager - it generates complex passwords safely!',
+            'Enable automatic security updates on all devices!',
+            'Always verify HTTPS before entering sensitive information!',
+            'Contact senders through official channels when suspicious!',
+            'Test your backups monthly!',
+            'Log out of accounts on shared computers!',
+            'Monitor account activity weekly!',
+            'Use antivirus with real-time protection!',
+            'Hover over URLs before clicking!',
+            'Companies never ask for passwords via calls!',
+            'Set up banking alerts for all transactions!',
+            'Change default router passwords immediately!',
+            'Limit personal information sharing online!',
+            'Enable auto-lock with biometrics!',
+            'Trust your instincts - if suspicious, it probably is!'
+        ];
+
+        let lastTipIndex = -1;
+
+        function showRandomTip() {
+            trackInteraction('floating-tip');
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * securityTips.length);
+            } while (randomIndex === lastTipIndex && securityTips.length > 1);
+            
+            lastTipIndex = randomIndex;
+            showNotification(securityTips[randomIndex], 'info');
+        }
+
+        window.addEventListener('scroll', function() {
+            const winHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const trackLength = docHeight - winHeight;
+            const pctScrolled = Math.floor(scrollTop / trackLength * 100);
+            
+            if (pctScrolled > scrollDepth) {
+                scrollDepth = pctScrolled;
+                
+                if (scrollDepth >= 25 && !window.scroll25) {
+                    window.scroll25 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_25');
+                }
+                if (scrollDepth >= 50 && !window.scroll50) {
+                    window.scroll50 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_50');
+                }
+                if (scrollDepth >= 75 && !window.scroll75) {
+                    window.scroll75 = true;
+                    updateScore(SCORING.scroll_milestone, 'scroll_75');
+                    showNotification('Explorer Badge! (+' + SCORING.scroll_milestone + ' points)', 'success');
+                }
+            }
+        });
+
+        function checkCompletionBonus() {
+            const requiredActions = ['password-tip', '2fa-tip', 'phishing-tip', 'update-tip', 'wifi-tip', 'backup-tip'];
+            const completedActions = requiredActions.filter(action => userInteractions[action] > 0);
+            
+            if (completedActions.length === requiredActions.length && !window.completionBonusAwarded) {
+                window.completionBonusAwarded = true;
+                updateScore(SCORING.completion_bonus, 'completion_bonus');
+                showNotification(`COMPLETION MASTER! (+${SCORING.completion_bonus} points)`, 'success');
+            }
+        }
+
+        window.addEventListener('load', function() {
+            updateScore(SCORING.page_visit, 'page_visit');
+            updateScoreVisual();
+            updateProgressBar();
+            
+            showNotification('Welcome to Packages-Cybersecurity! Earn points by exploring!', 'success');
+            
+            setTimeout(() => {
+                showNotification('Pro tip: Click on security cards to learn!', 'info');
+            }, 10000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            logAnalytics('session_end', {
+                totalScore: userScore,
+                sessionDuration: Date.now() - sessionStartTime,
+                scrollDepth: scrollDepth,
+                completedActions: Object.keys(userInteractions).length,
+                securityLevel: securityLevelAchieved,
+                quizAccuracy: totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
+            });
+        });
+    </script>
+</body>
+</html>
