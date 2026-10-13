@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login – CyberShield</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a1a 0%, #0d1b3e 40%, #1a0a2e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: drift 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #6c63ff; top: -150px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: #00d2ff; bottom: -100px; right: -80px; animation-delay: 3s; }
+    .orb-3 { width: 300px; height: 300px; background: #a855f7; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: 6s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(30px, 20px) scale(1.08); }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(108, 99, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108, 99, 255, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      width: 420px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 24px;
+      padding: 48px 40px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .shield-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #6c63ff, #00d2ff);
+      border-radius: 18px;
+      margin: 0 auto 24px;
+      font-size: 28px;
+      box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 8px 32px rgba(108,99,255,0.4); }
+      50% { box-shadow: 0 8px 48px rgba(108,99,255,0.7); }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.3);
+      color: #a78bfa;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin: 0 auto 32px;
+      width: fit-content;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 13px 14px 13px 42px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(108,99,255,0.6);
+      background: rgba(108,99,255,0.06);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    }
+
+    input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .toggle-pass {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px;
+      transition: color 0.2s;
+    }
+    .toggle-pass:hover { color: rgba(255,255,255,0.65); }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6c63ff 0%, #00d2ff 100%);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 28px;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 8px 24px rgba(108,99,255,0.35);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(108,99,255,0.5);
+    }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      margin-top: 18px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert.error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      margin: 28px 0 20px;
+    }
+
+    .back-link {
+      text-align: center;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .back-link a {
+      color: #a78bfa;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .back-link a:hover { color: #c4b5fd; }
+
+    @media (max-width: 480px) {
+      .card { width: 90%; padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="card">
+    <div class="shield-icon">🛡️</div>
+    <h1>Admin Portal</h1>
+    <p class="subtitle">CyberShield Control Centre</p>
+    <div class="badge">🔒 Restricted Access</div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="field">
+        <label for="email">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input type="email" id="email" placeholder="admin@cybershield.com" autocomplete="username" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="password" placeholder="••••••••••" autocomplete="current-password" required />
+          <button type="button" class="toggle-pass" id="togglePass" onclick="togglePassword()">👁️</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="loginBtn">
+        <div class="btn-inner">
+          <div class="spinner" id="spinner"></div>
+          <span id="btnText">Sign In to Dashboard</span>
+        </div>
+      </button>
+
+      <div class="alert error" id="errorAlert">
+        ⚠️ <span id="errorMsg">Invalid email or password.</span>
+      </div>
+    </form>
+
+    <div class="divider"></div>
+    <div class="back-link"><a href="/">← Back to Main Site</a></div>
+  </div>
+
+  <script>
+    const ADMIN_EMAIL    = 'admin@cybershield.com';
+    const ADMIN_PASSWORD = 'Admin@123';
+    const ADMIN_TOKEN    = 'cybershield-admin-2024';
+
+    // Redirect if already authenticated
+    if (sessionStorage.getItem('adminToken') === ADMIN_TOKEN) {
+      window.location.replace('/admin-dashboard.html');
+    }
+
+    function togglePassword() {
+      const pw = document.getElementById('password');
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+    }
+
+    function setLoading(on) {
+      const btn = document.getElementById('loginBtn');
+      const spinner = document.getElementById('spinner');
+      const text = document.getElementById('btnText');
+      btn.disabled = on;
+      spinner.style.display = on ? 'block' : 'none';
+      text.textContent = on ? 'Authenticating…' : 'Sign In to Dashboard';
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorAlert');
+      document.getElementById('errorMsg').textContent = msg;
+      el.style.display = 'flex';
+    }
+
+    function hideError() {
+      document.getElementById('errorAlert').style.display = 'none';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      hideError();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      setLoading(true);
+
+      setTimeout(() => {
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+          sessionStorage.setItem('adminToken', ADMIN_TOKEN);
+          window.location.replace('/admin-dashboard.html');
+        } else {
+          setLoading(false);
+          showError('Invalid email or password. Please try again.');
+          document.getElementById('password').value = '';
+        }
+      }, 900);
+    }
+
+    document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', hideError));
+  </script>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – CyberShield</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #07080f;
+      --surface: rgba(255,255,255,0.035);
+      --surface-hover: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(255,255,255,0.14);
+      --text: #f0f0ff;
+      --text-muted: rgba(240,240,255,0.45);
+      --text-dim: rgba(240,240,255,0.25);
+      --accent: #6c63ff;
+      --accent-2: #00d2ff;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: 240px;
+      background: rgba(12,12,24,0.95);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo .icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo .name {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-logo .version {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+      padding: 12px 8px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.87rem;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: var(--surface-hover); color: var(--text); }
+    .nav-item.active { background: rgba(108,99,255,0.15); color: #a78bfa; }
+    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px 12px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── Main ─── */
+    .main {
+      margin-left: 240px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Topbar ─── */
+    .topbar {
+      height: 64px;
+      background: rgba(7,8,15,0.8);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky; top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .topbar-left p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px 6px 8px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .admin-avatar {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
+
+    /* ─── Content ─── */
+    .content { padding: 28px; flex: 1; }
+
+    /* ─── Lock Banner ─── */
+    .lock-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      border: 1px solid;
+      transition: all 0.3s;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .lock-banner.unlocked {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.2);
+    }
+    .lock-banner.locked {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.25);
+    }
+
+    .lock-banner-info { display: flex; align-items: center; gap: 14px; }
+
+    .lock-status-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .unlocked .lock-status-icon { background: rgba(34,197,94,0.12); }
+    .locked .lock-status-icon { background: rgba(239,68,68,0.12); }
+
+    .lock-banner-title { font-size: 1rem; font-weight: 600; }
+    .lock-banner-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    .lock-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      white-space: nowrap;
+    }
+    .lock-toggle-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .lock-toggle-btn.lock-action {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(239,68,68,0.3);
+    }
+    .lock-toggle-btn.unlock-action {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.3);
+    }
+    .lock-toggle-btn:hover:not(:disabled) { transform: translateY(-2px); }
+
+    /* ─── Stats Grid ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .stat-card:hover { background: var(--surface-hover); border-color: var(--border-bright); }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ─── Table Section ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .section-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .section-actions { display: flex; gap: 10px; }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-bright); }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Search */
+    .search-bar {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .search-bar input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px 10px 40px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-bar input:focus {
+      border-color: rgba(108,99,255,0.5);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+    }
+    .search-bar input::placeholder { color: var(--text-dim); }
+    .search-icon {
+      position: absolute;
+      left: 13px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr {
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    .user-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .badge-level {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-expert { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
+    .badge-advanced { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
+    .badge-intermediate { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+    .badge-beginner { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.25); }
+
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-bar {
+      width: 60px; height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    /* Loading / Empty / Error states */
+    .state-row td {
+      text-align: center;
+      padding: 56px 24px;
+      color: var(--text-muted);
+    }
+
+    .loading-dots span {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin: 0 3px;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: rgba(20,20,40,0.95);
+      border: 1px solid var(--border-bright);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      z-index: 1000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s;
+      min-width: 280px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,0.3); }
+    .toast.error { border-color: rgba(239,68,68,0.3); }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .page-btns { display: flex; gap: 6px; }
+
+    .page-btn {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .page-btn:hover { background: var(--surface-hover); color: var(--text); }
+    .page-btn.active { background: rgba(108,99,255,0.2); color: #a78bfa; border-color: rgba(108,99,255,0.35); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo .name, .sidebar-logo .version, .nav-item span:not(.nav-icon), .nav-label { display: none; }
+      .main { margin-left: 60px; }
+      .nav-item { justify-content: center; padding: 10px 0; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .content { padding: 16px; }
+      .lock-banner { flex-direction: column; gap: 14px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">🛡️</div>
+      <div>
+        <div class="name">CyberShield</div>
+        <div class="version">Admin Panel v2.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item active" href="#" onclick="showSection('users')">
+        <span class="nav-icon">👥</span><span>Users</span>
+      </a>
+      <a class="nav-item" href="#" onclick="showSection('settings')">
+        <span class="nav-icon">⚙️</span><span>Settings</span>
+      </a>
+      <div class="nav-label">Tools</div>
+      <button class="nav-item" onclick="exportExcel()">
+        <span class="nav-icon">📊</span><span>Export Excel</span>
+      </button>
+      <button class="nav-item" onclick="refreshUsers()">
+        <span class="nav-icon">🔄</span><span>Refresh</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item" onclick="logout()" style="width:100%">
+        <span class="nav-icon">🚪</span><span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 id="pageTitle">User Management</h2>
+        <p id="pageSubtitle">View and manage all registered users</p>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-pill">
+          <div class="admin-avatar">A</div>
+          <span>admin@cybershield.com</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content" id="mainContent">
+
+      <!-- Lock Banner -->
+      <div class="lock-banner unlocked" id="lockBanner">
+        <div class="lock-banner-info">
+          <div class="lock-status-icon" id="lockIcon">🟢</div>
+          <div>
+            <div class="lock-banner-title" id="lockTitle">Site Activities Unlocked</div>
+            <div class="lock-banner-desc" id="lockDesc">Users can access all quizzes, videos, and interactive features.</div>
+          </div>
+        </div>
+        <button class="lock-toggle-btn lock-action" id="lockBtn" onclick="toggleLock()">
+          🔒 Lock All Activities
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-sub">Registered participants</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Score</div>
+          <div class="stat-value" id="statAvgScore">—</div>
+          <div class="stat-sub">Points across all users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Accuracy</div>
+          <div class="stat-value" id="statAvgAccuracy">—%</div>
+          <div class="stat-sub">Quiz performance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completed Videos</div>
+          <div class="stat-value" id="statVideos">—</div>
+          <div class="stat-sub">Video completions</div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="section-header">
+        <div>
+          <div class="section-title">All Users</div>
+          <div class="section-sub" id="tableCount">Loading...</div>
+        </div>
+        <div class="section-actions">
+          <button class="btn-secondary" onclick="refreshUsers()">🔄 Refresh</button>
+          <button class="btn-primary" onclick="exportExcel()" id="exportBtn">📊 Export Excel</button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, level…" oninput="filterUsers()" />
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Level</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Video</th>
+              <th>Quiz Marks</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr class="state-row">
+              <td colspan="8">
+                <div class="loading-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="pagination" id="paginationBar">
+          <span id="paginationInfo">—</span>
+          <div class="page-btns" id="pageBtns"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Done!</span>
+  </div>
+
+  <script>
+    const ADMIN_TOKEN   = 'cybershield-admin-2024';
+    const API_USERS     = '/api/get-users';
+    const API_SETTINGS  = '/api/admin-settings';
+
+    // Auth guard
+    if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
+      window.location.replace('/admin-login.html');
+    }
+
+    // ── State ──
+    let allUsers    = [];
+    let filtered    = [];
+    let isLocked    = false;
+    let lockLoading = false;
+    const PAGE_SIZE = 15;
+    let currentPage = 1;
+
+    // ── Init ──
+    async function init() {
+      await Promise.all([fetchLockStatus(), fetchUsers()]);
+    }
+
+    // ── Lock ──
+    async function fetchLockStatus() {
+      try {
+        const res  = await fetch(API_SETTINGS);
+        const data = await res.json();
+        if (data.success) applyLockState(data.locked);
+      } catch (e) {
+        console.warn('Could not fetch lock status', e);
+      }
+    }
+
+    function applyLockState(locked) {
+      isLocked = locked;
+      const banner = document.getElementById('lockBanner');
+      const icon   = document.getElementById('lockIcon');
+      const title  = document.getElementById('lockTitle');
+      const desc   = document.getElementById('lockDesc');
+      const btn    = document.getElementById('lockBtn');
+
+      if (locked) {
+        banner.className = 'lock-banner locked';
+        icon.textContent = '🔴';
+        title.textContent = 'Site Activities LOCKED';
+        desc.textContent  = 'All user activities are disabled. Users see a locked banner.';
+        btn.className = 'lock-toggle-btn unlock-action';
+        btn.innerHTML = '🔓 Unlock All Activities';
+      } else {
+        banner.className = 'lock-banner unlocked';
+        icon.textContent = '🟢';
+        title.textContent = 'Site Activities Unlocked';
+        desc.textContent  = 'Users can access all quizzes, videos, and interactive features.';
+        btn.className = 'lock-toggle-btn lock-action';
+        btn.innerHTML = '🔒 Lock All Activities';
+      }
+    }
+
+    async function toggleLock() {
+      if (lockLoading) return;
+      const newState = !isLocked;
+      const confirmed = confirm(
+        newState
+          ? '⚠️ Lock ALL site activities? Users will see a locked message and cannot interact.'
+          : '✅ Unlock site activities? Users will regain full access.'
+      );
+      if (!confirmed) return;
+
+      lockLoading = true;
+      const btn = document.getElementById('lockBtn');
+      btn.disabled = true;
+      btn.innerHTML = newState ? '⏳ Locking…' : '⏳ Unlocking…';
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({ locked: newState })
+        });
+        const data = await res.json();
+        if (data.success) {
+          applyLockState(data.locked);
+          showToast(
+            data.locked ? '🔒 All activities locked!' : '🔓 Activities unlocked!',
+            data.locked ? 'error' : 'success'
+          );
+        } else {
+          showToast('❌ Failed to update lock state', 'error');
+          applyLockState(isLocked); // revert button
+        }
+      } catch (e) {
+        showToast('❌ Network error. Please retry.', 'error');
+      } finally {
+        lockLoading = false;
+        btn.disabled = false;
+      }
+    }
+
+    // ── Users ──
+    async function fetchUsers() {
+      setTableLoading(true);
+      try {
+        const res  = await fetch(API_USERS);
+        const data = await res.json();
+        if (data.success) {
+          allUsers = data.data || [];
+          filtered = [...allUsers];
+          currentPage = 1;
+          renderStats();
+          renderTable();
+          document.getElementById('tableCount').textContent =
+            `${allUsers.length} user${allUsers.length !== 1 ? 's' : ''} registered`;
+        } else {
+          setTableError('Failed to load users.');
+        }
+      } catch (e) {
+        setTableError('Network error. Check your connection.');
+      }
+    }
+
+    function refreshUsers() { fetchUsers(); }
+
+    function filterUsers() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      filtered = q
+        ? allUsers.filter(u =>
+            (u.userName || '').toLowerCase().includes(q) ||
+            (u.level || '').toLowerCase().includes(q)
+          )
+        : [...allUsers];
+      currentPage = 1;
+      renderTable();
+    }
+
+    function renderStats() {
+      document.getElementById('statTotal').textContent = allUsers.length;
+      const avgScore = allUsers.length
+        ? Math.round(allUsers.reduce((s, u) => s + (u.score || 0), 0) / allUsers.length)
+        : 0;
+      const avgAcc = allUsers.length
+        ? Math.round(allUsers.reduce((s, u) => s + (u.accuracy || 0), 0) / allUsers.length)
+        : 0;
+      const videos = allUsers.filter(u => u.videoCompleted).length;
+
+      document.getElementById('statAvgScore').textContent = avgScore;
+      document.getElementById('statAvgAccuracy').textContent = avgAcc + '%';
+      document.getElementById('statVideos').textContent = videos;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('usersTableBody');
+      const total = filtered.length;
+      const pages = Math.ceil(total / PAGE_SIZE) || 1;
+      if (currentPage > pages) currentPage = pages;
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const slice = filtered.slice(start, start + PAGE_SIZE);
+
+      if (slice.length === 0) {
+        tbody.innerHTML = `<tr class="state-row"><td colspan="8">😕 No users found.</td></tr>`;
+        renderPagination(0, 0);
+        return;
+      }
+
+      const maxScore = Math.max(...allUsers.map(u => u.score || 0), 1);
+
+      tbody.innerHTML = slice.map((u, i) => {
+        const idx   = start + i + 1;
+        const name  = u.userName || 'Unknown';
+        const init  = name.charAt(0).toUpperCase();
+        const level = u.level || 'Beginner';
+        const score = u.score || 0;
+        const acc   = u.accuracy || 0;
+        const video = u.videoCompleted ? '✅' : '❌';
+        const quiz  = u.quizMarks || 0;
+        const date  = u.completionDate || u.date || '—';
+        const pct   = Math.round((score / maxScore) * 100);
+        const badgeCls = getLevelBadge(level);
+
+        return `
+          <tr>
+            <td style="color:var(--text-dim)">${idx}</td>
+            <td>
+              <div class="user-name-cell">
+                <div class="user-avatar">${init}</div>
+                <span>${escHtml(name)}</span>
+              </div>
+            </td>
+            <td><span class="badge-level ${badgeCls}">${escHtml(level)}</span></td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+                <span>${score}</span>
+              </div>
+            </td>
+            <td>${acc}%</td>
+            <td>${video}</td>
+            <td>${quiz}</td>
+            <td style="color:var(--text-muted);font-size:0.78rem">${escHtml(date)}</td>
+          </tr>`;
+      }).join('');
+
+      renderPagination(total, pages);
+    }
+
+    function renderPagination(total, pages) {
+      document.getElementById('paginationInfo').textContent =
+        total > 0 ? `Showing ${Math.min((currentPage-1)*PAGE_SIZE+1,total)}–${Math.min(currentPage*PAGE_SIZE,total)} of ${total}` : '';
+
+      const container = document.getElementById('pageBtns');
+      if (pages <= 1) { container.innerHTML = ''; return; }
+
+      let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+      for (let p = 1; p <= pages; p++) {
+        if (pages > 7 && Math.abs(p - currentPage) > 2 && p !== 1 && p !== pages) {
+          if (p === 2 || p === pages - 1) html += `<button class="page-btn" disabled>…</button>`;
+          continue;
+        }
+        html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      }
+      html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+      container.innerHTML = html;
+    }
+
+    function goPage(p) {
+      const pages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+      if (p < 1 || p > pages) return;
+      currentPage = p;
+      renderTable();
+    }
+
+    // ── Export ──
+    function exportExcel() {
+      if (!allUsers.length) { showToast('❌ No data to export', 'error'); return; }
+      const ws = XLSX.utils.json_to_sheet(allUsers.map(u => ({
+        'Name':             u.userName || '',
+        'Total Score':      u.score || 0,
+        'Level':            u.level || '',
+        'Video Marks':      u.videoMarks || 0,
+        'Quiz Marks':       u.quizMarks || 0,
+        'Accuracy %':       u.accuracy || 0,
+        'Video Completed':  u.videoCompleted ? 'Yes' : 'No',
+        'Correct Answers':  u.correctAnswers || 0,
+        'Total Questions':  u.totalQuestions || 0,
+        'Date':             u.completionDate || u.date || '',
+        'Doc ID':           u.id || ''
+      })));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Users');
+      XLSX.writeFile(wb, `CyberShield_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+      showToast('📊 Excel file downloaded!', 'success');
+    }
+
+    // ── Helpers ──
+    function getLevelBadge(level) {
+      const l = (level || '').toLowerCase();
+      if (l.includes('expert'))       return 'badge-expert';
+      if (l.includes('advanced'))     return 'badge-advanced';
+      if (l.includes('intermediate')) return 'badge-intermediate';
+      return 'badge-beginner';
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function setTableLoading(on) {
+      if (!on) return;
+      document.getElementById('usersTableBody').innerHTML = `
+        <tr class="state-row">
+          <td colspan="8">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
+          </td>
+        </tr>`;
+    }
+
+    function setTableError(msg) {
+      document.getElementById('usersTableBody').innerHTML = `
+        <tr class="state-row"><td colspan="8">⚠️ ${msg}</td></tr>`;
+    }
+
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.className = `toast ${type} show`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3200);
+    }
+
+    function logout() {
+      sessionStorage.removeItem('adminToken');
+      window.location.replace('/admin-login.html');
+    }
+
+    function showSection(section) {
+      // Simple stub for future section switching
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+
+    init();
+  </script>
+</body>
+</html>
