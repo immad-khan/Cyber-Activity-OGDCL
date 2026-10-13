@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard – CyberShield</title>
+  <title>Admin Dashboard – OGDCL</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
@@ -263,6 +263,116 @@
       box-shadow: 0 4px 16px rgba(34,197,94,0.3);
     }
     .lock-toggle-btn:hover:not(:disabled) { transform: translateY(-2px); }
+
+    /* ─── Individual Activity Grid ─── */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .activity-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+    .activity-card.locked {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .activity-card.unlocked {
+      background: rgba(34, 197, 94, 0.04);
+      border-color: rgba(34, 197, 94, 0.18);
+    }
+    .activity-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+    }
+    .act-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .act-icon {
+      font-size: 22px;
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .act-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 100px;
+    }
+    .act-badge.badge-unlocked {
+      background: rgba(34,197,94,0.15);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .act-badge.badge-locked {
+      background: rgba(239,68,68,0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+    .act-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .act-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .act-action-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .act-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .act-action-btn.btn-lock {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+    }
+    .act-action-btn.btn-lock:hover:not(:disabled) {
+      background: #ef4444;
+      color: #fff;
+    }
+    .act-action-btn.btn-unlock {
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.35);
+      color: #86efac;
+    }
+    .act-action-btn.btn-unlock:hover:not(:disabled) {
+      background: #22c55e;
+      color: #fff;
+    }
 
     /* ─── Stats Grid ─── */
     .stats-grid {
@@ -581,10 +691,10 @@
   <!-- ─── SIDEBAR ─── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="icon">🛡️</div>
+      <img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;object-fit:contain;" />
       <div>
-        <div class="name">CyberShield</div>
-        <div class="version">Admin Panel v2.0</div>
+        <div class="name">OGDCL</div>
+        <div class="version">Admin Portal</div>
       </div>
     </div>
 
@@ -617,13 +727,13 @@
     <!-- Topbar -->
     <header class="topbar">
       <div class="topbar-left">
-        <h2 id="pageTitle">User Management</h2>
-        <p id="pageSubtitle">View and manage all registered users</p>
+        <h2 id="pageTitle">OGDCL User Management</h2>
+        <p id="pageSubtitle">View participant records & control activity locks</p>
       </div>
       <div class="topbar-right">
         <div class="admin-pill">
           <div class="admin-avatar">A</div>
-          <span>admin@cybershield.com</span>
+          <span>admin@ogdcl.com</span>
         </div>
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
       </div>
@@ -632,7 +742,7 @@
     <!-- Content -->
     <div class="content" id="mainContent">
 
-      <!-- Lock Banner -->
+      <!-- Global Lock Banner -->
       <div class="lock-banner unlocked" id="lockBanner">
         <div class="lock-banner-info">
           <div class="lock-status-icon" id="lockIcon">🟢</div>
@@ -644,6 +754,17 @@
         <button class="lock-toggle-btn lock-action" id="lockBtn" onclick="toggleLock()">
           🔒 Lock All Activities
         </button>
+      </div>
+
+      <!-- Individual Activity Controls -->
+      <div style="margin-bottom: 24px;">
+        <div class="section-header" style="margin-bottom:12px;">
+          <div>
+            <div class="section-title">Individual Activity Controls</div>
+            <div class="section-sub">Lock or unlock specific modules independently for all users</div>
+          </div>
+        </div>
+        <div class="activity-grid" id="activityGrid"></div>
       </div>
 
       <!-- Stats -->
@@ -738,24 +859,69 @@
     }
 
     // ── State ──
-    let allUsers    = [];
-    let filtered    = [];
-    let isLocked    = false;
-    let lockLoading = false;
-    const PAGE_SIZE = 15;
-    let currentPage = 1;
+    let allUsers      = [];
+    let filtered      = [];
+    let isLocked      = false;
+    let lockLoading   = false;
+    let actLoading    = {};
+    let activityLocks = {
+      activity_1: false,
+      activity_2: false,
+      activity_3: false,
+      activity_4: false
+    };
+    const PAGE_SIZE   = 15;
+    let currentPage   = 1;
+
+    const ACTIVITIES = [
+      {
+        id: 'activity_1',
+        title: 'Activity 1: The Executive Target',
+        desc: 'Executive spear-phishing & cyber threat landscape module.',
+        icon: '🎣',
+        url: 'phishing-week.html'
+      },
+      {
+        id: 'activity_2',
+        title: 'Activity 2: Password Protection',
+        desc: 'Password security, Bitwarden, and Multi-Factor Authentication.',
+        icon: '🔐',
+        url: 'mfa-week.html'
+      },
+      {
+        id: 'activity_3',
+        title: 'Activity 3: Data Privacy Mastery',
+        desc: 'Corporate data protection & confidential information protocols.',
+        icon: '🛡️',
+        url: 'privacy-week.html'
+      },
+      {
+        id: 'activity_4',
+        title: 'Activity 4: Social Engineering Defense',
+        desc: 'Pretexting, human manipulation, and human firewall defenses.',
+        icon: '🧠',
+        url: 'social-engineering-week.html'
+      }
+    ];
 
     // ── Init ──
     async function init() {
+      renderActivityCards();
       await Promise.all([fetchLockStatus(), fetchUsers()]);
     }
 
-    // ── Lock ──
+    // ── Lock Status ──
     async function fetchLockStatus() {
       try {
         const res  = await fetch(API_SETTINGS);
         const data = await res.json();
-        if (data.success) applyLockState(data.locked);
+        if (data.success) {
+          applyLockState(data.locked);
+          if (data.activityLocks) {
+            activityLocks = { ...activityLocks, ...data.activityLocks };
+            renderActivityCards();
+          }
+        }
       } catch (e) {
         console.warn('Could not fetch lock status', e);
       }
@@ -772,17 +938,100 @@
       if (locked) {
         banner.className = 'lock-banner locked';
         icon.textContent = '🔴';
-        title.textContent = 'Site Activities LOCKED';
-        desc.textContent  = 'All user activities are disabled. Users see a locked banner.';
+        title.textContent = 'ALL Site Activities LOCKED';
+        desc.textContent  = 'Global site lock is ON. All activities, quizzes and videos are inaccessible.';
         btn.className = 'lock-toggle-btn unlock-action';
         btn.innerHTML = '🔓 Unlock All Activities';
       } else {
         banner.className = 'lock-banner unlocked';
         icon.textContent = '🟢';
-        title.textContent = 'Site Activities Unlocked';
-        desc.textContent  = 'Users can access all quizzes, videos, and interactive features.';
+        title.textContent = 'Global Activities Unlocked';
+        desc.textContent  = 'Global access is open. Individual activities below can still be locked.';
         btn.className = 'lock-toggle-btn lock-action';
         btn.innerHTML = '🔒 Lock All Activities';
+      }
+    }
+
+    function renderActivityCards() {
+      const container = document.getElementById('activityGrid');
+      if (!container) return;
+
+      container.innerHTML = ACTIVITIES.map(act => {
+        const isActLocked = isLocked || !!activityLocks[act.id];
+        const loading = !!actLoading[act.id];
+
+        return `
+          <div class="activity-card ${isActLocked ? 'locked' : 'unlocked'}" id="card-${act.id}">
+            <div>
+              <div class="act-top">
+                <div class="act-icon">${act.icon}</div>
+                <span class="act-badge ${isActLocked ? 'badge-locked' : 'badge-unlocked'}">
+                  ${isActLocked ? (isLocked ? '🔴 Globally Locked' : '🔴 Locked') : '🟢 Open'}
+                </span>
+              </div>
+              <div class="act-title">${act.title}</div>
+              <div class="act-desc">${act.desc}</div>
+            </div>
+            <div>
+              <button 
+                class="act-action-btn ${isActLocked && !isLocked ? 'btn-unlock' : 'btn-lock'}"
+                onclick="toggleActivityLock('${act.id}')"
+                ${loading || isLocked ? 'disabled' : ''}
+                title="${isLocked ? 'Unlock global site lock first' : ''}"
+              >
+                ${loading ? '⏳ Updating…' : (isActLocked && !isLocked ? '🔓 Unlock Activity' : '🔒 Lock Activity')}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleActivityLock(actId) {
+      if (actLoading[actId] || isLocked) return;
+
+      const act = ACTIVITIES.find(a => a.id === actId);
+      const currentlyLocked = !!activityLocks[actId];
+      const targetState = !currentlyLocked;
+
+      const confirmed = confirm(
+        targetState
+          ? `Lock "${act?.title || actId}"? Users will be prevented from taking this assessment.`
+          : `Unlock "${act?.title || actId}"? Users will regain access.`
+      );
+      if (!confirmed) return;
+
+      actLoading[actId] = true;
+      renderActivityCards();
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({
+            activityId: actId,
+            activityLocked: targetState
+          })
+        });
+
+        const data = await res.json();
+        if (data.success && data.activityLocks) {
+          activityLocks = { ...activityLocks, ...data.activityLocks };
+          showToast(
+            targetState ? `🔒 "${act?.title}" locked!` : `🔓 "${act?.title}" unlocked!`,
+            targetState ? 'error' : 'success'
+          );
+        } else {
+          showToast('❌ Failed to update activity lock', 'error');
+        }
+      } catch (e) {
+        showToast('❌ Network error. Please retry.', 'error');
+      } finally {
+        actLoading[actId] = false;
+        renderActivityCards();
       }
     }
 
@@ -791,8 +1040,8 @@
       const newState = !isLocked;
       const confirmed = confirm(
         newState
-          ? '⚠️ Lock ALL site activities? Users will see a locked message and cannot interact.'
-          : '✅ Unlock site activities? Users will regain full access.'
+          ? '⚠️ Lock ALL site activities globally? Users will see a locked message on all pages.'
+          : '✅ Unlock global site activities? Individual activity lock settings will apply.'
       );
       if (!confirmed) return;
 
@@ -813,19 +1062,22 @@
         const data = await res.json();
         if (data.success) {
           applyLockState(data.locked);
+          if (data.activityLocks) activityLocks = { ...activityLocks, ...data.activityLocks };
+          renderActivityCards();
           showToast(
-            data.locked ? '🔒 All activities locked!' : '🔓 Activities unlocked!',
+            data.locked ? '🔒 All activities locked globally!' : '🔓 Global activities unlocked!',
             data.locked ? 'error' : 'success'
           );
         } else {
           showToast('❌ Failed to update lock state', 'error');
-          applyLockState(isLocked); // revert button
+          applyLockState(isLocked);
         }
       } catch (e) {
         showToast('❌ Network error. Please retry.', 'error');
       } finally {
         lockLoading = false;
         btn.disabled = false;
+        renderActivityCards();
       }
     }
 
@@ -980,7 +1232,7 @@
       })));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Users');
-      XLSX.writeFile(wb, `CyberShield_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+      XLSX.writeFile(wb, `OGDCL_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
       showToast('📊 Excel file downloaded!', 'success');
     }
 
