@@ -4,6 +4,26 @@
 (function (window) {
   'use strict';
 
+  // Automatically keep signature asset in sync with signature.png
+  if (typeof Image !== 'undefined') {
+    try {
+      const sigImg = new Image();
+      sigImg.crossOrigin = 'anonymous';
+      sigImg.onload = function () {
+        try {
+          const c = document.createElement('canvas');
+          c.width = sigImg.naturalWidth || sigImg.width;
+          c.height = sigImg.naturalHeight || sigImg.height;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(sigImg, 0, 0);
+          window.CERT_ASSETS = window.CERT_ASSETS || {};
+          window.CERT_ASSETS.signature = c.toDataURL('image/png');
+        } catch (e) { }
+      };
+      sigImg.src = 'signature.png?t=' + Date.now();
+    } catch (e) { }
+  }
+
   function downloadOGDCLCertificate(opts) {
     if (typeof window.jspdf === 'undefined' && typeof jsPDF === 'undefined') {
       alert('PDF library not loaded. Please refresh the page.');
@@ -141,11 +161,31 @@
 
     // ── 5. PERFORMANCE SUMMARY BOX ──
     const boxY = 132;
+    const col1X = 24;
+    const col2X = 104;
+    const col1Width = 76;
+    const col2Width = 84;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+
+    // Calculate wrapped lines to prevent text exceeding certificate bounds
+    const nameLines = doc.splitTextToSize(`• Participant: ${userName}`, col1Width);
+    const modLines = doc.splitTextToSize(`• Module: ${activityName}`, col2Width);
+
+    const totalLinesCol1 = nameLines.length + 2; // name + score + accuracy
+    const totalLinesCol2 = modLines.length + 2;  // module + level + date
+    const maxItems = Math.max(totalLinesCol1, totalLinesCol2);
+
+    // Dynamic height based on wrapped lines
+    const lineHeight = 5.2;
+    const boxHeight = Math.max(34, 13 + (maxItems - 1) * lineHeight + 7);
+
     doc.setFillColor(248, 250, 252);
-    doc.roundedRect(18, boxY, pageWidth - 36, 32, 2, 2, 'F');
+    doc.roundedRect(18, boxY, pageWidth - 36, boxHeight, 2, 2, 'F');
     doc.setDrawColor(0, 180, 150);
     doc.setLineWidth(0.4);
-    doc.roundedRect(18, boxY, pageWidth - 36, 32, 2, 2, 'D');
+    doc.roundedRect(18, boxY, pageWidth - 36, boxHeight, 2, 2, 'D');
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
@@ -157,24 +197,37 @@
     doc.setTextColor(51, 65, 85);
 
     // Column 1
-    doc.text(`• Participant: ${userName}`, 24, boxY + 14);
-    doc.text(`• Total Score: ${score} points`, 24, boxY + 20);
-    doc.text(`• Assessment Accuracy: ${accuracy}%`, 24, boxY + 26);
+    let c1Y = boxY + 14;
+    nameLines.forEach((line, idx) => {
+      doc.text(line, idx === 0 ? col1X : col1X + 3.5, c1Y);
+      if (idx < nameLines.length - 1) c1Y += 4.5;
+    });
+    c1Y += lineHeight;
+    doc.text(`• Total Score: ${score} points`, col1X, c1Y);
+    c1Y += lineHeight;
+    doc.text(`• Assessment Accuracy: ${accuracy}%`, col1X, c1Y);
 
     // Column 2
-    doc.text(`• Module: ${activityName}`, 115, boxY + 14);
-    doc.text(`• Security Level: ${level}`, 115, boxY + 20);
-    doc.text(`• Completion Date: ${currentDate}`, 115, boxY + 26);
+    let c2Y = boxY + 14;
+    modLines.forEach((line, idx) => {
+      doc.text(line, idx === 0 ? col2X : col2X + 3.5, c2Y);
+      if (idx < modLines.length - 1) c2Y += 4.5;
+    });
+    c2Y += lineHeight;
+    doc.text(`• Security Level: ${level}`, col2X, c2Y);
+    c2Y += lineHeight;
+    doc.text(`• Completion Date: ${currentDate}`, col2X, c2Y);
 
     // ── 6. CLOSING STATEMENT ──
+    const closingY = Math.max(176, boxY + boxHeight + 8);
     const bodyText2 = 'His/Her performance during the training and assessment remained commendable.';
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10.5);
     doc.setTextColor(30, 41, 59);
-    doc.text(bodyText2, 18, 178);
+    doc.text(bodyText2, 18, closingY);
 
     // ── 7. OFFICIAL SEAL & SIGNATURE ──
-    const bottomY = 205;
+    const bottomY = Math.max(204, closingY + 26);
 
     // Official Seal (Bottom Left)
     if (assets.seal) {
@@ -194,7 +247,12 @@
     // Official Signature (Bottom Right)
     if (assets.signature) {
       try {
-        doc.addImage(assets.signature, 'PNG', 134, bottomY - 14, 46, 21);
+        // Native aspect ratio 237 / 140 = 1.693
+        const sigW = 42;
+        const sigH = sigW / 1.693; // ~24.8mm
+        const sigXPos = 157 - (sigW / 2);
+        const sigYPos = bottomY - 14;
+        doc.addImage(assets.signature, 'PNG', sigXPos, sigYPos, sigW, sigH);
       } catch (e) {
         console.warn('Could not render signature', e);
       }
@@ -205,12 +263,12 @@
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(15, 23, 42);
-    doc.text('(Muhammad Naveed Raza)', sigX, bottomY + 13, { align: 'center' });
+    doc.text('( M. Danish Hussain )', sigX, bottomY + 13, { align: 'center' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(71, 85, 105);
-    doc.text('Manager (P&P) OIST', sigX, bottomY + 18, { align: 'center' });
+    doc.text('Head Information Security', sigX, bottomY + 18, { align: 'center' });
     doc.text('OGDCL Islamabad', sigX, bottomY + 22.5, { align: 'center' });
 
     // ── 8. FOOTER NOTE ──
