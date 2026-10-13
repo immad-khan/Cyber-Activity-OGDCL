@@ -945,9 +945,9 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Packages-Cybersecurity. Protecting your digital life, one tip at a time.</p>
+            <p>&copy; 2025 OGDCL - Oil & Gas Development Company Limited. Protecting your digital life, one tip at a time.</p>
             <p>🛡️ Stay Safe | 🔐 Stay Secure | 🌐 Stay Connected</p>
-            <p style="margin-top: 20px; opacity: 0.7;">Powered by Packages Group - Cyber Security Division</p>
+            <p style="margin-top: 20px; opacity: 0.7;">Powered by OGDCL Information Security Division</p>
         </div>
     </footer>
 
@@ -1527,7 +1527,7 @@
             updateScoreVisual();
             updateProgressBar();
             
-            showNotification('Welcome to Packages-Cybersecurity! Earn points by exploring!', 'success');
+            showNotification('Welcome to OGDCL Cybersecurity! Earn points by exploring!', 'success');
             
             setTimeout(() => {
                 showNotification('Pro tip: Click on security cards to learn!', 'info');
@@ -1659,8 +1659,51 @@
                 try {
                     const res  = await fetch('/api/admin-settings');
                     const data = await res.json();
-                    if (data.success && data.locked) {
+                    if (!data.success) return;
+
+                    if (data.locked) {
                         showLockBanner();
+                    }
+
+                    if (data.activityLocks) {
+                        const actMap = {
+                            activity_1: { page: 'phishing-week.html', label: 'Activity 1' },
+                            activity_2: { page: 'mfa-week.html', label: 'Activity 2' },
+                            activity_3: { page: 'privacy-week.html', label: 'Activity 3' },
+                            activity_4: { page: 'social-engineering-week.html', label: 'Activity 4' }
+                        };
+
+                        Object.entries(data.activityLocks).forEach(([key, isActLocked]) => {
+                            if (!isActLocked) return;
+                            const act = actMap[key];
+                            if (!act) return;
+
+                            document.querySelectorAll(`a[href*="${act.page}"]`).forEach(link => {
+                                link.classList.add('act-locked-btn');
+                                link.setAttribute('title', `${act.label} is locked by administrator`);
+                                link.style.opacity = '0.5';
+                                link.style.filter = 'grayscale(0.7)';
+                                link.style.cursor = 'not-allowed';
+
+                                const textEl = link.querySelector('.week-num') || link;
+                                if (!link.querySelector('.lock-tag')) {
+                                    const lockTag = document.createElement('span');
+                                    lockTag.className = 'lock-tag';
+                                    lockTag.textContent = ' 🔒';
+                                    textEl.appendChild(lockTag);
+                                }
+
+                                link.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (typeof showNotification === 'function') {
+                                        showNotification(`🔒 ${act.label} is currently locked by the administrator.`, 'error');
+                                    } else {
+                                        alert(`🔒 ${act.label} is currently locked by the administrator.`);
+                                    }
+                                });
+                            });
+                        });
                     }
                 } catch (e) {
                     // Silently fail — don't block users if API is down
