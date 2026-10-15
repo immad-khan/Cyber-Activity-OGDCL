@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OGDCL - Cybersecurity Awareness & Digital Safety</title>
+    <title>Cybersecurity Shield - Awareness & Digital Safety</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
     <script src="certificate.js?v=3"></script>
@@ -792,7 +792,7 @@
     <header class="header">
         <div class="header-container">
             <nav class="nav">
-                <div class="logo"><a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">Cybersecurity</span></a></div>
+                <div class="logo"><a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">Cybersecurity Shield</span></a></div>
                 
                 <div class="hamburger" onclick="toggleMenu()">
                     <span></span>
@@ -813,13 +813,13 @@
                         </span>
                     </a>
                     
-                    <a href="privacy-week.html" class="week-button">
+                    <a href="social-engineering-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 3</span>
                         </span>
                     </a>
                     
-                    <a href="social-engineering-week.html" class="week-button">
+                    <a href="privacy-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 4</span>
                         </span>
@@ -1527,7 +1527,7 @@
             updateScoreVisual();
             updateProgressBar();
             
-            showNotification('Welcome to OGDCL Cybersecurity! Earn points by exploring!', 'success');
+            showNotification('Welcome to Cybersecurity Shield! Earn points by exploring!', 'success');
             
             setTimeout(() => {
                 showNotification('Pro tip: Click on security cards to learn!', 'info');
@@ -1669,8 +1669,8 @@
                         const actMap = {
                             activity_1: { page: 'phishing-week.html', label: 'Activity 1' },
                             activity_2: { page: 'mfa-week.html', label: 'Activity 2' },
-                            activity_3: { page: 'privacy-week.html', label: 'Activity 3' },
-                            activity_4: { page: 'social-engineering-week.html', label: 'Activity 4' }
+                            activity_3: { page: 'social-engineering-week.html', label: 'Activity 3' },
+                            activity_4: { page: 'privacy-week.html', label: 'Activity 4' }
                         };
 
                         Object.entries(data.activityLocks).forEach(([key, isActLocked]) => {
