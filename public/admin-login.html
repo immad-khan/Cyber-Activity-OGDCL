@@ -299,7 +299,7 @@
     </form>
 
     <div class="divider"></div>
-    <div class="back-link"><a href="/">← Back to Main Site</a></div>
+    <div class="back-link"><a href="index.html">← Back to Main Site</a></div>
   </div>
 
   <script>
@@ -309,7 +309,7 @@
 
     // Redirect if already authenticated
     if (sessionStorage.getItem('adminToken') === ADMIN_TOKEN) {
-      window.location.replace('/admin-dashboard.html');
+      window.location.replace('admin-dashboard.html');
     }
 
     function togglePassword() {
@@ -346,7 +346,7 @@
       setTimeout(() => {
         if (VALID_EMAILS.includes(email) && password === ADMIN_PASSWORD) {
           sessionStorage.setItem('adminToken', ADMIN_TOKEN);
-          window.location.replace('/admin-dashboard.html');
+          window.location.replace('admin-dashboard.html');
         } else {
           setLoading(false);
           showError('Invalid email or password. Please try again.');
