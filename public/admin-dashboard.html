@@ -855,7 +855,7 @@
 
     // Auth guard
     if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
-      window.location.replace('/admin-login.html');
+      window.location.replace('admin-login.html');
     }
 
     // ── State ──
@@ -1276,7 +1276,7 @@
 
     function logout() {
       sessionStorage.removeItem('adminToken');
-      window.location.replace('/admin-login.html');
+      window.location.replace('admin-login.html');
     }
 
     function showSection(section) {
