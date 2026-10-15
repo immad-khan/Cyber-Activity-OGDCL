@@ -11,13 +11,13 @@
             id: 'activity_2',
             name: 'Activity 2: Password Protection'
         },
-        'privacy-week': {
-            id: 'activity_3',
-            name: 'Activity 3: Data Privacy Week'
-        },
         'social-engineering-week': {
+            id: 'activity_3',
+            name: 'Activity 3: Social Engineering'
+        },
+        'privacy-week': {
             id: 'activity_4',
-            name: 'Activity 4: Social Engineering Week'
+            name: 'Activity 4: Data Privacy'
         }
     };
 
