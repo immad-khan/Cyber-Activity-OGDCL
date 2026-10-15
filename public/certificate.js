@@ -79,7 +79,7 @@
     doc.setFontSize(9.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(50, 60, 75);
-    doc.text('OGDCL INSTITUTE OF SCIENCE & TECHNOLOGY', 125, 28, { align: 'center' });
+    doc.text('CYBERSECURITY DEPARTMENT', 125, 28, { align: 'center' });
 
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
@@ -96,46 +96,42 @@
     doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
 
-    // Left Column (Contact Numbers)
+    // Left Column (Address)
     const leftX = 18;
     let contactY = 44;
-    const contactLines = [
-      'Voice:  +92-51-9258591',
-      'PABX:   +92-51-9258691-6',
-      'FAX:     +92-51-9258152',
-      'Telex:   5692 OGDC-PK',
-      'Email:   oistinfo@ogdcl.com'
-    ];
-    contactLines.forEach(line => {
-      doc.text(line, leftX, contactY);
-      contactY += 3.8;
-    });
-
-    // Right Column (Address)
-    const rightX = pageWidth - 18;
-    let addrY = 44;
     const addrLines = [
-      '136-137 Street 16,',
-      'Sector I-9,',
-      'Islamabad 44790,',
-      'Pakistan.'
+      'Cybersecurity Department,',
+      'OGDCL House, Jinnah Avenue,',
+      'Islamabad, Pakistan.'
     ];
     addrLines.forEach(line => {
-      doc.text(line, rightX, addrY, { align: 'right' });
-      addrY += 3.8;
+      doc.text(line, leftX, contactY);
+      contactY += 4;
+    });
+
+    // Right Column (Contact)
+    const rightX = pageWidth - 18;
+    let contactRightY = 44;
+    const contactLines = [
+      'Tel: 051-920024061, 4177',
+      'Email: cyber.security@ogdcl.com'
+    ];
+    contactLines.forEach(line => {
+      doc.text(line, rightX, contactRightY, { align: 'right' });
+      contactRightY += 4;
     });
 
     // Separator
     doc.setDrawColor(220, 225, 235);
     doc.setLineWidth(0.3);
-    doc.line(18, 66, pageWidth - 18, 66);
+    doc.line(18, 62, pageWidth - 18, 62);
 
     // Reference No. and Date
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(30, 41, 59);
-    doc.text(refNumber, 18, 73);
-    doc.text(currentDate, rightX, 73, { align: 'right' });
+    doc.text(refNumber, 18, 70);
+    doc.text(currentDate, rightX, 70, { align: 'right' });
 
     // ── 3. MAIN TITLE ──
     const titleY = 88;
