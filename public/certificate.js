@@ -226,23 +226,8 @@
     doc.setTextColor(30, 41, 59);
     doc.text(bodyText2, 18, closingY);
 
-    // ── 7. OFFICIAL SEAL & SIGNATURE ──
+    // ── 7. OFFICIAL SIGNATURE ──
     const bottomY = Math.max(204, closingY + 26);
-
-    // Official Seal (Bottom Left)
-    if (assets.seal) {
-      try {
-        doc.addImage(assets.seal, 'PNG', 24, bottomY - 6, 38, 38);
-      } catch (e) {
-        console.warn('Could not render seal', e);
-      }
-    }
-
-    // Seal text under seal
-    doc.setFontSize(7.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(100, 116, 139);
-    doc.text('OGDCL VERIFIED & SEALED', 43, bottomY + 36, { align: 'center' });
 
     // Official Signature (Bottom Right)
     if (assets.signature) {
