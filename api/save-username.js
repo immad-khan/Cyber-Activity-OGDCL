@@ -1,13 +1,7 @@
 // File: api/save-username.js
 // Saves user completion data to Supabase PostgreSQL (with optional Firebase fallback)
 
-import pkg from 'pg';
-const { Pool } = pkg;
-
-const pool = new Pool({
-  connectionString: `postgresql://postgres.qjvpdrdfbmblfhprnbbf:${encodeURIComponent('S!ddeeq5696')}@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres`,
-  ssl: { rejectUnauthorized: false }
-});
+import { pool } from './db.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -48,53 +42,48 @@ export default async function handler(req, res) {
     const sanitizedName = String(userName).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Save to Supabase
-    const client = await pool.connect();
-    try {
-      const insertQuery = `
-        INSERT INTO public.users (
-          "userName",
-          score,
-          level,
-          accuracy,
-          "videoCompleted",
-          "videoMarks",
-          "quizMarks",
-          "correctAnswers",
-          "totalQuestions",
-          activity,
-          "completionDate"
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        RETURNING id, "userName", score, level, "createdAt";
-      `;
-
-      const values = [
-        sanitizedName,
-        parseInt(score, 10) || 0,
+    // Save to Supabase using pre-warmed connection pool
+    const insertQuery = `
+      INSERT INTO public.users (
+        "userName",
+        score,
         level,
-        parseInt(accuracy, 10) || 0,
-        Boolean(videoCompleted),
-        parseInt(videoMarks, 10) || 0,
-        parseInt(quizMarks, 10) || 0,
-        parseInt(correctAnswers, 10) || 0,
-        parseInt(totalQuestions, 10) || 0,
+        accuracy,
+        "videoCompleted",
+        "videoMarks",
+        "quizMarks",
+        "correctAnswers",
+        "totalQuestions",
         activity,
-        completionDate
-      ];
+        "completionDate"
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING id, "userName", score, level, "createdAt";
+    `;
 
-      const result = await client.query(insertQuery, values);
-      const savedUser = result.rows[0];
+    const values = [
+      sanitizedName,
+      parseInt(score, 10) || 0,
+      level,
+      parseInt(accuracy, 10) || 0,
+      Boolean(videoCompleted),
+      parseInt(videoMarks, 10) || 0,
+      parseInt(quizMarks, 10) || 0,
+      parseInt(correctAnswers, 10) || 0,
+      parseInt(totalQuestions, 10) || 0,
+      activity,
+      completionDate
+    ];
 
-      return res.status(200).json({
-        success: true,
-        message: 'Saved successfully to Supabase',
-        id: savedUser.id,
-        data: savedUser
-      });
-    } finally {
-      client.release();
-    }
+    const result = await pool.query(insertQuery, values);
+    const savedUser = result.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      message: 'Saved successfully to Supabase',
+      id: savedUser.id,
+      data: savedUser
+    });
 
   } catch (error) {
     console.error('Error saving user to Supabase:', error);
