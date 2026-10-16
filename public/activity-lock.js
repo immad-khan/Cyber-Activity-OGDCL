@@ -1,5 +1,5 @@
 // File: public/activity-lock.js
-// Enforces global and per-activity locking for OGDCL Cybersecurity platform
+// Enforces global and per-activity locking for OGDCL Cybersecurity platform with live automatic synchronization
 
 (function() {
     const ACTIVITY_CONFIG = {
@@ -133,7 +133,6 @@
     }
 
     function showLockBanner(isGlobal) {
-        if (document.getElementById('adminSiteLockBanner')) return;
         injectLockStyles();
         document.body.classList.add('activity-locked');
 
@@ -143,23 +142,49 @@
             try { vid.pause(); } catch(e) {}
         }
 
-        const banner = document.createElement('div');
+        let banner = document.getElementById('adminSiteLockBanner');
+        const lockMessage = isGlobal
+            ? 'All platform activities have been temporarily locked by the administrator.'
+            : `${currentActivity.name} has been temporarily locked by the administrator.`;
+
+        if (banner) {
+            const msgEl = banner.querySelector('.lock-msg');
+            if (msgEl) msgEl.textContent = lockMessage;
+            return;
+        }
+
+        banner = document.createElement('div');
         banner.id = 'adminSiteLockBanner';
         banner.innerHTML = `
             <span class="lock-icon">🔒</span>
             <span class="lock-badge">Module Locked</span>
-            <span class="lock-msg">
-                ${isGlobal
-                    ? 'All platform activities have been temporarily locked by the administrator.'
-                    : `${currentActivity.name} has been temporarily locked by the administrator.`
-                }
-            </span>
+            <span class="lock-msg">${lockMessage}</span>
         `;
         document.body.insertBefore(banner, document.body.firstChild);
 
-        const overlay = document.createElement('div');
-        overlay.className = 'activity-locked-overlay';
-        document.body.appendChild(overlay);
+        if (!document.querySelector('.activity-locked-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'activity-locked-overlay';
+            document.body.appendChild(overlay);
+        }
+    }
+
+    function removeLockBanner() {
+        document.body.classList.remove('activity-locked');
+        const banner = document.getElementById('adminSiteLockBanner');
+        if (banner) banner.remove();
+        const overlay = document.querySelector('.activity-locked-overlay');
+        if (overlay) overlay.remove();
+    }
+
+    function lockClickHandler(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof showNotification === 'function') {
+            showNotification('🔒 This activity is currently locked by the administrator.', 'error');
+        } else {
+            alert('🔒 This activity is currently locked by the administrator.');
+        }
     }
 
     function updateNavLocks(activityLocks) {
@@ -171,37 +196,52 @@
         };
 
         Object.entries(activityLocks).forEach(([actId, isLocked]) => {
-            if (!isLocked) return;
             const targetPage = pageLookup[actId];
             if (!targetPage) return;
 
             // Target nav buttons and dropdown items
             document.querySelectorAll(`a[href*="${targetPage}"], .dropdown-item[onclick*="${targetPage}"]`).forEach(el => {
-                el.classList.add('nav-item-locked');
-                el.title = 'This activity is locked by the administrator';
-                el.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (typeof showNotification === 'function') {
-                        showNotification('🔒 This activity is currently locked by the administrator.', 'error');
-                    } else {
-                        alert('🔒 This activity is currently locked by the administrator.');
-                    }
-                }, true);
+                if (isLocked) {
+                    el.classList.add('nav-item-locked');
+                    el.title = 'This activity is locked by the administrator';
+                    el.removeEventListener('click', lockClickHandler, true);
+                    el.addEventListener('click', lockClickHandler, true);
+                } else {
+                    el.classList.remove('nav-item-locked');
+                    el.title = '';
+                    el.removeEventListener('click', lockClickHandler, true);
+                }
             });
         });
     }
 
+    let lastKnownLock = null;
+
     async function checkLock() {
         try {
-            const res = await fetch('/api/admin-settings');
+            const res = await fetch('/api/admin-settings', { cache: 'no-store' });
             const data = await res.json();
             if (!data.success) return;
 
-            const isCurrentLocked = data.locked || !!(data.activityLocks && data.activityLocks[currentActivity.id]);
+            const isCurrentLocked = !!(data.locked || (data.activityLocks && data.activityLocks[currentActivity.id]));
+
             if (isCurrentLocked) {
                 showLockBanner(data.locked);
+                if (lastKnownLock === false) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('🔒 This activity has been locked by the administrator.', 'warning');
+                    }
+                }
+            } else {
+                removeLockBanner();
+                if (lastKnownLock === true) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('🔓 This activity is now unlocked!', 'success');
+                    }
+                }
             }
+
+            lastKnownLock = isCurrentLocked;
 
             if (data.activityLocks) {
                 updateNavLocks(data.activityLocks);
@@ -211,9 +251,19 @@
         }
     }
 
+    // Initial check
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', checkLock);
     } else {
         checkLock();
     }
+
+    // Live continuous polling: updates without requiring a page refresh
+    setInterval(checkLock, 2500);
+
+    // Instant check when switching tabs or window focus
+    window.addEventListener('focus', checkLock);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkLock();
+    });
 })();
