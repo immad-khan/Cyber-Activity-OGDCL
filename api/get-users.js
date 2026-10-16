@@ -1,13 +1,7 @@
 // File: api/get-users.js
 // Fetches users from Supabase PostgreSQL (with optional Firebase fallback)
 
-import pkg from 'pg';
-const { Pool } = pkg;
-
-const pool = new Pool({
-  connectionString: `postgresql://postgres.qjvpdrdfbmblfhprnbbf:${encodeURIComponent('S!ddeeq5696')}@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres`,
-  ssl: { rejectUnauthorized: false }
-});
+import { pool } from './db.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,35 +16,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    const client = await pool.connect();
-    try {
-      const result = await client.query(`
-        SELECT 
-          id,
-          "userName",
-          score,
-          level,
-          accuracy,
-          "videoCompleted",
-          "videoMarks",
-          "quizMarks",
-          "correctAnswers",
-          "totalQuestions",
-          activity,
-          "completionDate",
-          "createdAt"
-        FROM public.users
-        ORDER BY "createdAt" DESC, score DESC
-      `);
+    const result = await pool.query(`
+      SELECT 
+        id,
+        "userName",
+        score,
+        level,
+        accuracy,
+        "videoCompleted",
+        "videoMarks",
+        "quizMarks",
+        "correctAnswers",
+        "totalQuestions",
+        activity,
+        "completionDate",
+        "createdAt"
+      FROM public.users
+      ORDER BY "createdAt" DESC, score DESC
+    `);
 
-      return res.status(200).json({
-        success: true,
-        data: result.rows,
-        count: result.rows.length
-      });
-    } finally {
-      client.release();
-    }
+    return res.status(200).json({
+      success: true,
+      data: result.rows,
+      count: result.rows.length
+    });
+
   } catch (supabaseError) {
     console.error('Supabase get-users error:', supabaseError);
 
