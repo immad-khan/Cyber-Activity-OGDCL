@@ -121,19 +121,31 @@
                 }
 
                 // Convert to Excel
-                const worksheet = XLSX.utils.json_to_sheet(data.map(user => ({
-                    'Name': user.userName || '',
-                    'Total Score': user.score || 0,
-                    'Level': user.level || '',
-                    'Video Marks': user.videoMarks || 0,
-                    'Quiz Marks': user.quizMarks || 0,
-                    'Accuracy %': user.accuracy || 0,
-                    'Video Completed': user.videoCompleted ? 'Yes' : 'No',
-                    'Correct Answers': user.correctAnswers || 0,
-                    'Total Questions': user.totalQuestions || 0,
-                    'Date': user.date || '',
-                    'Document ID': user.id || ''
-                })));
+                const worksheet = XLSX.utils.json_to_sheet(data.map(user => {
+                    let quizVal = 0;
+                    if (user.quizMarks !== undefined && user.quizMarks !== null && user.quizMarks !== '') {
+                        quizVal = Number(user.quizMarks);
+                    } else if (user.correctAnswers) {
+                        quizVal = Number(user.correctAnswers) * 20;
+                    } else {
+                        quizVal = Math.max(0, (user.score || 0) - (user.videoCompleted ? 50 : 0));
+                    }
+
+                    return {
+                        'Name': user.userName || '',
+                        'Activity': user.activity || '',
+                        'Total Score': user.score || 0,
+                        'Level': user.level || '',
+                        'Video Marks': user.videoMarks || (user.videoCompleted ? 50 : 0),
+                        'Quiz Marks': quizVal,
+                        'Accuracy %': user.accuracy || 0,
+                        'Video Completed': user.videoCompleted ? 'Yes' : 'No',
+                        'Correct Answers': user.correctAnswers || 0,
+                        'Total Questions': user.totalQuestions || 0,
+                        'Date': user.completionDate || user.date || '',
+                        'Document ID': user.id || ''
+                    };
+                }));
 
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, 'Users Data');

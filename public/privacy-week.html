@@ -938,20 +938,35 @@
             const nameInput = document.getElementById('userNameStart');
             const name = nameInput.value.trim();
 
-            if (!name) {
-                alert('Please enter your name to start the quiz.');
+            if (!name || name.length < 2) {
+                showNotification('Please enter a valid name (at least 2 characters)!', 'warning');
                 nameInput.focus();
                 return;
             }
 
             currentUserName = name;
-            localStorage.setItem('ogdcl_user_name', name);
+            try {
+                localStorage.setItem('ogdcl_user_name', name);
+            } catch (e) {}
+
+            currentQuizIndex = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
 
             document.getElementById('name-input-section').style.display = 'none';
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('displayUserName').textContent = currentUserName;
 
             showNewQuizQuestion();
+            showNotification(`Welcome ${name}! Each question is worth 20 marks!`, 'success');
+
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_start', {
+                    'event_category': 'engagement',
+                    'event_label': 'Activity 4 Quiz Started',
+                    'user_name': name
+                });
+            }
         }
 
         // Update Score and UI
@@ -1003,28 +1018,36 @@
         async function saveToDatabase() {
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const level = getCurrentSecurityLevel().name;
+            const quizMarks = correctAnswers * SCORING.quiz_correct;
+            const videoMarks = videoWatched ? SCORING.video_completion : 0;
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const nameToSave = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Participant';
 
             try {
                 const response = await fetch('/api/save-username', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        username: currentUserName,
-                        email: `${currentUserName.toLowerCase().replace(/[^a-z0-9]/g, '')}@ogdcl.com`,
+                        userName: nameToSave,
                         score: userScore,
-                        status: 'Completed',
-                        activity: 'Activity 4: Data Privacy & Protection',
-                        totalQuestions: totalQuestions,
-                        correctAnswers: correctAnswers,
+                        level: level,
                         accuracy: accuracy,
-                        level: level
+                        videoCompleted: videoWatched,
+                        videoMarks: videoMarks,
+                        quizMarks: quizMarks,
+                        correctAnswers: correctAnswers,
+                        totalQuestions: totalQuestions,
+                        activity: 'Activity 4: Data Privacy & Protection',
+                        date: currentDate
                     })
                 });
 
-                if (response.ok) {
-                    console.log('Progress saved successfully');
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    console.log('Progress saved successfully to database');
+                    showNotification('Results saved to database!', 'success');
                 } else {
-                    console.warn('Failed to save progress to database');
+                    console.warn('Failed to save progress to database:', data);
                 }
             } catch (err) {
                 console.error('Error saving progress:', err);
@@ -1122,14 +1145,15 @@
             }
 
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-            const currentQuestion = quizQuestions[currentQuizIndex];
+            const currentQuestion = quizQuestions[currentQuizIndex] || {};
+            const explanation = currentQuestion.explanation || 'Review the data protection rules to safeguard sensitive information.';
 
             if (isCorrect) {
                 resultDiv.innerHTML = `
                     <div style="color: #4ecdc4; margin-top: 25px; padding: 20px; background: rgba(78, 205, 196, 0.15); border-radius: 15px; border: 2px solid rgba(78, 205, 196, 0.4);">
                         <div style="font-size: 2rem; margin-bottom: 10px;">✅ +${bonusPoints} marks!</div>
                         <h4 style="margin-bottom: 10px; font-size: 1.2rem;">Correct! Outstanding privacy vigilance!</h4>
-                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <p style="line-height: 1.5;">${explanation}</p>
                         <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 8px; background: rgba(78, 205, 196, 0.1); border-radius: 8px;">
                             📊 Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}% | Score: ${userScore}/150
                         </div>
@@ -1141,7 +1165,7 @@
                     <div style="color: #ffd166; margin-top: 25px; padding: 20px; background: rgba(255, 209, 102, 0.15); border-radius: 15px; border: 2px solid rgba(255, 209, 102, 0.4);">
                         <div style="font-size: 2rem; margin-bottom: 10px;">📚 Keep learning!</div>
                         <h4 style="margin-bottom: 10px; font-size: 1.2rem;">Not quite right!</h4>
-                        <p style="line-height: 1.5;">${currentQuestion.explanation}</p>
+                        <p style="line-height: 1.5;">${explanation}</p>
                         <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 8px; background: rgba(255, 209, 102, 0.1); border-radius: 8px;">
                             📊 Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}% | Score: ${userScore}/150
                         </div>
@@ -1161,9 +1185,10 @@
             if (totalQuestions >= quizQuestions.length) {
                 setTimeout(() => {
                     showQuizCompletion();
-                }, 3000);
+                }, 2500);
             } else {
-                setTimeout(showNewQuizQuestion, 3500);
+                currentQuizIndex++;
+                setTimeout(showNewQuizQuestion, 3000);
             }
         }
 
@@ -1192,55 +1217,95 @@
             });
 
             document.getElementById('quiz-result').innerHTML = '';
-            currentQuizIndex++;
         }
 
-        // Show Quiz Completion
+        // Show Quiz Completion & Certificate Showcase
         function showQuizCompletion() {
             const quizSection = document.querySelector('.quiz-section');
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentLevel = getCurrentSecurityLevel();
             const quizMarks = correctAnswers * SCORING.quiz_correct;
             const videoMarks = videoWatched ? SCORING.video_completion : 0;
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant';
 
             saveToDatabase();
 
             quizSection.innerHTML = `
-                <div style="text-align: center; padding: 30px;">
-                    <div style="font-size: 3.5rem; margin-bottom: 15px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 15px; font-size: 2.2rem;">Activity 4 Complete!</h2>
+                <div style="text-align: center; padding: 25px 20px;">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 4 Complete!</h2>
+                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Data Privacy & Information Protection Assessment.</p>
                     
-                    <div style="background: rgba(0, 180, 216, 0.1); padding: 25px; border-radius: 20px; margin: 20px 0; border: 1px solid rgba(0, 255, 255, 0.3);">
-                        <h3 style="color: #48cae4; margin-bottom: 15px;">Your Assessment Summary</h3>
-                        <p style="font-size: 1.1rem; margin-bottom: 8px;">Quiz Questions: ${totalQuestions}/${quizQuestions.length}</p>
-                        <p style="font-size: 1.1rem; margin-bottom: 8px;">Correct Answers: ${correctAnswers}</p>
-                        <p style="font-size: 1.1rem; margin-bottom: 8px;">Accuracy: ${accuracy}%</p>
-                        
-                        <div style="margin: 15px 0; padding: 15px; background: rgba(0, 180, 216, 0.15); border-radius: 12px;">
-                            <p style="font-size: 1rem; margin-bottom: 6px;">Video Marks: ${videoMarks}/50</p>
-                            <p style="font-size: 1rem; margin-bottom: 6px;">Quiz Marks: ${quizMarks}/100</p>
-                            <p style="font-size: 1.5rem; font-weight: bold; color: #00ffff; margin-top: 10px;">Total: ${userScore}/150 marks</p>
+                    <!-- Official OGDCL Certificate Preview Card -->
+                    <div style="background: linear-gradient(135deg, rgba(11, 25, 44, 0.95), rgba(0, 40, 70, 0.95)); border: 2px solid #00ffff; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(0, 255, 255, 0.35); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #00b4d8, #0077b6); color: #fff; padding: 6px 20px; border-radius: 0 0 0 15px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                            Official Certificate
                         </div>
                         
-                        <p style="font-size: 1.3rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;">
+                            <img src="ogdcl-logo.png" alt="OGDCL" style="height: 38px; object-fit: contain;" onerror="this.style.display='none'">
+                            <div style="text-align: left;">
+                                <div style="font-size: 0.82rem; letter-spacing: 1.5px; text-transform: uppercase; color: #48cae4; font-weight: 800;">Oil & Gas Development Company Ltd</div>
+                                <div style="font-size: 0.72rem; color: #a0aec0;">Information Security & Training Division</div>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(0,255,255,0.3); border-bottom: 1px solid rgba(0,255,255,0.3); padding: 12px 0; margin: 12px 0;">
+                            <div style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #a0aec0;">Certificate of Completion</div>
+                            <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
+                            <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
+                                Has successfully demonstrated operational compliance in<br>
+                                <strong style="color: #48cae4;">Activity 4: Data Privacy & Corporate Information Protection</strong>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin: 15px 0; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 12px;">
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Total Score</div>
+                                <div style="color: #00ffff; font-size: 1.25rem; font-weight: bold;">${userScore}/150</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Quiz Marks</div>
+                                <div style="color: #2ec4b6; font-size: 1.25rem; font-weight: bold;">${quizMarks}/100</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Video Marks</div>
+                                <div style="color: #ffd166; font-size: 1.25rem; font-weight: bold;">${videoMarks}/50</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Accuracy</div>
+                                <div style="color: #48cae4; font-size: 1.25rem; font-weight: bold;">${accuracy}%</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Level</div>
+                                <div style="color: ${currentLevel.color}; font-size: 1.1rem; font-weight: bold;">${currentLevel.name}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #a0aec0; padding-top: 8px;">
+                            <span>📅 Issued: ${currentDate}</span>
+                            <span>🔒 Verified Electronic Credential</span>
+                        </div>
                     </div>
                     
-                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                    <!-- Action Buttons -->
+                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
                         <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; padding: 12px 25px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);">
-                            📄 Generate Certificate
+                                style="background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45); display: inline-flex; align-items: center; gap: 8px;">
+                            📄 Download PDF Certificate
                         </button>
                         <button onclick="resetQuiz()" 
-                                style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 12px 25px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                                style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer;">
                             🔄 Retake Quiz
                         </button>
                         <a href="index.html" 
-                           style="background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(0, 150, 255, 0.3)); color: #00ffff; border: 2px solid #00ffff; padding: 12px 25px; border-radius: 30px; font-size: 1rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                            Home
+                           style="background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(0, 150, 255, 0.3)); color: #00ffff; border: 2px solid #00ffff; padding: 14px 28px; border-radius: 30px; font-size: 1.05rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                            🏠 Back to Home
                         </a>
                     </div>
                     
-                    <p style="margin-top: 20px; color: #00ffff; font-size: 0.9rem;">✅ Your results have been saved to the database</p>
+                    <p style="margin-top: 20px; color: #2ec4b6; font-size: 0.95rem; font-weight: 600;">✅ Your quiz marks and assessment data have been saved to Admin Database!</p>
                 </div>
             `;
 
@@ -1255,14 +1320,14 @@
 
         // Generate Certificate
         async function generateCertificate() {
-            const userName = currentUserName;
+            const userName = currentUserName || localStorage.getItem('ogdcl_user_name');
 
             if (!userName) {
-                showNotification('Error: No user name found. Please retake the quiz.', 'error');
+                showNotification('Error: No user name found. Please enter your name.', 'error');
                 return;
             }
 
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentLevel = getCurrentSecurityLevel();
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -1323,7 +1388,7 @@
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your name to begin the assessment.</p>
                         <div>
-                            <input type="text" id="userNameStart" placeholder="Enter your full name" value="${currentUserName}" />
+                            <input type="text" id="userNameStart" placeholder="Enter your full name" value="${currentUserName || ''}" />
                             <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                         </div>
                     </div>

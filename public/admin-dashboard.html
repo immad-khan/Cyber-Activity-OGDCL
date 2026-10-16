@@ -575,6 +575,19 @@
     .badge-advanced { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
     .badge-intermediate { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
     .badge-beginner { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.25); }
+    
+    .badge-activity {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: rgba(0, 245, 160, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0, 245, 160, 0.2);
+      white-space: nowrap;
+    }
 
     .score-bar-wrap {
       display: flex;
@@ -802,9 +815,18 @@
         </div>
       </div>
 
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search by name, level…" oninput="filterUsers()" />
+      <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <div style="position: relative; flex: 1; min-width: 200px;">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search by name, level, activity…" oninput="filterUsers()" />
+        </div>
+        <select id="activityFilter" onchange="filterUsers()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: 'Inter', sans-serif; outline: none; cursor: pointer;">
+          <option value="all">🌐 All Activities</option>
+          <option value="Activity 1">Activity 1 (Phishing)</option>
+          <option value="Activity 2">Activity 2 (Passwords/MFA)</option>
+          <option value="Activity 3">Activity 3 (Social Engineering)</option>
+          <option value="Activity 4">Activity 4 (Data Privacy)</option>
+        </select>
       </div>
 
       <div class="table-wrap">
@@ -813,6 +835,7 @@
             <tr>
               <th>#</th>
               <th>Name</th>
+              <th>Activity</th>
               <th>Level</th>
               <th>Score</th>
               <th>Accuracy</th>
@@ -823,7 +846,7 @@
           </thead>
           <tbody id="usersTableBody">
             <tr class="state-row">
-              <td colspan="8">
+              <td colspan="9">
                 <div class="loading-dots">
                   <span></span><span></span><span></span>
                 </div>
@@ -1106,12 +1129,17 @@
 
     function filterUsers() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      filtered = q
-        ? allUsers.filter(u =>
-            (u.userName || '').toLowerCase().includes(q) ||
-            (u.level || '').toLowerCase().includes(q)
-          )
-        : [...allUsers];
+      const actFilter = document.getElementById('activityFilter') ? document.getElementById('activityFilter').value : 'all';
+
+      filtered = allUsers.filter(u => {
+        const matchesQuery = !q || (
+          (u.userName || '').toLowerCase().includes(q) ||
+          (u.level || '').toLowerCase().includes(q) ||
+          (u.activity || '').toLowerCase().includes(q)
+        );
+        const matchesAct = actFilter === 'all' || (u.activity || '').toLowerCase().includes(actFilter.toLowerCase());
+        return matchesQuery && matchesAct;
+      });
       currentPage = 1;
       renderTable();
     }
@@ -1141,7 +1169,7 @@
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
       if (slice.length === 0) {
-        tbody.innerHTML = `<tr class="state-row"><td colspan="8">😕 No users found.</td></tr>`;
+        tbody.innerHTML = `<tr class="state-row"><td colspan="9">😕 No users found.</td></tr>`;
         renderPagination(0, 0);
         return;
       }
@@ -1156,7 +1184,18 @@
         const score = u.score || 0;
         const acc   = u.accuracy || 0;
         const video = u.videoCompleted ? '✅' : '❌';
-        const quiz  = u.quizMarks || 0;
+        
+        // Calculate quizMarks robustly: use stored quizMarks, or correctAnswers * 20, or (score - videoMarks)
+        let quiz = 0;
+        if (u.quizMarks !== undefined && u.quizMarks !== null && u.quizMarks !== '') {
+          quiz = Number(u.quizMarks);
+        } else if (u.correctAnswers) {
+          quiz = Number(u.correctAnswers) * 20;
+        } else {
+          quiz = Math.max(0, score - (u.videoCompleted ? 50 : 0));
+        }
+
+        const act   = u.activity || 'Activity 1: The Executive Target';
         const date  = u.completionDate || u.date || '—';
         const pct   = Math.round((score / maxScore) * 100);
         const badgeCls = getLevelBadge(level);
@@ -1170,6 +1209,7 @@
                 <span>${escHtml(name)}</span>
               </div>
             </td>
+            <td><span class="badge-activity">${escHtml(act)}</span></td>
             <td><span class="badge-level ${badgeCls}">${escHtml(level)}</span></td>
             <td>
               <div class="score-bar-wrap">
@@ -1179,7 +1219,7 @@
             </td>
             <td>${acc}%</td>
             <td>${video}</td>
-            <td>${quiz}</td>
+            <td style="font-weight:700;color:var(--accent);font-size:0.95rem;">${quiz}</td>
             <td style="color:var(--text-muted);font-size:0.78rem">${escHtml(date)}</td>
           </tr>`;
       }).join('');
@@ -1216,19 +1256,31 @@
     // ── Export ──
     function exportExcel() {
       if (!allUsers.length) { showToast('❌ No data to export', 'error'); return; }
-      const ws = XLSX.utils.json_to_sheet(allUsers.map(u => ({
-        'Name':             u.userName || '',
-        'Total Score':      u.score || 0,
-        'Level':            u.level || '',
-        'Video Marks':      u.videoMarks || 0,
-        'Quiz Marks':       u.quizMarks || 0,
-        'Accuracy %':       u.accuracy || 0,
-        'Video Completed':  u.videoCompleted ? 'Yes' : 'No',
-        'Correct Answers':  u.correctAnswers || 0,
-        'Total Questions':  u.totalQuestions || 0,
-        'Date':             u.completionDate || u.date || '',
-        'Doc ID':           u.id || ''
-      })));
+      const ws = XLSX.utils.json_to_sheet(allUsers.map(u => {
+        let quizVal = 0;
+        if (u.quizMarks !== undefined && u.quizMarks !== null && u.quizMarks !== '') {
+          quizVal = Number(u.quizMarks);
+        } else if (u.correctAnswers) {
+          quizVal = Number(u.correctAnswers) * 20;
+        } else {
+          quizVal = Math.max(0, (u.score || 0) - (u.videoCompleted ? 50 : 0));
+        }
+
+        return {
+          'Name':             u.userName || '',
+          'Activity':         u.activity || '',
+          'Total Score':      u.score || 0,
+          'Level':            u.level || '',
+          'Video Marks':      u.videoMarks || (u.videoCompleted ? 50 : 0),
+          'Quiz Marks':       quizVal,
+          'Accuracy %':       u.accuracy || 0,
+          'Video Completed':  u.videoCompleted ? 'Yes' : 'No',
+          'Correct Answers':  u.correctAnswers || 0,
+          'Total Questions':  u.totalQuestions || 0,
+          'Date':             u.completionDate || u.date || '',
+          'Doc ID':           u.id || ''
+        };
+      }));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Users');
       XLSX.writeFile(wb, `OGDCL_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
@@ -1252,7 +1304,7 @@
       if (!on) return;
       document.getElementById('usersTableBody').innerHTML = `
         <tr class="state-row">
-          <td colspan="8">
+          <td colspan="9">
             <div class="loading-dots"><span></span><span></span><span></span></div>
             <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
           </td>
@@ -1261,7 +1313,7 @@
 
     function setTableError(msg) {
       document.getElementById('usersTableBody').innerHTML = `
-        <tr class="state-row"><td colspan="8">⚠️ ${msg}</td></tr>`;
+        <tr class="state-row"><td colspan="9">⚠️ ${msg}</td></tr>`;
     }
 
     let toastTimer;

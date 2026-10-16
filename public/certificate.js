@@ -39,7 +39,7 @@
     const level = opts.level || 'Guardian';
     const activityName = opts.activity || 'Cybersecurity Awareness & Threat Defense';
     const currentDate = opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const refNumber = opts.refNumber || `No. OIST/CS-2026/${Math.floor(100 + Math.random() * 900)}`;
+    const refNumber = opts.refNumber || `No. CyberSecurity-2026/${Math.floor(100 + Math.random() * 900)}`;
 
     const pageWidth = 210;
     const pageHeight = 297;
@@ -101,8 +101,8 @@
     let contactY = 44;
     const addrLines = [
       'Cybersecurity Department,',
-      'OGDCL House, Jinnah Avenue,',
-      'Islamabad, Pakistan.'
+      'OGDCL Head Office, Jinnah Avenue,',
+      'Islamabad.'
     ];
     addrLines.forEach(line => {
       doc.text(line, leftX, contactY);

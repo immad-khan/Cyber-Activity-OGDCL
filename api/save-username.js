@@ -21,26 +21,38 @@ export default async function handler(req, res) {
   }
 
   try {
+    const rawName = req.body?.userName || req.body?.username || req.body?.name;
+    if (!rawName || String(rawName).trim() === '') {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
     const {
-      userName,
-      score = 0,
+      score,
       level = 'Beginner',
       accuracy = 0,
       videoCompleted = false,
-      videoMarks = 0,
-      quizMarks = 0,
+      videoMarks,
+      quizMarks,
       correctAnswers = 0,
       totalQuestions = 0,
       activity = 'Cybersecurity Awareness',
       date
     } = req.body || {};
 
-    if (!userName || String(userName).trim() === '') {
-      return res.status(400).json({ error: 'Username is required' });
-    }
-
-    const sanitizedName = String(userName).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedName = String(rawName).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const finalCorrect = parseInt(correctAnswers, 10) || 0;
+    const finalVideoCompleted = Boolean(videoCompleted);
+    const finalVideoMarks = (videoMarks !== undefined && videoMarks !== null) 
+      ? parseInt(videoMarks, 10) 
+      : (finalVideoCompleted ? 50 : 0);
+    const finalQuizMarks = (quizMarks !== undefined && quizMarks !== null) 
+      ? parseInt(quizMarks, 10) 
+      : (finalCorrect * 20);
+    const finalScore = (score !== undefined && score !== null)
+      ? parseInt(score, 10)
+      : (finalVideoMarks + finalQuizMarks);
 
     // Save to Supabase using pre-warmed connection pool
     const insertQuery = `
@@ -63,13 +75,13 @@ export default async function handler(req, res) {
 
     const values = [
       sanitizedName,
-      parseInt(score, 10) || 0,
+      finalScore,
       level,
       parseInt(accuracy, 10) || 0,
-      Boolean(videoCompleted),
-      parseInt(videoMarks, 10) || 0,
-      parseInt(quizMarks, 10) || 0,
-      parseInt(correctAnswers, 10) || 0,
+      finalVideoCompleted,
+      finalVideoMarks,
+      finalQuizMarks,
+      finalCorrect,
       parseInt(totalQuestions, 10) || 0,
       activity,
       completionDate
