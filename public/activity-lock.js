@@ -166,8 +166,8 @@
         const pageLookup = {
             activity_1: 'phishing-week.html',
             activity_2: 'mfa-week.html',
-            activity_3: 'privacy-week.html',
-            activity_4: 'social-engineering-week.html'
+            activity_3: 'social-engineering-week.html',
+            activity_4: 'privacy-week.html'
         };
 
         Object.entries(activityLocks).forEach(([actId, isLocked]) => {
