@@ -1650,19 +1650,42 @@
                 `;
                 document.body.insertBefore(banner, document.body.firstChild);
 
-                const overlay = document.createElement('div');
-                overlay.className = 'site-locked-overlay';
-                document.body.appendChild(overlay);
+                if (!document.querySelector('.site-locked-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'site-locked-overlay';
+                    document.body.appendChild(overlay);
+                }
+            }
+
+            function removeLockBanner() {
+                document.body.classList.remove('site-locked');
+                const banner = document.getElementById(LOCK_BANNER_ID);
+                if (banner) banner.remove();
+                const overlay = document.querySelector('.site-locked-overlay');
+                if (overlay) overlay.remove();
+            }
+
+            function handleLockedLinkClick(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const label = this.getAttribute('data-act-label') || 'This activity';
+                if (typeof showNotification === 'function') {
+                    showNotification(`🔒 ${label} is currently locked by the administrator.`, 'error');
+                } else {
+                    alert(`🔒 ${label} is currently locked by the administrator.`);
+                }
             }
 
             async function checkLockStatus() {
                 try {
-                    const res  = await fetch('/api/admin-settings');
+                    const res  = await fetch('/api/admin-settings', { cache: 'no-store' });
                     const data = await res.json();
                     if (!data.success) return;
 
                     if (data.locked) {
                         showLockBanner();
+                    } else {
+                        removeLockBanner();
                     }
 
                     if (data.activityLocks) {
@@ -1674,44 +1697,56 @@
                         };
 
                         Object.entries(data.activityLocks).forEach(([key, isActLocked]) => {
-                            if (!isActLocked) return;
                             const act = actMap[key];
                             if (!act) return;
 
                             document.querySelectorAll(`a[href*="${act.page}"]`).forEach(link => {
-                                link.classList.add('act-locked-btn');
-                                link.setAttribute('title', `${act.label} is locked by administrator`);
-                                link.style.opacity = '0.5';
-                                link.style.filter = 'grayscale(0.7)';
-                                link.style.cursor = 'not-allowed';
+                                if (isActLocked) {
+                                    link.classList.add('act-locked-btn');
+                                    link.setAttribute('title', `${act.label} is locked by administrator`);
+                                    link.setAttribute('data-act-label', act.label);
+                                    link.style.opacity = '0.5';
+                                    link.style.filter = 'grayscale(0.7)';
+                                    link.style.cursor = 'not-allowed';
 
-                                const textEl = link.querySelector('.week-num') || link;
-                                if (!link.querySelector('.lock-tag')) {
-                                    const lockTag = document.createElement('span');
-                                    lockTag.className = 'lock-tag';
-                                    lockTag.textContent = ' 🔒';
-                                    textEl.appendChild(lockTag);
-                                }
-
-                                link.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    if (typeof showNotification === 'function') {
-                                        showNotification(`🔒 ${act.label} is currently locked by the administrator.`, 'error');
-                                    } else {
-                                        alert(`🔒 ${act.label} is currently locked by the administrator.`);
+                                    const textEl = link.querySelector('.week-num') || link;
+                                    if (!link.querySelector('.lock-tag')) {
+                                        const lockTag = document.createElement('span');
+                                        lockTag.className = 'lock-tag';
+                                        lockTag.textContent = ' 🔒';
+                                        textEl.appendChild(lockTag);
                                     }
-                                });
+
+                                    link.removeEventListener('click', handleLockedLinkClick);
+                                    link.addEventListener('click', handleLockedLinkClick);
+                                } else {
+                                    link.classList.remove('act-locked-btn');
+                                    link.removeAttribute('title');
+                                    link.removeAttribute('data-act-label');
+                                    link.style.opacity = '';
+                                    link.style.filter = '';
+                                    link.style.cursor = '';
+
+                                    const lockTag = link.querySelector('.lock-tag');
+                                    if (lockTag) lockTag.remove();
+
+                                    link.removeEventListener('click', handleLockedLinkClick);
+                                }
                             });
                         });
                     }
                 } catch (e) {
-                    // Silently fail — don't block users if API is down
                     console.warn('Lock status check failed:', e);
                 }
             }
 
             checkLockStatus();
+            // Live continuous polling: updates without requiring a page refresh
+            setInterval(checkLockStatus, 2500);
+            window.addEventListener('focus', checkLockStatus);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') checkLockStatus();
+            });
         })();
         // ──────────────────────────────────────────────────────────────
     </script>
