@@ -64,27 +64,28 @@
     // OGDCL Logo (Top Left)
     if (assets.logo) {
       try {
-        doc.addImage(assets.logo, 'PNG', 18, 16, 42, 16);
+        doc.addImage(assets.logo, 'PNG', 18, 17, 30, 12.5);
       } catch (e) {
         console.warn('Could not render logo in PDF', e);
       }
     }
 
-    // Header Title (Centered)
+    // Header Title (Centralized on Certificate)
+    const headerCenterX = pageWidth / 2;
     doc.setTextColor(20, 24, 33);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
-    doc.text('OIL & GAS DEVELOPMENT COMPANY LTD', 125, 22, { align: 'center' });
+    doc.text('OIL & GAS DEVELOPMENT COMPANY LTD', headerCenterX, 22, { align: 'center' });
 
     doc.setFontSize(9.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(50, 60, 75);
-    doc.text('CYBERSECURITY DEPARTMENT', 125, 28, { align: 'center' });
+    doc.text('CYBERSECURITY DEPARTMENT', headerCenterX, 28, { align: 'center' });
 
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 90, 105);
-    doc.text('ISLAMABAD, PAKISTAN', 125, 33, { align: 'center' });
+    doc.text('ISLAMABAD, PAKISTAN', headerCenterX, 33, { align: 'center' });
 
     // Thin separator under header
     doc.setDrawColor(220, 225, 235);
