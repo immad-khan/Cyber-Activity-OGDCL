@@ -20,6 +20,7 @@
     <script src="cert-assets.js?v=3"></script>
     <script src="certificate.js?v=3"></script>
     <script src="activity-lock.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         * {
@@ -307,13 +308,48 @@
             background: #000;
         }
 
-        .video-container video {
+        .video-container video,
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             border-radius: 15px;
+            border: none;
+        }
+
+        .claim-video-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ba55d3, #9370db);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(186, 85, 211, 0.4);
+        }
+
+        .claim-video-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(186, 85, 211, 0.6);
+            border-color: #ffffff;
+        }
+
+        .chapter-badge {
+            display: inline-block;
+            background: rgba(186, 85, 211, 0.25);
+            color: #da70d6;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-right: 6px;
+            border: 1px solid rgba(186, 85, 211, 0.4);
         }
 
         .marks-display {
@@ -627,30 +663,34 @@
         <div class="study-section">
             <h2 class="section-title">Social Engineering Defense Landscape</h2>
 
-            <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
-                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg">
-                    <source src="./videos/social-engineering.mp4" type="video/mp4">
-                    <source src="./videos/phishing-awareness.mp4" type="video/mp4">
-                    <source src="videos/phishing-awareness.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+            <div class="video-container">
+                <iframe id="trainingVideoIframe" 
+                        src="https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0" 
+                        title="Social Engineering Defense Training Video" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
             </div>
 
             <div class="marks-display">
                 <span class="marks-badge">Video: 50 marks</span>
                 <span class="marks-badge">Quiz: 100 marks</span>
+                <div style="margin-top: 10px;">
+                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                        🎁 Finished Watching? Claim 50 Video Marks
+                    </button>
+                </div>
             </div>
 
             <div class="learning-points">
-                <h3>Key Learning Points</h3>
-                <ul>
-                    <li><strong>Psychological Exploitation:</strong> Attackers weaponize fear, urgency, trust, and curiosity rather than software flaws. Stay vigilant.</li>
-                    <li><strong>Pretexting Tactics:</strong> Deceptive backstories (e.g., impersonating IT support, external auditors, or executive staff) are used to extract sensitive data.</li>
-                    <li><strong>Vishing & Phone Scams:</strong> Never divulge passwords, MFA codes, or OTPs over phone calls. Legitimate OGDCL IT will never ask for credentials.</li>
-                    <li><strong>Baiting Hazards:</strong> Unlabeled USB drives or media dropped in lobbies and parking lots contain malware. Immediately surrender found media to IT Security.</li>
-                    <li><strong>Tailgating Prevention:</strong> Never hold secure facility doors for unfamiliar or unbadged individuals. Every employee must badge in individually.</li>
-                    <li><strong>Authority Bias:</strong> High-pressure requests invoking corporate executive authority must always be verified via official corporate channels.</li>
-                    <li><strong>Prompt Escalation:</strong> Reporting suspicious interactions to the Information Security Division prevents enterprise-wide compromise.</li>
+                <h3>Video Chapters & Key Learning Points</h3>
+                <ul style="list-style: none; margin-left: 0;">
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">0:00</span><strong>Has this happened to you?</strong> Understanding everyday encounters with social engineering traps.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">0:30</span><strong>What is Social Engineering?</strong> Manipulation of human psychology and trust to trick victims into giving away data or access.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">1:09</span><strong>The Three Traits of an Attack:</strong> Emotional triggers, artificial urgency, and exploiting trust or authority.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">1:35</span><strong>Heightened Emotions & Urgency:</strong> Panic, fear, or curiosity provoke rash actions that bypass logical reasoning.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">2:19</span><strong>Where Attacks Happen:</strong> Phishing emails, phone calls (vishing), SMS/messaging (smishing), social platforms, and in-person tailgating.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Action</span><strong>What to do if attacked:</strong> Slow down, never click or share credentials, verify independently via official channels, and alert IT Security.</li>
                 </ul>
             </div>
         </div>
@@ -697,59 +737,59 @@
 
         const quizQuestions = [
             {
-                question: "An unexpected caller claims to be from the IT Helpdesk and demands your one-time authentication code to perform an 'urgent security patch'. How should you respond?",
+                question: "According to the video (Chapter 0:30), what is Social Engineering?",
                 options: [
-                    "Provide the code since it is from the IT department",
-                    "Refuse, hang up immediately, and report the call to official IT Security",
-                    "Ask them to confirm your employee ID first",
-                    "Give them the code if they send an email first"
+                    "Writing complex software scripts to crack firewall ports directly",
+                    "A manipulation technique that exploits human psychology, trust, and emotions to trick victims into handing over confidential data or access",
+                    "An automatic software update sent by your operating system",
+                    "A marketing discipline for managing corporate social media accounts"
                 ],
                 correct: 1,
-                explanation: "Legitimate IT personnel will NEVER ask for your passwords, MFA codes, or one-time security tokens. This is a classic vishing (voice phishing) attack."
+                explanation: "Social engineering targets the human element rather than technical software vulnerabilities—manipulating human psychology, curiosity, and trust to breach security."
             },
             {
-                question: "While entering a restricted OGDCL facility, an unfamiliar person carrying heavy equipment rushes behind you and asks you to hold the secure door. What is the correct protocol?",
+                question: "As highlighted in the video (Chapter 1:09), what are the core traits that social engineers weaponize?",
                 options: [
-                    "Hold the door open to be polite and helpful",
-                    "Politely ask them to badge in separately or direct them to the security reception desk",
-                    "Let them in but watch where they walk",
-                    "Take their photo and let them pass"
+                    "Patiently waiting months without contacting the victim",
+                    "Triggering heightened emotions, creating artificial urgency, and exploiting trust or authority",
+                    "Sending complex mathematical formulas that only computers can read",
+                    "Offering free printed textbooks and physical user manuals"
                 ],
                 correct: 1,
-                explanation: "This is known as 'tailgating' or 'piggybacking'. Attackers exploit courtesy to bypass physical security controls. Every person must badge in individually."
+                explanation: "Social engineering attacks rely on triggering heightened emotional states combined with artificial urgency so targets act on impulse before thinking critically."
             },
             {
-                question: "You find an unmarked, high-capacity USB flash drive labeled 'OGDCL Executive Payroll Q1' in the corporate parking lot. What should you do?",
+                question: "Why do attackers specifically rely on creating 'Heightened Emotions' and 'Urgency' (Chapter 1:35)?",
                 options: [
-                    "Plug it into your workstation to identify the owner",
-                    "Take it home and inspect it on your personal computer",
-                    "Hand it over immediately to Corporate Security/IT without plugging it in",
-                    "Format the drive so it can be safely reused"
-                ],
-                correct: 2,
-                explanation: "This is a 'baiting' attack. Malicious USB drives are deliberately dropped in public areas. Plugging them in can instantly execute malware, keyloggers, or ransomware."
-            },
-            {
-                question: "You receive an urgent message on WhatsApp or SMS appearing to be from your managing director asking you to urgently buy gift cards or authorize an emergency payment because they are in an offsite meeting. What tactic is being exploited?",
-                options: [
-                    "Distributed Denial of Service (DDoS)",
-                    "Psychological urgency and executive authority bias",
-                    "Buffer overflow exploitation",
-                    "SQL Injection"
+                    "To give the target sufficient time to consult with IT Security",
+                    "Because pressure and heightened emotions cloud logical judgment and prevent the victim from pausing to verify the request",
+                    "To ensure their emails comply with corporate spam transmission filters",
+                    "Because security firewalls can only detect slowly delivered messages"
                 ],
                 correct: 1,
-                explanation: "Social engineers use artificial urgency, fear, and executive authority to bypass standard operational procedures and critical thinking."
+                explanation: "When you are stressed, hurried, or alarmed, your rational cognitive defense drops. Attackers manufacture urgent deadlines so you won't pause to verify."
             },
             {
-                question: "What is 'pretexting' in the context of corporate cybersecurity and information defense?",
+                question: "Where do social engineering attacks happen according to the video (Chapter 2:19)?",
                 options: [
-                    "Testing network switches before installation",
-                    "Creating a fabricated scenario and persona to trick victims into revealing sensitive information",
-                    "Sending automated spam emails to bulk addresses",
-                    "Scanning public servers for open firewall ports"
+                    "Exclusively through personal spam email folders",
+                    "Across multiple communication channels including emails, phone calls (vishing), SMS/messaging, social networks, and in-person physical spaces",
+                    "Only on dark web chat forums",
+                    "Strictly inside physical server rooms by cutting network wires"
                 ],
                 correct: 1,
-                explanation: "Pretexting involves crafting an elaborate, believable backstory (pretext)—such as posing as an auditor, vendor, or colleague—to gain trust and extract sensitive data."
+                explanation: "Social engineering attacks occur everywhere: via emails (phishing), phone calls (vishing), text messages (smishing), social platforms (LinkedIn), and in-person interactions (tailgating)."
+            },
+            {
+                question: "What is the recommended action if you think you are being targeted by a social engineering attack?",
+                options: [
+                    "Reply to the attacker and demand that they prove their identity",
+                    "Slow down, do not click links or share credentials, verify through an independent official channel, and notify IT Security immediately",
+                    "Forward the message to all department colleagues to see if anyone wants to click it",
+                    "Comply with the urgent instructions immediately just to avoid potential trouble"
+                ],
+                correct: 1,
+                explanation: "Always slow down and pause. Never use phone numbers or links provided in the suspicious message. Verify independently through official channels and report it immediately."
             }
         ];
 
@@ -859,32 +899,60 @@
             }
         }
 
-        // Video Completion Handler
-        window.addEventListener('load', function () {
-            const video = document.getElementById('trainingVideo');
-
-            if (video) {
-                video.addEventListener('ended', function () {
-                    if (!videoWatched) {
-                        videoWatched = true;
-                        updateScore(SCORING.video_completion);
-                        showNotification('Video Complete! You earned 50 marks!', 'success');
-                        celebrateVideoCompletion();
-
-                        if (currentUserName) {
-                            saveToDatabase();
-                        }
-
-                        if (typeof gtag !== 'undefined') {
-                            gtag('event', 'video_complete', {
-                                'event_category': 'engagement',
-                                'event_label': 'Activity 3 Video Completed'
-                            });
-                        }
+        // YouTube IFrame API & Video Completion Handler
+        let ytPlayer;
+        function onYouTubeIframeAPIReady() {
+            try {
+                ytPlayer = new YT.Player('trainingVideoIframe', {
+                    events: {
+                        'onStateChange': onPlayerStateChange
                     }
                 });
+            } catch (e) {
+                console.log('YouTube API ready event handled');
             }
+        }
 
+        function onPlayerStateChange(event) {
+            // YT.PlayerState.ENDED is 0
+            if (event.data === 0) {
+                awardVideoMarks();
+            }
+        }
+
+        function awardVideoMarks() {
+            if (!videoWatched) {
+                videoWatched = true;
+                updateScore(SCORING.video_completion);
+                showNotification('Video Complete! You earned 50 marks!', 'success');
+                celebrateVideoCompletion();
+
+                const claimBtn = document.getElementById('claimVideoBtn');
+                if (claimBtn) {
+                    claimBtn.disabled = true;
+                    claimBtn.innerHTML = '✅ 50 Video Marks Claimed';
+                    claimBtn.style.background = 'linear-gradient(45deg, #2ec4b6, #20bf6b)';
+                    claimBtn.style.borderColor = '#2ec4b6';
+                    claimBtn.style.cursor = 'default';
+                }
+
+                if (currentUserName) {
+                    saveToDatabase();
+                }
+
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'video_complete', {
+                        'event_category': 'engagement',
+                        'event_label': 'Activity 3 Video Completed',
+                        'value': SCORING.video_completion
+                    });
+                }
+            } else {
+                showNotification('You have already claimed the 50 video marks!', 'info');
+            }
+        }
+
+        window.addEventListener('load', function () {
             updateScoreVisual();
             updateProgressBar();
             showNotification('Welcome! Watch the video (50 marks) and take the quiz (100 marks)!', 'success');
