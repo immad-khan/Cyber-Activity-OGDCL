@@ -50,18 +50,17 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         .nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             gap: 20px;
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
         }
 
         .logo {
@@ -71,140 +70,100 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .logo a {
             text-decoration: none;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .back-button {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            transition: all 0.4s ease;
+        .hamburger {
+            display: none;
+            flex-direction: column;
             cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .back-button:hover {
-            background: rgba(0, 255, 255, 0.15);
-            border-color: #00ffff;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-            transform: translateY(-3px);
-        }
-
-        /* Activities Dropdown */
-        .activities-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .activities-button {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            border: 2px solid rgba(52, 152, 219, 0.3);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            color: #3498db;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
-        }
-
-        .activities-button:hover {
-            background: rgba(52, 152, 219, 0.15);
-            border-color: #3498db;
-            box-shadow: 0 0 25px rgba(52, 152, 219, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .dropdown-arrow {
-            transition: transform 0.3s ease;
-            font-size: 0.8rem;
-        }
-
-        .activities-dropdown:hover .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 10px;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 2px solid rgba(52, 152, 219, 0.3);
-            min-width: 280px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            padding: 10px;
             z-index: 1001;
+            position: relative;
         }
 
-        .activities-dropdown:hover .dropdown-content {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            margin: 4px 0;
+            border-radius: 3px;
+            transition: all 0.3s ease;
         }
 
-        .dropdown-item {
-            padding: 15px 25px;
-            color: #ffffff;
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        .weeks-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .week-button {
+            padding: 12px 28px;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            transition: all 0.4s ease;
+            cursor: pointer;
             text-decoration: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
+            gap: 10px;
         }
 
-        .dropdown-item:last-child {
-            border-bottom: none;
+        .week-button:hover:not(.locked) {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.4), rgba(255, 0, 255, 0.4));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
         }
 
-        .dropdown-item:hover {
-            background: rgba(52, 152, 219, 0.2);
-            padding-left: 30px;
+        .week-button.active {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-color: #ffffff;
+            box-shadow: 0 8px 30px rgba(0, 255, 255, 0.6);
         }
 
-        .dropdown-item.active {
-            background: rgba(52, 152, 219, 0.25);
-            border-left: 4px solid #3498db;
-        }
-
-        .dropdown-item .emoji {
-            font-size: 1.5rem;
-        }
-
-        .dropdown-item .text {
-            font-size: 1rem;
-            font-weight: 500;
+        .week-button.locked {
+            background: rgba(100, 100, 100, 0.3);
+            border: 2px solid rgba(150, 150, 150, 0.4);
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .score-display {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             background: rgba(0, 255, 255, 0.2);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 30px;
             border: 2px solid;
             animation: scoreGlow 2s ease-in-out infinite alternate;
             font-weight: 600;
-            transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         @keyframes scoreGlow {
@@ -560,47 +519,45 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav {
+        @media (max-width: 1200px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .weeks-buttons {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 300px;
+                max-width: 80%;
+                height: calc(100vh - 80px);
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(20px);
                 flex-direction: column;
+                padding: 30px 20px;
                 gap: 15px;
+                transition: left 0.4s ease;
+                border-right: 2px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+                overflow-y: auto;
+                z-index: 999;
             }
-            
-            .nav-left {
-                flex-direction: column;
-                gap: 15px;
-                width: 100%;
+
+            .weeks-buttons.active {
+                left: 0;
             }
-            
-            .logo {
-                font-size: 1.6rem;
-            }
-            
-            .back-button, .activities-button {
-                padding: 10px 18px;
-                font-size: 1rem;
-            }
-            
-            .activities-dropdown {
-                width: 100%;
-            }
-            
-            .activities-button {
+
+            .week-button {
                 width: 100%;
                 justify-content: center;
             }
-            
-            .dropdown-content {
-                min-width: 100%;
-                left: 0;
-                right: 0;
-            }
-            
+        }
+
+        @media (max-width: 768px) {
             .score-display {
-                padding: 10px 20px;
-                gap: 15px;
                 flex-direction: column;
-                text-align: center;
+                gap: 8px;
+                font-size: 0.9rem;
             }
             
             .hero h1 {
@@ -730,40 +687,23 @@
 </head>
 <body>
     <header class="header">
-        <div class="container">
+        <div class="header-container">
             <nav class="nav">
-                <div class="nav-left">
-                    <a href="index.html" class="logo" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:30px;margin-right:8px;object-fit:contain;"><span style="color:#fff;">Cybersecurity Shield</span></a>
-                    <a href="index.html" class="back-button">
-                        <span>Back to Home</span>
-                    </a>
-                    
-                    <!-- Activities Dropdown -->
-                    <div class="activities-dropdown">
-                        <div class="activities-button">
-                            <span>Activities</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </div>
-                        <div class="dropdown-content">
-                            <div class="dropdown-item" onclick="window.location.href='phishing-week.html'">
-                                <span class="emoji">🎣</span>
-                                <span class="text">Phishing Week</span>
-                            </div>
-                            <div class="dropdown-item" onclick="window.location.href='mfa-week.html'">
-                                <span class="emoji">🔐</span>
-                                <span class="text">MFA Week</span>
-                            </div>
-                            <div class="dropdown-item" onclick="window.location.href='social-engineering-week.html'">
-                                <span class="emoji">🎭</span>
-                                <span class="text">Social Engineering</span>
-                            </div>
-                            <div class="dropdown-item active" onclick="window.location.href='privacy-week.html'">
-                                <span class="emoji">🔒</span>
-                                <span class="text">Data Privacy</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="logo"><a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">Cybersecurity Shield</span></a></div>
+
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
+
+                <div class="weeks-buttons" id="weekMenu">
+                    <a href="phishing-week.html" class="week-button">Activity 1</a>
+                    <a href="mfa-week.html" class="week-button">Activity 2</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 3</a>
+                    <a href="privacy-week.html" class="week-button active">Activity 4</a>
+                </div>
+
                 <div class="score-display">
                     <div>
                         <span id="levelIcon">🔓</span>
@@ -928,6 +868,29 @@
 
     <script>
         const { jsPDF } = window.jspdf;
+
+        // Toggle Mobile Menu
+        function toggleMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('weekMenu');
+            if (hamburger && menu) {
+                hamburger.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function (event) {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('weekMenu');
+            if (!hamburger || !menu) return;
+            const isClickInside = hamburger.contains(event.target) || menu.contains(event.target);
+
+            if (!isClickInside && menu.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                menu.classList.remove('active');
+            }
+        });
 
         let userInteractions = {};
         let sessionStartTime = Date.now();
