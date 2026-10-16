@@ -153,6 +153,22 @@
             opacity: 0.6;
         }
 
+        .back-home-btn {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 150, 255, 0.25));
+            border: 2px solid rgba(0, 255, 255, 0.6) !important;
+            color: #00ffff !important;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .back-home-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.35), rgba(0, 150, 255, 0.45)) !important;
+            border-color: #00ffff !important;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6) !important;
+            transform: translateY(-3px);
+            color: #ffffff !important;
+        }
+
         .score-display {
             display: flex;
             align-items: center;
@@ -602,6 +618,24 @@
             }
         }
 
+        @media (max-width: 1250px) and (min-width: 969px) {
+            .weeks-buttons {
+                gap: 8px;
+            }
+            .week-button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            .score-display {
+                padding: 8px 14px;
+                font-size: 0.88rem;
+                gap: 10px;
+            }
+            .logo {
+                font-size: 1.6rem;
+            }
+        }
+
         @media (max-width: 480px) {
             .hero h1 {
                 font-size: 2.2rem;
@@ -701,6 +735,7 @@
                 </div>
 
                 <div class="weeks-buttons" id="weekMenu">
+                    <a href="index.html" class="week-button back-home-btn">Home</a>
                     <a href="phishing-week.html" class="week-button">Activity 1</a>
                     <a href="mfa-week.html" class="week-button">Activity 2</a>
                     <a href="social-engineering-week.html" class="week-button active">Activity 3</a>
@@ -1287,14 +1322,20 @@
                         <input type="text" id="userName" placeholder="Enter your name for certificate" 
                                style="padding: 15px 20px; border: 2px solid #ba55d3; border-radius: 25px; background: rgba(186, 85, 211, 0.1); color: white; font-size: 1.1rem; text-align: center; margin-bottom: 20px; width: 100%; max-width: 300px;" />
                         <br>
-                        <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #ba55d3, #9370db); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 10px;">
-                            Generate PDF Certificate
-                        </button>
-                        <button onclick="resetQuiz()" 
-                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin: 10px;">
-                            Retake Quiz
-                        </button>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                            <button onclick="generateCertificate()" 
+                                    style="background: linear-gradient(45deg, #ba55d3, #9370db); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                                Generate PDF Certificate
+                            </button>
+                            <button onclick="resetQuiz()" 
+                                    style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                                Retake Quiz
+                            </button>
+                            <a href="index.html" 
+                               style="background: linear-gradient(45deg, rgba(186, 85, 211, 0.2), rgba(147, 112, 219, 0.3)); color: #ba55d3; border: 2px solid #ba55d3; padding: 15px 30px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                                🏠 Back to Home
+                            </a>
+                        </div>
                     </div>
                 </div>
             `;
