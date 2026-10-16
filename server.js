@@ -1,0 +1,109 @@
+// File: server.js
+// Production Web Server for CyberShield / OGDCL Cybersecurity Platform
+// Serves static assets, video streaming, and routes backend API requests.
+
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import os from 'os';
+
+// Import database connection pool & API handlers
+import './api/db.js';
+import getUsersHandler from './api/get-users.js';
+import saveUsernameHandler from './api/save-username.js';
+import adminSettingsHandler from './api/admin-settings.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const publicDir = path.join(__dirname, 'public');
+
+// Middleware: Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Middleware: Global CORS & Security Headers
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, X-Requested-With');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// Helper wrapper for async API handlers
+const wrapHandler = (handler) => async (req, res, next) => {
+  try {
+    await handler(req, res);
+  } catch (err) {
+    console.error(`[API Error] ${req.method} ${req.url}:`, err);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  }
+};
+
+// API Endpoints
+app.all('/api/get-users', wrapHandler(getUsersHandler));
+app.all('/api/save-username', wrapHandler(saveUsernameHandler));
+app.all('/api/admin-settings', wrapHandler(adminSettingsHandler));
+
+// Health check endpoint for load balancers / monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', uptime: process.uptime(), timestamp: new Date() });
+});
+
+// Serve static assets with HTML extension auto-resolution & video streaming support
+app.use(
+  express.static(publicDir, {
+    extensions: ['html'], // e.g. /mfa-week automatically resolves to /mfa-week.html
+    maxAge: '1h',
+    setHeaders: (res, filePath) => {
+      // Optimize video caching & streaming headers
+      if (filePath.endsWith('.mp4') || filePath.endsWith('.webm')) {
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    }
+  })
+);
+
+// Fallback: If route not found, redirect to index.html (SPA fallback)
+app.use((req, res) => {
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
+
+// Helper to get local network IPv4 addresses
+function getNetworkIps() {
+  const interfaces = os.networkInterfaces();
+  const addresses = [];
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name] || []) {
+      if (net.family === 'IPv4' && !net.internal) {
+        addresses.push(net.address);
+      }
+    }
+  }
+  return addresses;
+}
+
+// Start Server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('========================================================');
+  console.log(`🚀 CyberShield Server is LIVE and Running!`);
+  console.log(`👉 Local:   http://localhost:${PORT}`);
+  const ips = getNetworkIps();
+  if (ips.length > 0) {
+    ips.forEach((ip) => {
+      console.log(`👉 Network: http://${ip}:${PORT}`);
+    });
+  } else {
+    console.log(`👉 Network: http://<SERVER-IP>:${PORT}`);
+  }
+  console.log('========================================================');
+});

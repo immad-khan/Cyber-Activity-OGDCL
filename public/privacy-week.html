@@ -20,6 +20,7 @@
     <script src="cert-assets.js?v=3"></script>
     <script src="certificate.js?v=3"></script>
     <script src="activity-lock.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         * {
@@ -307,13 +308,48 @@
             background: #000;
         }
 
-        .video-container video {
+        .video-container video,
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             border-radius: 15px;
+            border: none;
+        }
+
+        .claim-video-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00b4d8, #0077b6);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+        }
+
+        .claim-video-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6);
+            border-color: #00ffff;
+        }
+
+        .chapter-badge {
+            display: inline-block;
+            background: rgba(0, 255, 255, 0.15);
+            color: #00ffff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-right: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
         }
 
         .marks-display {
@@ -595,7 +631,7 @@
         <div class="header-container">
             <div class="nav">
                 <div class="logo">
-                    <a href="index.html">Cybersecurity Shield</a>
+                    <a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">Cybersecurity Shield</span></a>
                 </div>
 
                 <div class="hamburger" id="hamburger">
@@ -606,10 +642,10 @@
 
                 <div class="weeks-buttons" id="navMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
-                    <a href="phishing-week.html" class="week-button">Week 1</a>
-                    <a href="mfa-week.html" class="week-button">Week 2</a>
-                    <a href="social-engineering-week.html" class="week-button">Week 3</a>
-                    <a href="privacy-week.html" class="week-button active">Week 4</a>
+                    <a href="phishing-week.html" class="week-button">Activity 1</a>
+                    <a href="mfa-week.html" class="week-button">Activity 2</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 3</a>
+                    <a href="privacy-week.html" class="week-button active">Activity 4</a>
                 </div>
 
                 <div class="score-display">
@@ -636,12 +672,12 @@
 
             <!-- Video Player -->
             <div class="video-container">
-                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/Password_policy_poster.jpg">
-                    <source src="./videos/data-privacy.mp4" type="video/mp4">
-                    <source src="./videos/Password_policy.mp4" type="video/mp4">
-                    <source src="videos/Password_policy.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+                <iframe id="trainingVideoIframe" 
+                        src="https://www.youtube.com/embed/aAfB0CQOdWQ?enablejsapi=1&rel=0" 
+                        title="Data Privacy & Cybersecurity Training Video" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
             </div>
 
             <!-- Marks Display -->
@@ -649,17 +685,22 @@
                 <span class="marks-badge">Video: 50 marks</span>
                 <span class="marks-badge">Quiz: 100 marks</span>
                 <span class="marks-badge">Total: 150 marks</span>
+                <div style="margin-top: 10px;">
+                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                        🎁 Finished Watching? Claim 50 Video Marks
+                    </button>
+                </div>
             </div>
 
             <!-- Learning Points -->
             <div class="learning-points">
-                <h3>Key Privacy Guidelines</h3>
-                <ul>
-                    <li><strong>Classify Sensitive Data:</strong> Identify Personally Identifiable Information (CNIC, payroll, medical, bank accounts) and confidential company files.</li>
-                    <li><strong>Clean Desk & Screen Policy:</strong> Always lock your screen (Win + L) when stepping away. Never leave confidential documents unattended.</li>
-                    <li><strong>Anti-Shoulder Surfing:</strong> Use privacy filter screens in public areas or while traveling to prevent visual eavesdropping.</li>
-                    <li><strong>Secure Document Disposal:</strong> Physical records must be shredded using approved cross-cut shredders; never discard sensitive paperwork in regular trash.</li>
-                    <li><strong>Principle of Least Privilege:</strong> Access corporate data solely on a verified need-to-know basis to minimize operational exposure.</li>
+                <h3>Video Key Topics & Privacy Rules</h3>
+                <ul style="list-style: none; margin-left: 0;">
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Tracking</span><strong>Digital Footprint:</strong> Websites, cookies, and mobile apps constantly track and aggregate personal habits and location history.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">PII Protection</span><strong>Personally Identifiable Information:</strong> Keep CNIC, financial, medical, and corporate confidential data encrypted and confidential.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Public Wi-Fi</span><strong>Network Encryption:</strong> Public Wi-Fi networks in airports and cafes expose unencrypted traffic; always use an authenticated VPN.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Defense</span><strong>MFA & Clean Desk:</strong> Enable multi-factor authentication, use strong unique passwords, and lock workstations (Win + L) whenever unattended.</li>
+                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Least Privilege</span><strong>Need-to-Know Access:</strong> Limit app permissions and grant users only the minimum access necessary for their specific job duties.</li>
                 </ul>
             </div>
         </div>
@@ -806,9 +847,61 @@
             });
         }
 
+        // YouTube IFrame API & Video Completion Handler
+        let ytPlayer;
+        function onYouTubeIframeAPIReady() {
+            try {
+                ytPlayer = new YT.Player('trainingVideoIframe', {
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            } catch (e) {
+                console.log('YouTube API ready event handled');
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            // YT.PlayerState.ENDED is 0
+            if (event.data === 0) {
+                awardVideoMarks();
+            }
+        }
+
+        function awardVideoMarks() {
+            if (!videoWatched) {
+                videoWatched = true;
+                updateScore(SCORING.video_completion);
+                showVideoCompletionModal();
+                showNotification('Video Complete! +50 marks awarded!', 'success');
+
+                const claimBtn = document.getElementById('claimVideoBtn');
+                if (claimBtn) {
+                    claimBtn.disabled = true;
+                    claimBtn.innerHTML = '✅ 50 Video Marks Claimed';
+                    claimBtn.style.background = 'linear-gradient(45deg, #2ec4b6, #20bf6b)';
+                    claimBtn.style.borderColor = '#2ec4b6';
+                    claimBtn.style.cursor = 'default';
+                }
+
+                if (currentUserName) {
+                    saveToDatabase();
+                }
+
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'video_complete', {
+                        'event_category': 'engagement',
+                        'event_label': 'Activity 4 Video Completed',
+                        'value': SCORING.video_completion
+                    });
+                }
+            } else {
+                showNotification('You have already claimed the 50 video marks!', 'info');
+            }
+        }
+
         // Initialize Page
         document.addEventListener('DOMContentLoaded', () => {
-            initVideoTracker();
             updateScoreVisual();
 
             const savedName = localStorage.getItem('ogdcl_user_name');
@@ -817,28 +910,6 @@
                 if (nameInput) nameInput.value = savedName;
             }
         });
-
-        // Initialize Video Tracking
-        function initVideoTracker() {
-            const video = document.getElementById('trainingVideo');
-            if (!video) return;
-
-            video.addEventListener('ended', () => {
-                if (!videoWatched) {
-                    videoWatched = true;
-                    updateScore(SCORING.video_completion);
-                    showVideoCompletionModal();
-
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'video_complete', {
-                            'event_category': 'engagement',
-                            'event_label': 'Activity 4 Video Completed',
-                            'value': SCORING.video_completion
-                        });
-                    }
-                }
-            });
-        }
 
         // Modal Functions
         function showVideoCompletionModal() {

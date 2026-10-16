@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
     <script src="certificate.js?v=3"></script>
-    
-<style>
+
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -156,11 +157,12 @@
         }
 
         @keyframes scoreGlow {
-            from { 
+            from {
                 box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
                 border-color: rgba(0, 255, 255, 0.6);
             }
-            to { 
+
+            to {
                 box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
                 border-color: #00ffff;
             }
@@ -214,8 +216,15 @@
         }
 
         @keyframes titlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .hero p {
@@ -277,7 +286,7 @@
             right: 0;
             bottom: 0;
             background: radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 50%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 80% 50%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
             z-index: -1;
         }
 
@@ -395,11 +404,14 @@
         }
 
         @keyframes warningPulse {
-            0%, 100% { 
+
+            0%,
+            100% {
                 opacity: 1;
                 transform: scale(1);
             }
-            50% { 
+
+            50% {
                 opacity: 0.7;
                 transform: scale(1.1);
             }
@@ -555,10 +567,23 @@
         }
 
         @keyframes floatAnimation {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-8px) rotate(1deg); }
-            50% { transform: translateY(-15px) rotate(0deg); }
-            75% { transform: translateY(-8px) rotate(-1deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-8px) rotate(1deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(0deg);
+            }
+
+            75% {
+                transform: translateY(-8px) rotate(-1deg);
+            }
         }
 
         .floating-tip:hover {
@@ -586,13 +611,14 @@
         }
 
         @keyframes modalAppear {
-            0% { 
-                transform: translate(-50%, -50%) scale(0.7); 
-                opacity: 0; 
+            0% {
+                transform: translate(-50%, -50%) scale(0.7);
+                opacity: 0;
             }
-            100% { 
-                transform: translate(-50%, -50%) scale(1); 
-                opacity: 1; 
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
             }
         }
 
@@ -610,28 +636,31 @@
         }
 
         @keyframes slideInNotification {
-            from { 
-                transform: translateX(400px) scale(0.8); 
-                opacity: 0; 
+            from {
+                transform: translateX(400px) scale(0.8);
+                opacity: 0;
             }
-            to { 
-                transform: translateX(0) scale(1); 
-                opacity: 1; 
+
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
             }
         }
 
         @keyframes levelUpAnimation {
-            0% { 
-                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); 
-                opacity: 0; 
+            0% {
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+                opacity: 0;
             }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.1) rotate(5deg); 
-                opacity: 1; 
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+                opacity: 1;
             }
-            100% { 
-                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
-                opacity: 1; 
+
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
             }
         }
 
@@ -639,7 +668,7 @@
             .nav {
                 flex-wrap: wrap;
             }
-            
+
             .weeks-buttons {
                 gap: 10px;
                 flex-wrap: wrap;
@@ -686,11 +715,11 @@
                 justify-content: space-between;
                 gap: 15px;
             }
-            
+
             .logo {
                 font-size: 1.6rem;
             }
-            
+
             .score-display {
                 flex-direction: column;
                 text-align: center;
@@ -699,35 +728,35 @@
                 gap: 8px;
                 font-size: 0.9rem;
             }
-            
+
             .hero h1 {
                 font-size: 2.8rem;
             }
-            
+
             .section-title {
                 font-size: 2.5rem;
             }
-            
+
             .tips-grid {
                 grid-template-columns: 1fr;
                 gap: 30px;
             }
-            
+
             .tip-card {
                 padding: 30px;
             }
-            
+
             .floating-tip {
                 bottom: 25px;
                 right: 25px;
                 padding: 12px 18px;
                 font-size: 0.9rem;
             }
-            
+
             .stats-grid {
                 gap: 30px;
             }
-            
+
             .security-quiz {
                 padding: 30px;
             }
@@ -743,23 +772,23 @@
             .logo {
                 font-size: 1.2rem;
             }
-            
+
             .hero h1 {
                 font-size: 2.2rem;
             }
-            
+
             .hero p {
                 font-size: 1.1rem;
             }
-            
+
             .section-title {
                 font-size: 2rem;
             }
-            
+
             .quiz-button {
                 min-width: 180px;
             }
-            
+
             .score-display {
                 font-size: 0.9rem;
             }
@@ -788,44 +817,48 @@
         }
     </style>
 </head>
+
 <body>
     <header class="header">
         <div class="header-container">
             <nav class="nav">
-                <div class="logo"><a href="index.html" style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png" alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span style="color:#fff;">Cybersecurity Shield</span></a></div>
-                
+                <div class="logo"><a href="index.html"
+                        style="display:flex;align-items:center;text-decoration:none;"><img src="ogdcl-logo.png"
+                            alt="OGDCL" style="height:34px;margin-right:10px;object-fit:contain;"><span
+                            style="color:#fff;">Cybersecurity</span></a></div>
+
                 <div class="hamburger" onclick="toggleMenu()">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-                
+
                 <div class="weeks-buttons" id="weekMenu">
                     <a href="phishing-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 1</span>
                         </span>
                     </a>
-                    
+
                     <a href="mfa-week.html" class="week-button ">
                         <span class="text">
                             <span class="week-num">Activity 2</span>
                         </span>
                     </a>
-                    
+
                     <a href="social-engineering-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 3</span>
                         </span>
                     </a>
-                    
+
                     <a href="privacy-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 4</span>
                         </span>
                     </a>
                 </div>
-                
+
                 <div class="score-display">
                     <div>
                         <span id="levelIcon">🔓</span>
@@ -844,7 +877,8 @@
         <section class="hero">
             <div class="container">
                 <h1>Stay Safe in the Digital World</h1>
-                <p>Your security is our priority. Learn essential cybersecurity practices to protect yourself online and safeguard your digital life.</p>
+                <p>Your security is our priority. Learn essential cybersecurity practices to protect yourself online and
+                    safeguard your digital life.</p>
                 <button class="cta-button" onclick="trackInteraction('hero-button')">Start Learning Now</button>
             </div>
         </section>
@@ -856,37 +890,45 @@
                     <div class="tip-card" id="password-tip" onclick="trackInteraction('password-tip')">
                         <div class="tip-icon">🔐</div>
                         <h3>Strong Passwords</h3>
-                        <p>Use unique, complex passwords with at least 12 characters. Include uppercase, lowercase, numbers, and symbols. Never reuse passwords across multiple accounts. Consider using a password manager.</p>
+                        <p>Use unique, complex passwords with at least 12 characters. Include uppercase, lowercase,
+                            numbers, and symbols. Never reuse passwords across multiple accounts. Consider using a
+                            password manager.</p>
                     </div>
-                    
+
                     <div class="tip-card" id="2fa-tip" onclick="trackInteraction('2fa-tip')">
                         <div class="tip-icon">📱</div>
                         <h3>Two-Factor Authentication</h3>
-                        <p>Enable 2FA on all your important accounts. This adds an extra layer of security that makes it much harder for attackers to access your accounts, even if they have your password.</p>
+                        <p>Enable 2FA on all your important accounts. This adds an extra layer of security that makes it
+                            much harder for attackers to access your accounts, even if they have your password.</p>
                     </div>
-                    
+
                     <div class="tip-card" id="phishing-tip" onclick="trackInteraction('phishing-tip')">
                         <div class="tip-icon">🎣</div>
                         <h3>Recognize Phishing</h3>
-                        <p>Be suspicious of unexpected emails asking for personal information. Check sender addresses carefully and never click suspicious links or download unexpected attachments from unknown sources.</p>
+                        <p>Be suspicious of unexpected emails asking for personal information. Check sender addresses
+                            carefully and never click suspicious links or download unexpected attachments from unknown
+                            sources.</p>
                     </div>
-                    
+
                     <div class="tip-card" id="update-tip" onclick="trackInteraction('update-tip')">
                         <div class="tip-icon">🔄</div>
                         <h3>Keep Software Updated</h3>
-                        <p>Regularly update your operating system, browsers, and applications. Security patches often fix vulnerabilities that hackers could exploit to gain unauthorized access.</p>
+                        <p>Regularly update your operating system, browsers, and applications. Security patches often
+                            fix vulnerabilities that hackers could exploit to gain unauthorized access.</p>
                     </div>
-                    
+
                     <div class="tip-card" id="wifi-tip" onclick="trackInteraction('wifi-tip')">
                         <div class="tip-icon">📶</div>
                         <h3>Secure Wi-Fi Practices</h3>
-                        <p>Avoid public Wi-Fi for sensitive activities. Use a VPN when necessary and ensure your home Wi-Fi uses WPA3 encryption. Be cautious of fake hotspots in public places.</p>
+                        <p>Avoid public Wi-Fi for sensitive activities. Use a VPN when necessary and ensure your home
+                            Wi-Fi uses WPA3 encryption. Be cautious of fake hotspots in public places.</p>
                     </div>
-                    
+
                     <div class="tip-card" id="backup-tip" onclick="trackInteraction('backup-tip')">
                         <div class="tip-icon">💾</div>
                         <h3>Regular Backups</h3>
-                        <p>Backup your important data regularly to multiple locations. This protects you from ransomware attacks, hardware failures, and accidental data loss. Test your backups periodically.</p>
+                        <p>Backup your important data regularly to multiple locations. This protects you from ransomware
+                            attacks, hardware failures, and accidental data loss. Test your backups periodically.</p>
                     </div>
                 </div>
             </div>
@@ -896,8 +938,11 @@
             <div class="container">
                 <div class="alert-icon">⚠️</div>
                 <h2>Current Threat Level: ELEVATED</h2>
-                <p>Recent increase in sophisticated phishing attacks targeting social media and banking credentials. Cybercriminals are using AI-generated content to create more convincing scams. Stay vigilant and verify all unexpected communications through official channels.</p>
-                <button class="cta-button" onclick="trackInteraction('threat-alert-button')">Learn More About Current Threats</button>
+                <p>Recent increase in sophisticated phishing attacks targeting social media and banking credentials.
+                    Cybercriminals are using AI-generated content to create more convincing scams. Stay vigilant and
+                    verify all unexpected communications through official channels.</p>
+                <button class="cta-button" onclick="trackInteraction('threat-alert-button')">Learn More About Current
+                    Threats</button>
             </div>
         </section>
 
@@ -932,9 +977,11 @@
                     <h3>Quick Security Quiz</h3>
                     <p id="quiz-question">Which of these makes the strongest password?</p>
                     <div id="quiz-options">
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
+                        <button class="quiz-button"
+                            onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
                         <button class="quiz-button" onclick="handleQuizAnswer(false, 'mypassword')">mypassword</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
+                        <button class="quiz-button"
+                            onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
                         <button class="quiz-button" onclick="handleQuizAnswer(false, '123456789')">123456789</button>
                     </div>
                     <div id="quiz-result"></div>
@@ -945,7 +992,8 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 OGDCL - Oil & Gas Development Company Limited. Protecting your digital life, one tip at a time.</p>
+            <p>&copy; 2025 OGDCL - Oil & Gas Development Company Limited. Protecting your digital life, one tip at a
+                time.</p>
             <p>🛡️ Stay Safe | 🔐 Stay Secure | 🌐 Stay Connected</p>
             <p style="margin-top: 20px; opacity: 0.7;">Powered by OGDCL Information Security Division</p>
         </div>
@@ -1032,11 +1080,11 @@
             menu.classList.toggle('active');
         }
 
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const hamburger = document.querySelector('.hamburger');
             const menu = document.getElementById('weekMenu');
             const isClickInside = hamburger.contains(event.target) || menu.contains(event.target);
-            
+
             if (!isClickInside && menu.classList.contains('active')) {
                 hamburger.classList.remove('active');
                 menu.classList.remove('active');
@@ -1066,18 +1114,18 @@
         function updateScore(points, reason = '') {
             userScore += points;
             document.getElementById('userScore').textContent = userScore;
-            
+
             const newLevel = getCurrentSecurityLevel();
             if (newLevel.name !== securityLevelAchieved) {
                 const oldLevel = securityLevelAchieved;
                 securityLevelAchieved = newLevel.name;
                 showLevelUpNotification(oldLevel, newLevel);
             }
-            
+
             updateScoreVisual();
             updateProgressBar();
             animateScoreIncrease();
-            
+
             logAnalytics('score_update', {
                 points: points,
                 totalScore: userScore,
@@ -1101,13 +1149,13 @@
             const levelIconElement = document.getElementById('levelIcon');
             const levelNameElement = document.getElementById('levelName');
             const scoreDisplay = document.querySelector('.score-display');
-            
+
             scoreElement.style.color = currentLevel.color;
             scoreElement.style.textShadow = `0 0 10px ${currentLevel.color}`;
             levelIconElement.textContent = currentLevel.icon;
             levelNameElement.textContent = currentLevel.name;
             levelNameElement.style.color = currentLevel.color;
-            
+
             scoreDisplay.style.background = currentLevel.bgColor;
             scoreDisplay.style.borderColor = currentLevel.color;
         }
@@ -1116,7 +1164,7 @@
             const currentLevel = getCurrentSecurityLevel();
             const nextLevelIndex = SECURITY_LEVELS.findIndex(level => level.name === currentLevel.name) + 1;
             const progressBar = document.getElementById('progressBar');
-            
+
             if (nextLevelIndex < SECURITY_LEVELS.length) {
                 const nextLevel = SECURITY_LEVELS[nextLevelIndex];
                 const progress = ((userScore - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
@@ -1130,7 +1178,7 @@
             const scoreElement = document.getElementById('userScore');
             scoreElement.style.transform = 'scale(1.3)';
             scoreElement.style.transition = 'transform 0.4s ease';
-            
+
             setTimeout(() => {
                 scoreElement.style.transform = 'scale(1)';
             }, 400);
@@ -1155,7 +1203,7 @@
                 animation: levelUpAnimation 1s ease-out;
                 max-width: 450px;
             `;
-            
+
             notification.innerHTML = `
                 <div style="font-size: 5rem; margin-bottom: 20px;">${newLevel.icon}</div>
                 <h2 style="margin-bottom: 15px; font-size: 2.5rem;">LEVEL UP!</h2>
@@ -1167,13 +1215,13 @@
                     Continue Learning
                 </button>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 showNotification(`Welcome to ${newLevel.name} level! Your cybersecurity knowledge is growing!`, 'success');
             }, 1000);
-            
+
             setTimeout(() => {
                 if (document.body.contains(notification)) {
                     notification.remove();
@@ -1186,27 +1234,27 @@
                 showNotification('You already earned points for this!', 'info');
                 return;
             }
-            
+
             userInteractions[action] = 1;
-            
+
             if (action.includes('tip')) {
                 const tipCard = document.getElementById(action);
                 if (tipCard) {
                     tipCard.classList.add('completed');
                 }
             }
-            
+
             let points = SCORING[action.replace('-', '_')] || SCORING.tip_interaction;
-            
+
             updateScore(points, action);
-            
+
             logAnalytics(action, {
                 count: userInteractions[action],
                 timestamp: new Date().toISOString(),
                 sessionDuration: Date.now() - sessionStartTime,
                 pointsAwarded: points
             });
-            
+
             showInteractionFeedback(action, points);
             checkCompletionBonus();
         }
@@ -1221,7 +1269,7 @@
                 screenResolution: screen.width + 'x' + screen.height,
                 timestamp: new Date().toISOString()
             };
-            
+
             if (!window.sessionAnalytics) {
                 window.sessionAnalytics = [];
             }
@@ -1240,7 +1288,7 @@
                 'threat-alert-button': `Stay informed about current threats! (+${points} points)`,
                 'floating-tip': `Active learning - excellent security habit! (+${points} points)`
             };
-            
+
             const message = messages[action] || `Learning through exploration! (+${points} points)`;
             showNotification(message, 'success');
         }
@@ -1253,7 +1301,7 @@
                 warning: 'linear-gradient(45deg, #ffeaa7, #fab1a0)',
                 error: 'linear-gradient(45deg, #ff6b6b, #ee5a52)'
             };
-            
+
             notification.style.cssText = `
                 position: fixed;
                 top: 140px;
@@ -1271,7 +1319,7 @@
                 border: 2px solid rgba(255,255,255,0.3);
                 font-size: 0.95rem;
             `;
-            
+
             notification.innerHTML = `
                 <div style="display: flex; align-items: flex-start; gap: 12px;">
                     <span style="flex: 1;">${message}</span>
@@ -1279,9 +1327,9 @@
                             style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.7; padding: 0;">×</button>
                 </div>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 if (document.body.contains(notification)) {
                     notification.remove();
@@ -1292,14 +1340,14 @@
         function handleQuizAnswer(isCorrect, selectedAnswer) {
             totalQuestions++;
             const resultDiv = document.getElementById('quiz-result');
-            
+
             let bonusPoints = 0;
             if (isCorrect) {
                 correctAnswers++;
                 bonusPoints = SCORING.quiz_correct;
                 updateScore(bonusPoints, 'quiz_correct');
             }
-            
+
             logAnalytics('quiz_answer', {
                 correct: isCorrect,
                 selectedAnswer: selectedAnswer,
@@ -1307,10 +1355,10 @@
                 totalCorrect: correctAnswers,
                 totalQuestions: totalQuestions
             });
-            
+
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentQuestion = quizQuestions[currentQuizIndex];
-            
+
             if (isCorrect) {
                 resultDiv.innerHTML = `
                     <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
@@ -1336,7 +1384,7 @@
                 `;
                 showNotification('Great attempt! Keep learning!', 'warning');
             }
-            
+
             if (totalQuestions >= quizQuestions.length) {
                 setTimeout(() => {
                     showQuizCompletion();
@@ -1349,11 +1397,11 @@
         function showNewQuizQuestion() {
             currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
             const quiz = quizQuestions[currentQuizIndex];
-            
+
             document.getElementById('quiz-question').textContent = quiz.question;
             const optionsDiv = document.getElementById('quiz-options');
             optionsDiv.innerHTML = '';
-            
+
             quiz.options.forEach((option, index) => {
                 const button = document.createElement('button');
                 button.className = 'quiz-button';
@@ -1361,7 +1409,7 @@
                 button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
                 optionsDiv.appendChild(button);
             });
-            
+
             document.getElementById('quiz-result').innerHTML = '';
         }
 
@@ -1369,7 +1417,7 @@
             const quizContainer = document.querySelector('.security-quiz');
             const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
             const currentLevel = getCurrentSecurityLevel();
-            
+
             quizContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px;">
                     <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
@@ -1402,17 +1450,17 @@
         async function generateCertificate() {
             const nameInput = document.getElementById('userName');
             const enteredName = nameInput.value.trim();
-            
+
             if (!enteredName) {
                 showNotification('Please enter your name!', 'warning');
                 nameInput.focus();
                 return;
             }
-            
+
             const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
             const currentLevel = getCurrentSecurityLevel();
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            
+
             showNotification('Generating official OGDCL certificate...', 'info');
 
             try {
@@ -1436,7 +1484,7 @@
                 currentQuizIndex = 0;
                 correctAnswers = 0;
                 totalQuestions = 0;
-                
+
                 const quizContainer = document.querySelector('.security-quiz');
                 quizContainer.innerHTML = `
                     <h3>Quick Security Quiz</h3>
@@ -1449,7 +1497,7 @@
                     </div>
                     <div id="quiz-result"></div>
                 `;
-                
+
                 showNotification('Quiz reset! Start fresh!', 'info');
             }
         }
@@ -1480,21 +1528,21 @@
             do {
                 randomIndex = Math.floor(Math.random() * securityTips.length);
             } while (randomIndex === lastTipIndex && securityTips.length > 1);
-            
+
             lastTipIndex = randomIndex;
             showNotification(securityTips[randomIndex], 'info');
         }
 
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const winHeight = window.innerHeight;
             const docHeight = document.documentElement.scrollHeight;
             const scrollTop = window.pageYOffset;
             const trackLength = docHeight - winHeight;
             const pctScrolled = Math.floor(scrollTop / trackLength * 100);
-            
+
             if (pctScrolled > scrollDepth) {
                 scrollDepth = pctScrolled;
-                
+
                 if (scrollDepth >= 25 && !window.scroll25) {
                     window.scroll25 = true;
                     updateScore(SCORING.scroll_milestone, 'scroll_25');
@@ -1514,7 +1562,7 @@
         function checkCompletionBonus() {
             const requiredActions = ['password-tip', '2fa-tip', 'phishing-tip', 'update-tip', 'wifi-tip', 'backup-tip'];
             const completedActions = requiredActions.filter(action => userInteractions[action] > 0);
-            
+
             if (completedActions.length === requiredActions.length && !window.completionBonusAwarded) {
                 window.completionBonusAwarded = true;
                 updateScore(SCORING.completion_bonus, 'completion_bonus');
@@ -1522,19 +1570,19 @@
             }
         }
 
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             updateScore(SCORING.page_visit, 'page_visit');
             updateScoreVisual();
             updateProgressBar();
-            
+
             showNotification('Welcome to Cybersecurity Shield! Earn points by exploring!', 'success');
-            
+
             setTimeout(() => {
                 showNotification('Pro tip: Click on security cards to learn!', 'info');
             }, 10000);
         });
 
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', function () {
             logAnalytics('session_end', {
                 totalScore: userScore,
                 sessionDuration: Date.now() - sessionStartTime,
@@ -1678,7 +1726,7 @@
 
             async function checkLockStatus() {
                 try {
-                    const res  = await fetch('/api/admin-settings', { cache: 'no-store' });
+                    const res = await fetch('/api/admin-settings', { cache: 'no-store' });
                     const data = await res.json();
                     if (!data.success) return;
 
@@ -1751,4 +1799,5 @@
         // ──────────────────────────────────────────────────────────────
     </script>
 </body>
+
 </html>
