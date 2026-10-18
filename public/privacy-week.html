@@ -113,12 +113,13 @@
 
         .weeks-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .week-button {
-            padding: 12px 28px;
+            padding: 10px 20px;
             background: linear-gradient(45deg, rgba(0, 255, 255, 0.15), rgba(0, 180, 216, 0.2));
             backdrop-filter: blur(15px);
             border-radius: 30px;
@@ -129,9 +130,12 @@
             color: #ffffff;
             font-weight: 600;
             font-size: 1rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .week-button:hover:not(.locked) {
@@ -620,6 +624,26 @@
             .score-display {
                 font-size: 0.85rem;
                 padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 1350px) and (min-width: 969px) {
+            .weeks-buttons {
+                gap: 8px;
+            }
+            .week-button {
+                padding: 8px 14px;
+                font-size: 0.88rem;
+                white-space: nowrap;
+            }
+            .score-display {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                gap: 8px;
+                white-space: nowrap;
+            }
+            .logo {
+                font-size: 1.5rem;
             }
         }
     </style>
