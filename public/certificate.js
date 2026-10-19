@@ -156,10 +156,10 @@
 
     // Build first line identity details with Name, Employee ID, Designation, Department
     const empDetails = [];
-    if (employeeId) empDetails.push(`Employee ID: ${employeeId}`);
+    if (employeeId) empDetails.push(`ID: ${employeeId}`);
     if (designation) empDetails.push(`Designation: ${designation}`);
     if (department) empDetails.push(`Department: ${department}`);
-    const empDetailStr = empDetails.length > 0 ? ` (${empDetails.join(', ')})` : '';
+    const empDetailStr = empDetails.length > 0 ? ` with ${empDetails.join(' / ')}` : '';
 
     const bodyText1 = `It is certified that Mr./Ms. ${userName}${empDetailStr} has successfully completed the Cybersecurity Awareness & Digital Safety Assessment conducted by OGDCL. During this program, they demonstrated exemplary diligence, understanding of digital threat vectors, password protection, phishing mitigation, and enterprise information security protocols.`;
 
