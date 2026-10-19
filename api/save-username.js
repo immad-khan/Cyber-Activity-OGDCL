@@ -27,6 +27,9 @@ export default async function handler(req, res) {
     }
 
     const {
+      employeeId = '',
+      department = '',
+      designation = '',
       score,
       level = 'Beginner',
       accuracy = 0,
@@ -40,6 +43,9 @@ export default async function handler(req, res) {
     } = req.body || {};
 
     const sanitizedName = String(rawName).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedEmpId = String(employeeId).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedDept = String(department).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedDesig = String(designation).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const finalCorrect = parseInt(correctAnswers, 10) || 0;
@@ -54,10 +60,13 @@ export default async function handler(req, res) {
       ? parseInt(score, 10)
       : (finalVideoMarks + finalQuizMarks);
 
-    // Save to Supabase using pre-warmed connection pool
+    // Save to PostgreSQL using pre-warmed connection pool
     const insertQuery = `
       INSERT INTO public.users (
         "userName",
+        "employeeId",
+        department,
+        designation,
         score,
         level,
         accuracy,
@@ -69,12 +78,15 @@ export default async function handler(req, res) {
         activity,
         "completionDate"
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id, "userName", score, level, "createdAt";
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING id, "userName", "employeeId", department, designation, score, level, "createdAt";
     `;
 
     const values = [
       sanitizedName,
+      sanitizedEmpId,
+      sanitizedDept,
+      sanitizedDesig,
       finalScore,
       level,
       parseInt(accuracy, 10) || 0,
@@ -92,7 +104,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Saved successfully to Supabase',
+      message: 'Saved successfully to database',
       id: savedUser.id,
       data: savedUser
     });
