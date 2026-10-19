@@ -20,6 +20,9 @@ export default async function handler(req, res) {
       SELECT 
         id,
         "userName",
+        "employeeId",
+        department,
+        designation,
         score,
         level,
         accuracy,
