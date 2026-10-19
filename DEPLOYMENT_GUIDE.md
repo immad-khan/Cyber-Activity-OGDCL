@@ -1,106 +1,159 @@
-# Windows Server Deployment Guide (24/7 Live)
+# Windows Server Offline Deployment Guide (PostgreSQL Local Database)
 
-This guide explains how to deploy the **CyberShield / OGDCL Cybersecurity Platform** on a Windows Server so that it runs continuously 24/7 without interruption.
-
----
-
-## 1. Prerequisites on the Windows Server
-
-1. **Install Node.js (LTS version)**:
-   - Download the Windows Installer (.msi) from [https://nodejs.org](https://nodejs.org) (v20.x or v22.x LTS recommended).
-   - Complete the installation wizard (keep default options checked).
-   - Verify by opening PowerShell or Command Prompt:
-     ```powershell
-     node -v
-     npm -v
-     ```
-
-2. **Copy the Project to the Server**:
-   - Copy this entire project directory to your desired location on the server, e.g.:
-     `C:\Apps\Cyber-Activity-OGDCL`
+This guide walks you through setting up the **CyberShield / OGDCL Cybersecurity Platform** on a completely offline Windows Server with a brand new local **PostgreSQL** database.
 
 ---
 
-## 2. Quick Test (Manual Run)
+## ⚠️ CRITICAL NOTICE FOR OFFLINE SERVERS (NO INTERNET)
 
-1. Open PowerShell or Command Prompt inside the project folder:
-   ```powershell
-   cd C:\Apps\Cyber-Activity-OGDCL
-   npm install
-   npm start
+1. **Do NOT run `npm install` on the offline server** (npm requires internet).
+2. **Copy this entire project folder WITH `node_modules`** from your internet-connected computer to the offline server.
+   - `node_modules` has already been installed in this folder.
+   - Simply copy the folder (e.g. `website1-main`) onto a USB drive or local network share, and paste it onto the server (e.g. `C:\Apps\CyberShield`).
+
+---
+
+## Part 1: Installing PostgreSQL on Windows Server
+
+You have `postgresql-18.x-windows-x64.exe` (or v16 / v17):
+
+1. **Run the PostgreSQL Installer as Administrator**:
+   - Double-click the installer `postgresql-18.x-windows-x64.exe`.
+2. **Components Selection**:
+   - Keep default selections checked:
+     - ✅ **PostgreSQL Server**
+     - ✅ **pgAdmin 4** (GUI management tool)
+     - ✅ **Command Line Tools**
+3. **Password Configuration (IMPORTANT)**:
+   - When asked for the password for the `postgres` superuser, enter a password (for example: `postgres` or your company server password).
+   - **Write this password down!** You will need it in your `.env` file.
+4. **Port**:
+   - Keep default port `5432`.
+5. **Finish**:
+   - At the final screen, **UNCHECK "Stack Builder"** (Stack Builder attempts to download extra add-ons from the internet, which will fail offline).
+   - Click **Finish**.
+
+PostgreSQL is now installed and running in the background as a Windows Service (`postgresql-x64-...`).
+
+---
+
+## Part 2: Create the `cybershield` Database
+
+You can do this using **pgAdmin 4** (GUI) or **Command Prompt**:
+
+### Method A: Using pgAdmin 4 (Easiest)
+1. Open **pgAdmin 4** from your Windows Start Menu.
+2. Enter your master password (set during install).
+3. Expand **Servers** -> Click **PostgreSQL 18** (or 16/17) -> Enter your `postgres` password.
+4. Right-click on **Databases** -> **Create** -> **Database...**
+5. In the **Database** field, type:
+   ```text
+   cybershield
    ```
+6. Click **Save**.
+
+### Method B: Using Command Line (Fastest)
+Open Command Prompt / PowerShell as Administrator and run:
+```cmd
+"C:\Program Files\PostgreSQL\18\bin\createdb.exe" -U postgres cybershield
+```
+*(Enter your password when prompted).*
+
+---
+
+## Part 3: Configure Project Connection (`.env`)
+
+1. Open the project folder on the server.
+2. Open the file [`.env`](file:///d:/Desktop/website1-main/website1-main/.env) in Notepad.
+3. Verify or update the `DATABASE_URL` line with your actual PostgreSQL password:
+   ```env
+   DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/cybershield
+   PORT=3000
+   ```
+   *(Replace `YOUR_PASSWORD` with the password you chose in Part 1).*
+4. Save and close the file.
+
+---
+
+## Part 4: Run Database Schema & Migrations
+
+We provided an automated 1-click script that creates the tables, indexes, and default settings:
+
+### Option A: One-Click Setup Script (Recommended)
+1. Double-click **[`setup-db.bat`](file:///d:/Desktop/website1-main/website1-main/setup-db.bat)** inside the project directory.
 2. You will see:
    ```text
-   ========================================================
-   🚀 CyberShield Server is LIVE and Running!
-   👉 Local:   http://localhost:3000
-   👉 Network: http://192.168.x.x:3000
-   ========================================================
+   ============================================================
+   🛡️ CyberShield Local Database Setup Tool
+   ============================================================
+   ✅ Connected successfully!
+   ✅ Table "public.users" created/verified.
+   ✅ Indexes "idx_users_score" & "idx_users_createdat" ready.
+   ✅ Table "public.site_settings" created/verified.
+   ✅ Default settings seeded (All activities unlocked).
+   ✅ Seeded sample employee record for Admin Dashboard preview.
+   🎉 Database setup completed successfully!
    ```
-3. Test it in your browser at `http://localhost:3000`.
+
+### Option B: Manual SQL Execution in pgAdmin 4
+If you prefer running SQL manually:
+1. In pgAdmin 4, right-click on the database **`cybershield`**.
+2. Click **Query Tool**.
+3. Open or paste the contents of **[`schema-postgres-local.sql`](file:///d:/Desktop/website1-main/website1-main/schema-postgres-local.sql)**.
+4. Press **F5** (or click the ▶️ Execute button).
 
 ---
 
-## 3. Keep it Live 24/7 as a Windows Service (Automated)
+## Part 5: Starting the CyberShield Server
 
-To ensure the server never stops—even if you log out of the server or the server restarts after Windows updates:
-
-### Automated Method:
-Right-click on **`install-windows-service.bat`** and select **"Run as Administrator"**.
-
-### Manual Method (via PowerShell / CMD as Administrator):
-```powershell
-# 1. Install PM2 and Windows startup tool globally
-npm install -g pm2 pm2-windows-startup
-
-# 2. Register PM2 with Windows boot
-pm2-startup install
-
-# 3. Start the server under PM2
-cd C:\Apps\Cyber-Activity-OGDCL
-pm2 start server.js --name "cybershield"
-
-# 4. Save the running process list so it automatically restarts on reboot
-pm2 save
-```
-
-### Useful Management Commands:
-- **Check Status**: `pm2 status`
-- **View Live Logs**: `pm2 logs cybershield`
-- **Restart Application**: `pm2 restart cybershield`
-- **Stop Application**: `pm2 stop cybershield`
-
----
-
-## 4. Change Port to Standard HTTP Port 80 (Optional)
-
-By default, the server runs on port **3000**.
-If you want users to just type `http://<SERVER-IP>` without specifying `:3000`:
-- Set the environment variable `PORT=80` before starting:
-  ```powershell
-  set PORT=80
-  pm2 restart cybershield --update-env
+### Quick Start (Double Click):
+- Double-click **[`start-server.bat`](file:///d:/Desktop/website1-main/website1-main/start-server.bat)**.
+- The command window will display:
+  ```text
+  ========================================================
+  🚀 CyberShield Server is LIVE and Running!
+  👉 Local:   http://localhost:3000
+  👉 Network: http://192.168.x.x:3000
+  ========================================================
   ```
-  *(Note: Ensure Port 80 is not already occupied by IIS or Skype. If IIS is installed, you can use IIS as a Reverse Proxy).*
+- Open `http://localhost:3000` in Google Chrome or Edge.
 
 ---
 
-## 5. Allow Incoming Traffic in Windows Firewall
+## Part 6: Allow Intranet / Network Access in Windows Firewall
 
-To allow users across your company's network / intranet to access the website:
+To let other computers on your corporate network access the website:
 
-1. Open PowerShell **as Administrator** on the Windows Server.
-2. Run this command to open the firewall port:
+1. Open **PowerShell as Administrator** on the Windows Server.
+2. Run this command:
    ```powershell
    New-NetFirewallRule -DisplayName "CyberShield Web Server" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow
    ```
-   *(If you are using Port 80, replace `3000` with `80`)*.
+3. Users across the network can now open:
+   ```text
+   http://<SERVER-IP-ADDRESS>:3000
+   ```
+   (e.g., `http://10.144.27.93:3000`)
 
 ---
 
-## 6. Accessing the Website
+## Part 7: Keep Server Running 24/7 (Windows Service)
 
-Employees can access the site from any computer on your network using:
-- **By IP Address**: `http://<SERVER_IP>:3000` (e.g., `http://10.144.27.93:3000`)
-- **By Server Hostname**: `http://<SERVER_NAME>:3000`
-- **By Corporate Domain** *(if configured in DNS/Active Directory)*: `http://cyberawareness.ogdcl.local`
+To make sure the website stays running even if you log out of Windows or the server reboots:
+
+1. Right-click on **`install-windows-service.bat`** and choose **"Run as Administrator"**.
+2. Or run manually via PM2:
+   ```cmd
+   npm install -g pm2 pm2-windows-startup
+   pm2-startup install
+   pm2 start server.js --name "cybershield"
+   pm2 save
+   ```
+
+---
+
+## Summary of Key Files
+- [`.env`](file:///d:/Desktop/website1-main/website1-main/.env): Stores your local database connection password and server port.
+- [`setup-db.bat`](file:///d:/Desktop/website1-main/website1-main/setup-db.bat): 1-click database creator and schema runner.
+- [`schema-postgres-local.sql`](file:///d:/Desktop/website1-main/website1-main/schema-postgres-local.sql): Pure PostgreSQL script for `users` and `site_settings`.
+- [`start-server.bat`](file:///d:/Desktop/website1-main/website1-main/start-server.bat): 1-click server runner.
