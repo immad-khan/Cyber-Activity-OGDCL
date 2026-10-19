@@ -32,6 +32,9 @@ async function runSetup() {
       CREATE TABLE IF NOT EXISTS public.users (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         "userName" TEXT NOT NULL,
+        "employeeId" TEXT,
+        department TEXT,
+        designation TEXT,
         score INT DEFAULT 0,
         level TEXT DEFAULT 'Beginner',
         accuracy INT DEFAULT 0,
@@ -44,15 +47,21 @@ async function runSetup() {
         "completionDate" TEXT,
         "createdAt" TIMESTAMPTZ DEFAULT NOW()
       );
+
+      -- Ensure new columns exist even if table was previously created
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "employeeId" TEXT;
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS department TEXT;
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS designation TEXT;
     `);
-    console.log('   ✅ Table "public.users" created/verified.');
+    console.log('   ✅ Table "public.users" created/verified with Employee ID, Department & Designation.');
 
     // 2. Indexes
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_users_score ON public.users (score DESC);
       CREATE INDEX IF NOT EXISTS idx_users_createdat ON public.users ("createdAt" DESC);
+      CREATE INDEX IF NOT EXISTS idx_users_empid ON public.users ("employeeId");
     `);
-    console.log('   ✅ Indexes "idx_users_score" & "idx_users_createdat" ready.');
+    console.log('   ✅ Indexes "idx_users_score", "idx_users_createdat", and "idx_users_empid" ready.');
 
     // 3. Site Settings Table
     await pool.query(`
@@ -80,12 +89,14 @@ async function runSetup() {
     if (userCount === 0) {
       await pool.query(`
         INSERT INTO public.users (
-          "userName", score, level, accuracy, "videoCompleted", 
+          "userName", "employeeId", department, designation, 
+          score, level, accuracy, "videoCompleted", 
           "videoMarks", "quizMarks", "correctAnswers", "totalQuestions", 
           activity, "completionDate"
         )
         VALUES (
-          'Demo Employee', 150, 'Guardian', 100, TRUE, 
+          'Demo Employee', 'OGDCL-1024', 'Information Technology', 'Security Specialist',
+          150, 'Guardian', 100, TRUE, 
           50, 100, 5, 5, 
           'Activity 1: The Executive Target', TO_CHAR(NOW(), 'FMMonth DD, YYYY')
         );
