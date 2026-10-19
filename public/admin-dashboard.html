@@ -818,7 +818,7 @@
       <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
         <div style="position: relative; flex: 1; min-width: 200px;">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Search by name, level, activity…" oninput="filterUsers()" />
+          <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…" oninput="filterUsers()" />
         </div>
         <select id="activityFilter" onchange="filterUsers()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: 'Inter', sans-serif; outline: none; cursor: pointer;">
           <option value="all">🌐 All Activities</option>
@@ -835,6 +835,9 @@
             <tr>
               <th>#</th>
               <th>Name</th>
+              <th>Emp ID</th>
+              <th>Department</th>
+              <th>Designation</th>
               <th>Activity</th>
               <th>Level</th>
               <th>Score</th>
@@ -846,7 +849,7 @@
           </thead>
           <tbody id="usersTableBody">
             <tr class="state-row">
-              <td colspan="9">
+              <td colspan="12">
                 <div class="loading-dots">
                   <span></span><span></span><span></span>
                 </div>
@@ -1134,6 +1137,9 @@
       filtered = allUsers.filter(u => {
         const matchesQuery = !q || (
           (u.userName || '').toLowerCase().includes(q) ||
+          (u.employeeId || '').toLowerCase().includes(q) ||
+          (u.department || '').toLowerCase().includes(q) ||
+          (u.designation || '').toLowerCase().includes(q) ||
           (u.level || '').toLowerCase().includes(q) ||
           (u.activity || '').toLowerCase().includes(q)
         );
@@ -1169,7 +1175,7 @@
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
       if (slice.length === 0) {
-        tbody.innerHTML = `<tr class="state-row"><td colspan="9">😕 No users found.</td></tr>`;
+        tbody.innerHTML = `<tr class="state-row"><td colspan="12">😕 No users found.</td></tr>`;
         renderPagination(0, 0);
         return;
       }
@@ -1180,6 +1186,9 @@
         const idx   = start + i + 1;
         const name  = u.userName || 'Unknown';
         const init  = name.charAt(0).toUpperCase();
+        const empId = u.employeeId || '—';
+        const dept  = u.department || '—';
+        const desig = u.designation || '—';
         const level = u.level || 'Beginner';
         const score = u.score || 0;
         const acc   = u.accuracy || 0;
@@ -1209,6 +1218,9 @@
                 <span>${escHtml(name)}</span>
               </div>
             </td>
+            <td><span style="font-family:monospace;font-size:0.83rem;color:var(--accent-2);">${escHtml(empId)}</span></td>
+            <td><span style="font-size:0.85rem;">${escHtml(dept)}</span></td>
+            <td><span style="font-size:0.85rem;">${escHtml(desig)}</span></td>
             <td><span class="badge-activity">${escHtml(act)}</span></td>
             <td><span class="badge-level ${badgeCls}">${escHtml(level)}</span></td>
             <td>
@@ -1268,6 +1280,9 @@
 
         return {
           'Name':             u.userName || '',
+          'Employee ID':      u.employeeId || '',
+          'Department':       u.department || '',
+          'Designation':      u.designation || '',
           'Activity':         u.activity || '',
           'Total Score':      u.score || 0,
           'Level':            u.level || '',
@@ -1304,7 +1319,7 @@
       if (!on) return;
       document.getElementById('usersTableBody').innerHTML = `
         <tr class="state-row">
-          <td colspan="9">
+          <td colspan="12">
             <div class="loading-dots"><span></span><span></span><span></span></div>
             <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
           </td>
@@ -1313,7 +1328,7 @@
 
     function setTableError(msg) {
       document.getElementById('usersTableBody').innerHTML = `
-        <tr class="state-row"><td colspan="9">⚠️ ${msg}</td></tr>`;
+        <tr class="state-row"><td colspan="12">⚠️ ${msg}</td></tr>`;
     }
 
     let toastTimer;
