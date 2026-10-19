@@ -34,6 +34,9 @@
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
     const userName = (opts.userName || 'Participant').trim();
+    const employeeId = (opts.employeeId || '').trim();
+    const department = (opts.department || '').trim();
+    const designation = (opts.designation || '').trim();
     const score = opts.score || 0;
     const accuracy = opts.accuracy || 100;
     const level = opts.level || 'Guardian';
@@ -151,7 +154,14 @@
     doc.setFontSize(10.5);
     doc.setTextColor(30, 41, 59);
 
-    const bodyText1 = `It is certified that Mr./Ms. ${userName} has successfully completed the Cybersecurity Awareness & Digital Safety Assessment conducted by OGDCL. During this program, they demonstrated exemplary diligence, understanding of digital threat vectors, password protection, phishing mitigation, and enterprise information security protocols.`;
+    // Build first line identity details with Name, Employee ID, Designation, Department
+    const empDetails = [];
+    if (employeeId) empDetails.push(`Employee ID: ${employeeId}`);
+    if (designation) empDetails.push(`Designation: ${designation}`);
+    if (department) empDetails.push(`Department: ${department}`);
+    const empDetailStr = empDetails.length > 0 ? ` (${empDetails.join(', ')})` : '';
+
+    const bodyText1 = `It is certified that Mr./Ms. ${userName}${empDetailStr} has successfully completed the Cybersecurity Awareness & Digital Safety Assessment conducted by OGDCL. During this program, they demonstrated exemplary diligence, understanding of digital threat vectors, password protection, phishing mitigation, and enterprise information security protocols.`;
 
     const splitText1 = doc.splitTextToSize(bodyText1, pageWidth - 36);
     doc.text(splitText1, 18, 104, { lineHeightFactor: 1.5 });
@@ -166,17 +176,21 @@
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
 
-    // Calculate wrapped lines to prevent text exceeding certificate bounds
-    const nameLines = doc.splitTextToSize(`• Participant: ${userName}`, col1Width);
-    const modLines = doc.splitTextToSize(`• Module: ${activityName}`, col2Width);
+    // Construct summary items for both columns
+    const col1Items = [`• Participant: ${userName}`];
+    if (employeeId) col1Items.push(`• Employee ID: ${employeeId}`);
+    col1Items.push(`• Total Score: ${score} points`);
+    col1Items.push(`• Assessment Accuracy: ${accuracy}%`);
 
-    const totalLinesCol1 = nameLines.length + 2; // name + score + accuracy
-    const totalLinesCol2 = modLines.length + 2;  // module + level + date
-    const maxItems = Math.max(totalLinesCol1, totalLinesCol2);
+    const col2Items = [];
+    if (designation) col2Items.push(`• Designation: ${designation}`);
+    if (department) col2Items.push(`• Department: ${department}`);
+    col2Items.push(`• Security Level: ${level}`);
+    col2Items.push(`• Completion Date: ${currentDate}`);
 
-    // Dynamic height based on wrapped lines
+    const maxItems = Math.max(col1Items.length, col2Items.length);
     const lineHeight = 5.2;
-    const boxHeight = Math.max(34, 13 + (maxItems - 1) * lineHeight + 7);
+    const boxHeight = Math.max(38, 13 + (maxItems - 1) * lineHeight + 7);
 
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(18, boxY, pageWidth - 36, boxHeight, 2, 2, 'F');
@@ -193,27 +207,27 @@
     doc.setFontSize(9);
     doc.setTextColor(51, 65, 85);
 
-    // Column 1
+    // Render Column 1
     let c1Y = boxY + 14;
-    nameLines.forEach((line, idx) => {
-      doc.text(line, idx === 0 ? col1X : col1X + 3.5, c1Y);
-      if (idx < nameLines.length - 1) c1Y += 4.5;
+    col1Items.forEach((item) => {
+      const wrapped = doc.splitTextToSize(item, col1Width);
+      wrapped.forEach((line, idx) => {
+        doc.text(line, idx === 0 ? col1X : col1X + 3.5, c1Y);
+        if (idx < wrapped.length - 1) c1Y += 4.5;
+      });
+      c1Y += lineHeight;
     });
-    c1Y += lineHeight;
-    doc.text(`• Total Score: ${score} points`, col1X, c1Y);
-    c1Y += lineHeight;
-    doc.text(`• Assessment Accuracy: ${accuracy}%`, col1X, c1Y);
 
-    // Column 2
+    // Render Column 2
     let c2Y = boxY + 14;
-    modLines.forEach((line, idx) => {
-      doc.text(line, idx === 0 ? col2X : col2X + 3.5, c2Y);
-      if (idx < modLines.length - 1) c2Y += 4.5;
+    col2Items.forEach((item) => {
+      const wrapped = doc.splitTextToSize(item, col2Width);
+      wrapped.forEach((line, idx) => {
+        doc.text(line, idx === 0 ? col2X : col2X + 3.5, c2Y);
+        if (idx < wrapped.length - 1) c2Y += 4.5;
+      });
+      c2Y += lineHeight;
     });
-    c2Y += lineHeight;
-    doc.text(`• Security Level: ${level}`, col2X, c2Y);
-    c2Y += lineHeight;
-    doc.text(`• Completion Date: ${currentDate}`, col2X, c2Y);
 
     // ── 6. CLOSING STATEMENT ──
     const closingY = Math.max(176, boxY + boxHeight + 8);
