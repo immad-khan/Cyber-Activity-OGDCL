@@ -830,6 +830,17 @@
             currentDepartment = dept;
             currentDesignation = desig;
 
+            try {
+                localStorage.setItem('ogdcl_user_name', userName);
+                localStorage.setItem('ogdcl_emp_id', empId);
+                localStorage.setItem('ogdcl_dept', dept);
+                localStorage.setItem('ogdcl_desig', desig);
+            } catch (e) {}
+
+            currentQuizIndex = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+
             document.getElementById('name-input-section').style.display = 'none';
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('displayUserName').textContent = userName;
@@ -935,6 +946,17 @@
             
             updateScoreVisual();
             updateProgressBar();
+
+            const savedName = localStorage.getItem('ogdcl_user_name');
+            const savedEmpId = localStorage.getItem('ogdcl_emp_id');
+            const savedDept = localStorage.getItem('ogdcl_dept');
+            const savedDesig = localStorage.getItem('ogdcl_desig');
+
+            if (savedName && document.getElementById('userNameStart')) document.getElementById('userNameStart').value = savedName;
+            if (savedEmpId && document.getElementById('userEmpIdStart')) document.getElementById('userEmpIdStart').value = savedEmpId;
+            if (savedDept && document.getElementById('userDepartmentStart')) document.getElementById('userDepartmentStart').value = savedDept;
+            if (savedDesig && document.getElementById('userDesignationStart')) document.getElementById('userDesignationStart').value = savedDesig;
+
             showNotification('Welcome! Watch the video (50 marks) and take the quiz (100 marks)!', 'success');
         });
 
@@ -1229,55 +1251,95 @@
             document.getElementById('quiz-result').innerHTML = '';
         }
 
-        // Show Quiz Completion
+        // Show Quiz Completion & Certificate Showcase
         function showQuizCompletion() {
             const quizSection = document.querySelector('.quiz-section');
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentLevel = getCurrentSecurityLevel();
             const quizMarks = correctAnswers * SCORING.quiz_correct;
             const videoMarks = videoWatched ? SCORING.video_completion : 0;
-            
+            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant';
+
             saveToDatabase();
-            
+
             quizSection.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 2.5rem;">Activity 2 Complete!</h2>
+                <div style="text-align: center; padding: 25px 20px;">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 2 Complete!</h2>
+                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Password Protection & Multi-Factor Authentication Assessment.</p>
                     
-                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
-                        <h3 style="color: #4ecdc4; margin-bottom: 15px;">Your Performance</h3>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Quiz Questions: ${totalQuestions}/${quizQuestions.length}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct Answers: ${correctAnswers}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
-                        
-                        <div style="margin: 20px 0; padding: 20px; background: rgba(78, 205, 196, 0.1); border-radius: 15px;">
-                            <p style="font-size: 1.1rem; margin-bottom: 8px;">Video Marks: ${videoMarks}/50</p>
-                            <p style="font-size: 1.1rem; margin-bottom: 8px;">Quiz Marks: ${quizMarks}/100</p>
-                            <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Total: ${userScore}/150 marks</p>
+                    <!-- Official OGDCL Certificate Preview Card -->
+                    <div style="background: linear-gradient(135deg, rgba(11, 25, 44, 0.95), rgba(0, 40, 70, 0.95)); border: 2px solid #00ffff; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(0, 255, 255, 0.35); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #00b4d8, #0077b6); color: #fff; padding: 6px 20px; border-radius: 0 0 0 15px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                            Official Certificate
                         </div>
                         
-                        <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
+                        <div style="text-align: center; margin-bottom: 14px;">
+                            <img src="ogdcl-logo.png" alt="OGDCL" style="height: 36px; object-fit: contain; margin-bottom: 6px;" onerror="this.style.display='none'"><br>
+                            <div style="font-size: 0.95rem; letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; font-weight: 800;">OIL & GAS DEVELOPMENT COMPANY LTD</div>
+                            <div style="font-size: 0.8rem; letter-spacing: 1px; color: #48cae4; font-weight: 700;">CYBERSECURITY DEPARTMENT</div>
+                            <div style="font-size: 0.72rem; color: #cbd5e0; letter-spacing: 0.8px;">ISLAMABAD, PAKISTAN</div>
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(0,255,255,0.3); border-bottom: 1px solid rgba(0,255,255,0.3); padding: 12px 0; margin: 12px 0;">
+                            <div style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #a0aec0;">Certificate of Completion</div>
+                            <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
+                            <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
+                                Has successfully demonstrated operational compliance in<br>
+                                <strong style="color: #48cae4;">Activity 2: Password Protection & Multi-Factor Authentication</strong>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin: 15px 0; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 12px;">
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Total Score</div>
+                                <div style="color: #00ffff; font-size: 1.25rem; font-weight: bold;">${userScore}/150</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Quiz Marks</div>
+                                <div style="color: #2ec4b6; font-size: 1.25rem; font-weight: bold;">${quizMarks}/100</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Video Marks</div>
+                                <div style="color: #ffd166; font-size: 1.25rem; font-weight: bold;">${videoMarks}/50</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Accuracy</div>
+                                <div style="color: #48cae4; font-size: 1.25rem; font-weight: bold;">${accuracy}%</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Level</div>
+                                <div style="color: ${currentLevel.color}; font-size: 1.1rem; font-weight: bold;">${currentLevel.name}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #a0aec0; padding-top: 8px;">
+                            <span>📅 Issued: ${currentDate}</span>
+                            <span>🔒 Verified Electronic Credential</span>
+                        </div>
                     </div>
                     
-                    <div style="margin-top: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                    <!-- Action Buttons -->
+                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
                         <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
-                            📄 Generate Certificate
+                                style="background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45); display: inline-flex; align-items: center; gap: 8px;">
+                            📄 Download PDF Certificate
                         </button>
                         <button onclick="resetQuiz()" 
-                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                                style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer;">
                             🔄 Retake Quiz
                         </button>
                         <a href="index.html" 
-                           style="background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(0, 150, 255, 0.3)); color: #00ffff; border: 2px solid #00ffff; padding: 15px 30px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                           style="background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(0, 150, 255, 0.3)); color: #00ffff; border: 2px solid #00ffff; padding: 14px 28px; border-radius: 30px; font-size: 1.05rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
                             🏠 Back to Home
                         </a>
                     </div>
                     
-                    <p style="margin-top: 20px; color: #4ecdc4; font-size: 0.9rem;">✅ Your results have been saved to the database</p>
+                    <p style="margin-top: 20px; color: #2ec4b6; font-size: 0.95rem; font-weight: 600;">✅ Your quiz marks and assessment data have been saved to Admin Database!</p>
                 </div>
             `;
-            
+
             // Track quiz completion in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_complete', {
@@ -1290,36 +1352,37 @@
 
         // Generate Certificate
         async function generateCertificate() {
-            const userName = currentUserName;
-            
+            const userName = currentUserName || localStorage.getItem('ogdcl_user_name');
+            const empId = currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || '';
+            const dept = currentDepartment || localStorage.getItem('ogdcl_dept') || '';
+            const desig = currentDesignation || localStorage.getItem('ogdcl_desig') || '';
+
             if (!userName) {
-                showNotification('Error: No user name found. Please retake the quiz.', 'error');
+                showNotification('Error: No user name found. Please enter your name.', 'error');
                 return;
             }
-            
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentLevel = getCurrentSecurityLevel();
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            const quizMarks = correctAnswers * SCORING.quiz_correct;
-            const videoMarks = videoWatched ? SCORING.video_completion : 0;
-            
+
             showNotification('Generating PDF certificate...', 'info');
-            
+
             try {
                 window.downloadOGDCLCertificate({
                     userName: userName,
-                    employeeId: currentEmployeeId,
-                    department: currentDepartment,
-                    designation: currentDesignation,
+                    employeeId: empId,
+                    department: dept,
+                    designation: desig,
                     score: userScore,
                     accuracy: accuracy,
                     level: currentLevel.name,
                     activity: 'Activity 2: Password Protection & Multi-Factor Authentication',
                     date: currentDate
                 });
-                
+
                 showNotification(`Certificate generated for ${userName}!`, 'success');
-                
+
                 // Track certificate generation in Google Analytics
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'certificate_generated', {
@@ -1328,7 +1391,7 @@
                         'value': userScore
                     });
                 }
-                
+
             } catch (error) {
                 console.error('Error generating PDF:', error);
                 showNotification('Error generating certificate. Please try again.', 'error');
