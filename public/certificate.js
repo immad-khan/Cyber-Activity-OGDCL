@@ -110,6 +110,44 @@
   const PT = 25.4 / 72;                              // pt -> mm
   const baseline = (top, pt) => top + pt * PT * 0.94; // layout "top" -> jsPDF text baseline
 
+  const ACTIVITY_PROGRAM_TITLES = {
+    activity_1: 'Password Security Awareness Program',
+    'activity 1': 'Password Security Awareness Program',
+    password: 'Password Security Awareness Program',
+    mfa: 'Password Security Awareness Program',
+
+    activity_2: 'Email Security & Phishing Prevention Program',
+    'activity 2': 'Email Security & Phishing Prevention Program',
+    email: 'Email Security & Phishing Prevention Program',
+    phishing: 'Email Security & Phishing Prevention Program',
+
+    activity_3: 'Competency in Data Privacy and Protection Program',
+    'activity 3': 'Competency in Data Privacy and Protection Program',
+    privacy: 'Competency in Data Privacy and Protection Program',
+    data: 'Competency in Data Privacy and Protection Program',
+
+    activity_4: 'QR Code Quishing Defence Program',
+    'activity 4': 'QR Code Quishing Defence Program',
+    'qr code': 'QR Code Quishing Defence Program',
+    quishing: 'QR Code Quishing Defence Program',
+    social: 'QR Code Quishing Defence Program'
+  };
+
+  function resolveCertificateTitle(opts) {
+    if (opts && opts.title && opts.title.trim()) return opts.title.trim();
+    if (opts && opts.program && opts.program.trim()) return opts.program.trim();
+    const actStr = String((opts && (opts.activity || opts.activityName)) || '').toLowerCase();
+    for (const [key, val] of Object.entries(ACTIVITY_PROGRAM_TITLES)) {
+      if (actStr.includes(key)) return val;
+    }
+    const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
+    if (path.includes('mfa')) return 'Password Security Awareness Program';
+    if (path.includes('phishing')) return 'Email Security & Phishing Prevention Program';
+    if (path.includes('privacy')) return 'Competency in Data Privacy and Protection Program';
+    if (path.includes('social')) return 'QR Code Quishing Defence Program';
+    return 'Cybersecurity Awareness Assessment';
+  }
+
   function downloadOGDCLCertificate(opts) {
     opts = opts || {};
     if (typeof window.jspdf === 'undefined' && typeof jsPDF === 'undefined') {
@@ -121,7 +159,7 @@
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
     const userName = (opts.userName || 'Participant').trim();
-    const title = opts.title || 'Cybersecurity Awareness Assessment';
+    const title = resolveCertificateTitle(opts);
     const currentDate = opts.date || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
     const W = 297, H = 210, CX = W / 2;
@@ -282,6 +320,7 @@
   }
 
   window.getActivityCertKey = getActivityCertKey;
+  window.resolveCertificateTitle = resolveCertificateTitle;
   window.downloadOGDCLCertificate = downloadOGDCLCertificate;
   window.checkCertificateClaimed = checkCertificateClaimed;
   window.markCertificateClaimed = markCertificateClaimed;
