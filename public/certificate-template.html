@@ -573,7 +573,14 @@
       const score = urlParams.get('score') || localStorage.getItem('ogdcl_score') || '100';
       const accuracy = urlParams.get('accuracy') || localStorage.getItem('ogdcl_accuracy') || '100';
       const level = urlParams.get('level') || localStorage.getItem('ogdcl_security_level') || 'Guardian';
-      const title = urlParams.get('title') || 'Cybersecurity Awareness & Digital Safety Assessment';
+      const activityParam = urlParams.get('activity') || '';
+      let resolvedTitle = 'Password Security Awareness Program';
+      if (typeof window.resolveCertificateTitle === 'function') {
+        resolvedTitle = window.resolveCertificateTitle({ activity: activityParam, title: urlParams.get('title') });
+      } else if (urlParams.get('title')) {
+        resolvedTitle = urlParams.get('title');
+      }
+      const title = urlParams.get('title') || resolvedTitle;
       const date = urlParams.get('date') || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
       const ref = urlParams.get('ref') || localStorage.getItem('ogdcl_certificate_id') || ('OGDCL-' + new Date().getFullYear() + '-9A4C8F2E1B');
 
