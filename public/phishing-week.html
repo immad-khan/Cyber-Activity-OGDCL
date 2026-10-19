@@ -422,6 +422,17 @@
             margin-bottom: 20px;
         }
 
+        .name-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .name-input-grid input {
+            margin-bottom: 0 !important;
+        }
+
         .name-input-section input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
@@ -676,16 +687,24 @@
             <h2>Executive Security Quiz (100 marks)</h2>
 
             <div id="name-input-section" class="name-input-section">
-                <p>Enter your name to begin the assessment.</p>
-                <div>
-                    <input type="text" id="userNameStart" placeholder="Enter your full name" />
-                    <button onclick="startQuiz()" class="start-button">Start Quiz</button>
+                <p>Enter your details to begin the assessment.</p>
+                <div class="name-input-grid">
+                    <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                    <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
+                    <input type="text" id="userDepartmentStart" placeholder="Department *" required />
+                    <input type="text" id="userDesignationStart" placeholder="Designation *" required />
                 </div>
+                <button onclick="startQuiz()" class="start-button">Start Quiz</button>
             </div>
 
             <div id="quiz-content" style="display: none;">
                 <div class="user-name-display">
-                    <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+                    <p>
+                        <strong>Name:</strong> <span id="displayUserName"></span> &nbsp;|&nbsp;
+                        <strong>Emp ID:</strong> <span id="displayUserEmpId"></span> &nbsp;|&nbsp;
+                        <strong>Dept:</strong> <span id="displayUserDept"></span> &nbsp;|&nbsp;
+                        <strong>Designation:</strong> <span id="displayUserDesig"></span>
+                    </p>
                 </div>
                 <p id="quiz-question"></p>
                 <div id="quiz-options"></div>
@@ -777,6 +796,9 @@
         let currentQuizIndex = 0;
         let securityLevelAchieved = 'Beginner';
         let currentUserName = '';
+        let currentEmployeeId = '';
+        let currentDepartment = '';
+        let currentDesignation = '';
         let videoWatched = false;
 
         // Toggle Mobile Menu
@@ -800,21 +822,50 @@
         // Start Quiz Function
         function startQuiz() {
             const nameInput = document.getElementById('userNameStart');
-            const userName = nameInput.value.trim();
+            const empIdInput = document.getElementById('userEmpIdStart');
+            const deptInput = document.getElementById('userDepartmentStart');
+            const desigInput = document.getElementById('userDesignationStart');
+
+            const userName = nameInput ? nameInput.value.trim() : '';
+            const empId = empIdInput ? empIdInput.value.trim() : '';
+            const dept = deptInput ? deptInput.value.trim() : '';
+            const desig = desigInput ? desigInput.value.trim() : '';
 
             if (!userName || userName.length < 2) {
-                showNotification('Please enter a valid name (at least 2 characters)!', 'warning');
-                nameInput.focus();
+                showNotification('Please enter a valid full name!', 'warning');
+                nameInput?.focus();
+                return;
+            }
+            if (!empId) {
+                showNotification('Please enter your Employee ID!', 'warning');
+                empIdInput?.focus();
+                return;
+            }
+            if (!dept) {
+                showNotification('Please enter your Department!', 'warning');
+                deptInput?.focus();
+                return;
+            }
+            if (!desig) {
+                showNotification('Please enter your Designation!', 'warning');
+                desigInput?.focus();
                 return;
             }
 
             currentUserName = userName;
+            currentEmployeeId = empId;
+            currentDepartment = dept;
+            currentDesignation = desig;
+
             document.getElementById('name-input-section').style.display = 'none';
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('displayUserName').textContent = userName;
+            if (document.getElementById('displayUserEmpId')) document.getElementById('displayUserEmpId').textContent = empId;
+            if (document.getElementById('displayUserDept')) document.getElementById('displayUserDept').textContent = dept;
+            if (document.getElementById('displayUserDesig')) document.getElementById('displayUserDesig').textContent = desig;
 
             showNewQuizQuestion();
-            showNotification(`Welcome ${userName}! Each question is worth 20 marks!`, 'success');
+            showNotification(`Welcome ${userName} (${empId})! Each question is worth 20 marks!`, 'success');
 
             // Track quiz start in Google Analytics
             if (typeof gtag !== 'undefined') {
@@ -833,6 +884,9 @@
 
                 const payload = {
                     userName: currentUserName,
+                    employeeId: currentEmployeeId,
+                    department: currentDepartment,
+                    designation: currentDesignation,
                     score: userScore,
                     level: securityLevelAchieved,
                     accuracy,
@@ -1280,6 +1334,9 @@
             try {
                 window.downloadOGDCLCertificate({
                     userName: userName,
+                    employeeId: currentEmployeeId,
+                    department: currentDepartment,
+                    designation: currentDesignation,
                     score: userScore,
                     accuracy: accuracy,
                     level: currentLevel.name,
@@ -1331,16 +1388,24 @@
                     <h2>Executive Security Quiz (100 marks)</h2>
                     
                     <div id="name-input-section" class="name-input-section">
-                        <p>Enter your name to begin the assessment.</p>
-                        <div>
-                            <input type="text" id="userNameStart" placeholder="Enter your full name" value="${currentUserName}" />
-                            <button onclick="startQuiz()" class="start-button">Start Quiz</button>
+                        <p>Enter your details to begin the assessment.</p>
+                        <div class="name-input-grid">
+                            <input type="text" id="userNameStart" placeholder="Full Name *" value="${currentUserName || ''}" required />
+                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" value="${currentEmployeeId || ''}" required />
+                            <input type="text" id="userDepartmentStart" placeholder="Department *" value="${currentDepartment || ''}" required />
+                            <input type="text" id="userDesignationStart" placeholder="Designation *" value="${currentDesignation || ''}" required />
                         </div>
+                        <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
                     
                     <div id="quiz-content" style="display: none;">
                         <div class="user-name-display">
-                            <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+                            <p>
+                                <strong>Name:</strong> <span id="displayUserName"></span> &nbsp;|&nbsp;
+                                <strong>Emp ID:</strong> <span id="displayUserEmpId"></span> &nbsp;|&nbsp;
+                                <strong>Dept:</strong> <span id="displayUserDept"></span> &nbsp;|&nbsp;
+                                <strong>Designation:</strong> <span id="displayUserDesig"></span>
+                            </p>
                         </div>
                         <p id="quiz-question"></p>
                         <div id="quiz-options"></div>
