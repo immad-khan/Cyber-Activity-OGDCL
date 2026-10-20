@@ -615,6 +615,28 @@ export default async function handler(req, res) {
         }
       }
 
+      // 6b. Delete / Clear Module Video if requested: { deleteModuleVideo: 'activity_1' }
+      if (body.deleteModuleVideo && (curModuleVideos[body.deleteModuleVideo] || DEFAULT_MODULE_VIDEOS[body.deleteModuleVideo])) {
+        const modKey = body.deleteModuleVideo;
+        curModuleVideos[modKey] = {
+          ...(curModuleVideos[modKey] || DEFAULT_MODULE_VIDEOS[modKey] || {}),
+          url: '',
+          poster: '',
+          sourceType: 'mp4',
+          updatedAt: new Date().toISOString()
+        };
+        try {
+          await pool.query(
+            `INSERT INTO site_settings (key, value, updated_at)
+             VALUES ('module_videos', $1, NOW())
+             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
+            [JSON.stringify(curModuleVideos)]
+          );
+        } catch (e) {
+          console.warn('Fallback: saving deleteModuleVideo to file');
+        }
+      }
+
       // 7. Update Specific Module MCQs: { moduleId: 'index' | 'activity_1'..4, mcqs: [ ... ] }
       if (body.moduleId && Array.isArray(body.mcqs)) {
         const modKey = body.moduleId;
