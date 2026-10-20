@@ -1614,11 +1614,41 @@
     <span id="toastMsg">Saved successfully!</span>
   </div>
 
+  <!-- Delete Video Confirmation Modal -->
+  <div class="modal-backdrop" id="deleteVideoModal" style="display:none;" onclick="if(event.target===this)closeDeleteVideoModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-icon-danger">🗑️</div>
+        <div>
+          <div class="modal-title">Delete Training Video</div>
+          <div class="modal-sub" id="deleteVideoModalModule">Module: Index</div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="deleteVideoModalDesc">Are you sure you want to remove the current video for this module? Users visiting this activity page will no longer see this video until a new one is added.</p>
+        <div id="deleteServerFileOption" class="modal-checkbox-row">
+          <label>
+            <input type="checkbox" id="chkDeleteServerFile" />
+            <span>Also permanently delete file from server storage (<span id="deleteFileNameSpan" style="color:#fff;font-weight:600;"></span>)</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" onclick="closeDeleteVideoModal()">Cancel</button>
+        <button class="btn-danger-action" type="button" id="btnConfirmDeleteAction" onclick="executeDeleteVideo()">
+          🗑️ Confirm Delete Video
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const ADMIN_TOKEN   = 'cybershield-admin-2024';
-    const API_USERS     = '/api/get-users';
-    const API_SETTINGS  = '/api/admin-settings';
-    const API_UPLOAD    = '/api/upload-video';
+    const ADMIN_TOKEN      = 'cybershield-admin-2024';
+    const API_USERS        = '/api/get-users';
+    const API_SETTINGS     = '/api/admin-settings';
+    const API_UPLOAD       = '/api/upload-video';
+    const API_DELETE_VIDEO = '/api/delete-video';
+    const API_LIST_VIDEOS  = '/api/list-videos';
 
     // Auth guard
     if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
@@ -1715,9 +1745,11 @@
         secContent.style.display = 'block';
         secUsers.style.display   = 'none';
         secLocks.style.display   = 'none';
-        document.getElementById('btnNavContent').classList.add('active');
-        titleEl.textContent = 'Content & Assessment Manager';
-        subEl.textContent   = 'Change training videos and MCQ quizzes for Index and Activities 1 to 4';
+        const modBtn = document.getElementById(`navMod-${currentModuleId}`);
+        if (modBtn) modBtn.classList.add('active');
+        const meta = MODULES_META[currentModuleId] || {};
+        titleEl.textContent = `${meta.name || 'Module'}: Content & Assessment Manager`;
+        subEl.textContent   = meta.desc || 'Manage video and assessment questions';
       } else if (section === 'users') {
         secContent.style.display = 'none';
         secUsers.style.display   = 'block';
@@ -1733,6 +1765,12 @@
         titleEl.textContent = 'Activity Locks & Security Controls';
         subEl.textContent   = 'Control global site lock and individual module locks in real-time';
       }
+    }
+
+    // ── Nav To Module from Left Nav Bar ──
+    function navToModule(modId) {
+      showSection('content');
+      selectModule(modId);
     }
 
     // ── Fetch Site Settings (Locks, Videos, MCQs) ──
@@ -1754,6 +1792,7 @@
             moduleMcqsData = data.moduleMcqs;
           }
           updateAllTabBadges();
+          updateSidebarBadges();
           selectModule(currentModuleId);
         }
       } catch (e) {
@@ -1767,12 +1806,22 @@
       const meta = MODULES_META[modId];
       if (!meta) return;
 
-      // Update Nav Tabs Active Class
+      // Update sidebar nav items
+      document.querySelectorAll('.sidebar-nav .nav-item[id^="navMod-"]').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `navMod-${modId}`);
+      });
+
+      // Update Top Nav Tabs Active Class
       document.querySelectorAll('.mod-tab').forEach(tab => {
         tab.classList.toggle('active', tab.getAttribute('data-mod') === modId);
       });
 
-      // Update Banner Info
+      // Update Topbar and Banner Info
+      const secContent = document.getElementById('sectionContent');
+      if (secContent && secContent.style.display !== 'none') {
+        document.getElementById('pageTitle').textContent = `${meta.name}: Content & Assessment Manager`;
+        document.getElementById('pageSubtitle').textContent = meta.desc;
+      }
       document.getElementById('bannerIcon').textContent = meta.icon;
       document.getElementById('bannerTitle').textContent = meta.title;
       document.getElementById('bannerDesc').textContent  = meta.desc;
@@ -1780,11 +1829,17 @@
       liveLink.href = meta.pageUrl;
       liveLink.innerHTML = `🔗 Open Live Page (${meta.pageUrl}) ↗`;
 
+      const subLabel = document.getElementById('currentModuleVideoSub');
+      if (subLabel) subLabel.textContent = `Manage video for ${meta.name} module`;
+
       // Render Video Editor for this module
       renderVideoEditor(modId);
 
       // Render MCQ Editor for this module
       renderMcqEditor(modId);
+
+      // Update badges
+      updateSidebarBadges();
     }
 
     function updateAllTabBadges() {
@@ -1797,12 +1852,57 @@
       });
     }
 
+    function updateSidebarBadges() {
+      Object.keys(MODULES_META).forEach(id => {
+        const sideBadge = document.getElementById(`sideBadge-${id}`);
+        if (sideBadge) {
+          const vid = moduleVideosData[id] || {};
+          const hasVid = !!(vid.url && vid.url.trim());
+          if (hasVid) {
+            sideBadge.textContent = 'Video';
+            sideBadge.className = 'nav-item-badge badge-has-vid';
+            sideBadge.title = `Active video: ${vid.url}`;
+          } else {
+            sideBadge.textContent = 'No Video';
+            sideBadge.className = 'nav-item-badge badge-no-vid';
+            sideBadge.title = 'No video attached';
+          }
+        }
+      });
+    }
+
     // ========================================================
-    // VIDEO MANAGEMENT LOGIC
+    // VIDEO MANAGEMENT LOGIC (DELETE & ADD VIDEO)
     // ========================================================
     function renderVideoEditor(modId) {
       const vid = moduleVideosData[modId] || {};
+      const hasUrl = !!(vid.url && vid.url.trim());
       const sourceType = vid.sourceType === 'youtube' ? 'youtube' : 'mp4';
+
+      // Update Current Active Video Status Banner
+      const banner = document.getElementById('currentVideoBanner');
+      const titleEl = document.getElementById('currentVideoStatusTitle');
+      const subEl = document.getElementById('currentVideoStatusSub');
+      const typeBadge = document.getElementById('currentVideoTypeBadge');
+      const delBtn = document.getElementById('btnDeleteCurrentVideo');
+
+      if (hasUrl) {
+        banner.className = 'current-video-banner has-video';
+        titleEl.textContent = 'Current Active Video';
+        subEl.textContent = vid.url;
+        subEl.title = vid.url;
+        typeBadge.textContent = sourceType === 'youtube' ? 'YouTube Embed' : 'MP4 Direct';
+        typeBadge.style.display = 'inline-block';
+        delBtn.disabled = false;
+        delBtn.style.display = 'inline-flex';
+      } else {
+        banner.className = 'current-video-banner no-video';
+        titleEl.textContent = '⚠️ No Video Configured';
+        subEl.textContent = 'Users currently have no video assigned for this module.';
+        typeBadge.style.display = 'none';
+        delBtn.disabled = true;
+        delBtn.style.display = 'none';
+      }
 
       setVideoSourceType(sourceType, false);
       document.getElementById('inputVideoUrl').value = vid.url || '';
@@ -1811,27 +1911,44 @@
       document.getElementById('inputVideoDesc').value = vid.desc || MODULES_META[modId].desc;
 
       refreshVideoPreview();
+      updateSidebarBadges();
     }
 
     function setVideoSourceType(type, triggerPreview = true) {
       const btnMp4 = document.getElementById('btnSourceMp4');
       const btnYt  = document.getElementById('btnSourceYoutube');
+      const btnLib = document.getElementById('btnSourceLibrary');
       const uploadSec = document.getElementById('mp4UploadSection');
+      const libSec = document.getElementById('serverLibrarySection');
       const posterGrp = document.getElementById('posterGroup');
       const lblUrl = document.getElementById('lblVideoUrl');
       const hintUrl = document.getElementById('videoUrlHint');
 
+      btnMp4.classList.remove('active');
+      btnYt.classList.remove('active');
+      if (btnLib) btnLib.classList.remove('active');
+
       if (type === 'youtube') {
         btnYt.classList.add('active');
-        btnMp4.classList.remove('active');
         uploadSec.style.display = 'none';
+        if (libSec) libSec.style.display = 'none';
         posterGrp.style.display = 'none';
         lblUrl.textContent = 'YouTube Video or Embed URL';
         hintUrl.textContent = 'Paste any YouTube URL (e.g. watch?v=... or youtu.be/...). It is auto-converted to embed.';
+      } else if (type === 'library') {
+        if (btnLib) btnLib.classList.add('active');
+        uploadSec.style.display = 'none';
+        if (libSec) {
+          libSec.style.display = 'block';
+          loadServerVideosLibrary();
+        }
+        posterGrp.style.display = 'block';
+        lblUrl.textContent = 'Selected Server Video Path';
+        hintUrl.textContent = 'Click "Select" on any video in the list above or edit the path manually.';
       } else {
         btnMp4.classList.add('active');
-        btnYt.classList.remove('active');
         uploadSec.style.display = 'block';
+        if (libSec) libSec.style.display = 'none';
         posterGrp.style.display = 'block';
         lblUrl.textContent = 'MP4 Video URL / Local File Path';
         hintUrl.textContent = 'Local path (e.g. videos/filename.mp4) or direct streaming MP4 link.';
@@ -1869,7 +1986,12 @@
       const previewWrap = document.getElementById('videoPreviewWrap');
 
       if (!rawUrl) {
-        previewWrap.innerHTML = `<div class="preview-placeholder">Enter a video URL or upload a file above to preview.</div>`;
+        previewWrap.innerHTML = `
+          <div class="preview-placeholder">
+            <div style="font-size:32px; margin-bottom:8px; opacity:0.8;">📭</div>
+            <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:4px;">No Video Set for this Module</div>
+            <div style="font-size:0.75rem; color:var(--text-dim);">Upload an MP4 video or paste a YouTube URL below to add one.</div>
+          </div>`;
         return;
       }
 
@@ -1889,6 +2011,149 @@
       }
     }
 
+    // ── Delete Previous Video Flow ──
+    let pendingDeleteInfo = null;
+
+    function confirmDeleteCurrentVideo() {
+      const vid = moduleVideosData[currentModuleId] || {};
+      const currentUrl = (document.getElementById('inputVideoUrl').value || vid.url || '').trim();
+      if (!currentUrl) {
+        showToast('No video to delete for this module', 'error');
+        return;
+      }
+
+      const isLocalFile = currentUrl.startsWith('videos/') || (!currentUrl.includes('://') && currentUrl.endsWith('.mp4'));
+      const filename = currentUrl;
+
+      pendingDeleteInfo = {
+        moduleId: currentModuleId,
+        filename: filename,
+        isLocalFile: isLocalFile
+      };
+
+      const modal = document.getElementById('deleteVideoModal');
+      const modTitle = document.getElementById('deleteVideoModalModule');
+      const fileRow = document.getElementById('deleteServerFileOption');
+      const fileSpan = document.getElementById('deleteFileNameSpan');
+
+      modTitle.textContent = `Module: ${MODULES_META[currentModuleId].name} (${MODULES_META[currentModuleId].title})`;
+      if (isLocalFile) {
+        fileRow.style.display = 'block';
+        fileSpan.textContent = filename;
+        document.getElementById('chkDeleteServerFile').checked = false;
+      } else {
+        fileRow.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeDeleteVideoModal() {
+      const modal = document.getElementById('deleteVideoModal');
+      if (modal) modal.style.display = 'none';
+      pendingDeleteInfo = null;
+    }
+
+    async function executeDeleteVideo() {
+      if (!pendingDeleteInfo) return;
+      const { moduleId, filename, isLocalFile } = pendingDeleteInfo;
+      const deleteFile = isLocalFile && document.getElementById('chkDeleteServerFile').checked;
+      const btn = document.getElementById('btnConfirmDeleteAction');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Deleting…';
+
+      try {
+        const res = await fetch(API_DELETE_VIDEO, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({
+            moduleId: moduleId,
+            filename: filename,
+            deleteFile: deleteFile
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          if (data.moduleVideos) {
+            moduleVideosData = data.moduleVideos;
+          } else if (moduleVideosData[moduleId]) {
+            moduleVideosData[moduleId].url = '';
+            moduleVideosData[moduleId].poster = '';
+          }
+
+          document.getElementById('inputVideoUrl').value = '';
+          document.getElementById('inputVideoPoster').value = '';
+          closeDeleteVideoModal();
+          showToast(`🗑️ Video removed from ${MODULES_META[moduleId].name}!`, 'success');
+          renderVideoEditor(moduleId);
+          updateSidebarBadges();
+          loadServerVideosLibrary();
+        } else {
+          throw new Error(data.error || 'Failed to delete video');
+        }
+      } catch (err) {
+        showToast(`Error deleting video: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🗑️ Confirm Delete Video';
+      }
+    }
+
+    function clearVideoUrlInput() {
+      document.getElementById('inputVideoUrl').value = '';
+      refreshVideoPreview();
+    }
+
+    // ── Server Videos Library ──
+    async function loadServerVideosLibrary() {
+      const container = document.getElementById('serverVideosListContainer');
+      if (!container) return;
+      container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">⏳ Scanning videos folder…</div>';
+
+      try {
+        const res = await fetch(API_LIST_VIDEOS, {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.files) || data.files.length === 0) {
+          container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">No video files found in public/videos/. Upload one above!</div>';
+          return;
+        }
+
+        const videoFiles = data.files.filter(f => f.isVideo);
+        if (videoFiles.length === 0) {
+          container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">No .mp4 or .webm videos in storage.</div>';
+          return;
+        }
+
+        container.innerHTML = videoFiles.map(f => `
+          <div class="server-video-row">
+            <div style="min-width:0;">
+              <div class="server-video-name" title="${f.path}">🎬 ${f.filename}</div>
+              <div class="server-video-meta">${f.sizeFormatted}</div>
+            </div>
+            <button type="button" class="btn-secondary" style="padding:3px 9px; font-size:0.72rem;" onclick="selectServerVideo('${f.path}')">
+              Select
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<div style="color:var(--danger);font-size:0.75rem;text-align:center;padding:10px;">Could not load server videos.</div>';
+      }
+    }
+
+    function selectServerVideo(videoPath) {
+      document.getElementById('inputVideoUrl').value = videoPath;
+      refreshVideoPreview();
+      showToast(`Selected: ${videoPath}`, 'info');
+    }
+
+    // ── Add New Video Upload ──
     async function handleVideoFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1926,7 +2191,8 @@
             statusText.textContent = `✅ Uploaded successfully as ${data.filename}!`;
             document.getElementById('inputVideoUrl').value = data.url;
             setVideoSourceType('mp4', true);
-            showToast(`Video uploaded: ${data.filename}`, 'success');
+            showToast(`Video uploaded: ${data.filename}! Click Save to apply.`, 'success');
+            loadServerVideosLibrary();
           } else {
             throw new Error(data.error || 'Upload failed');
           }
@@ -1990,7 +2256,8 @@
         if (data.success) {
           if (data.moduleVideos) moduleVideosData = data.moduleVideos;
           showToast(`🎥 Video settings saved for ${MODULES_META[currentModuleId].name}!`, 'success');
-          refreshVideoPreview();
+          renderVideoEditor(currentModuleId);
+          updateSidebarBadges();
         } else {
           showToast(data.error || 'Failed to save video settings', 'error');
         }
@@ -1998,7 +2265,7 @@
         showToast('Network error saving video settings', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '💾 Save Video Settings';
+        btn.innerHTML = '💾 Save & Publish Video Settings';
       }
     }
 
