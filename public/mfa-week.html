@@ -17,7 +17,7 @@
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=3"></script>
+    <script src="certificate.js?v=4"></script>
     <script src="activity-lock.js"></script>
     
     <style>
@@ -704,7 +704,7 @@
             { name: 'Guardian', threshold: 150, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
         ];
 
-        const quizQuestions = [
+        window.quizQuestions = [
             {
                 question: "What makes a password strong according to best practices?",
                 options: [
@@ -761,6 +761,27 @@
                 explanation: "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
             }
         ];
+        let quizQuestions = window.quizQuestions;
+
+        window.applyDynamicQuizQuestions = function(newMcqs) {
+            if (Array.isArray(newMcqs) && newMcqs.length > 0) {
+                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
+            }
+        };
+
+        function awardVideoMarks() {
+            if (!videoWatched) {
+                videoWatched = true;
+                updateScore(SCORING.video_completion, 'video_completed');
+                showNotification('Video Complete! You earned 50 marks!', 'success');
+                celebrateVideoCompletion();
+                const btn = document.getElementById('claimVideoBtn');
+                if (btn) { btn.disabled = true; btn.textContent = '✅ 50 Video Marks Awarded!'; }
+                if (currentUserName) saveToDatabase();
+            } else {
+                showNotification('You have already claimed your video marks!', 'info');
+            }
+        }
 
         // Global Variables
         let userScore = 0;
