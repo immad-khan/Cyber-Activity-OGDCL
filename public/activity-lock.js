@@ -1,5 +1,5 @@
 // File: public/activity-lock.js
-// Enforces global and per-activity locking for OGDCL Cybersecurity platform with live automatic synchronization
+// Enforces global and per-activity locking & synchronizes dynamic videos and MCQs from Admin Portal
 
 (function() {
     const ACTIVITY_CONFIG = {
@@ -18,6 +18,10 @@
         'privacy-week': {
             id: 'activity_4',
             name: 'Activity 4: Data Privacy'
+        },
+        'index': {
+            id: 'index',
+            name: 'Index: Overview'
         }
     };
 
@@ -29,6 +33,10 @@
             currentActivity = cfg;
             break;
         }
+    }
+
+    if (!currentActivity && (path === '' || path === '/' || path.endsWith('/index.html') || path.endsWith('index'))) {
+        currentActivity = ACTIVITY_CONFIG['index'];
     }
 
     if (!currentActivity) return;
@@ -199,7 +207,6 @@
             const targetPage = pageLookup[actId];
             if (!targetPage) return;
 
-            // Target nav buttons and dropdown items
             document.querySelectorAll(`a[href*="${targetPage}"], .dropdown-item[onclick*="${targetPage}"]`).forEach(el => {
                 if (isLocked) {
                     el.classList.add('nav-item-locked');
@@ -215,6 +222,103 @@
         });
     }
 
+    // ── Dynamic Video Sync ──
+    let currentLoadedVideoUrl = null;
+    let currentLoadedVideoType = null;
+
+    function syncDynamicVideo(vidCfg) {
+        if (!vidCfg || !vidCfg.url) return;
+        const container = document.querySelector('.video-container');
+        if (!container) return;
+
+        const targetType = vidCfg.sourceType === 'youtube' ? 'youtube' : 'mp4';
+        const targetUrl = vidCfg.url.trim();
+
+        if (currentLoadedVideoUrl === targetUrl && currentLoadedVideoType === targetType) {
+            return;
+        }
+
+        currentLoadedVideoUrl = targetUrl;
+        currentLoadedVideoType = targetType;
+
+        if (targetType === 'youtube') {
+            container.innerHTML = `
+                <iframe id="trainingVideoIframe" 
+                        src="${targetUrl}" 
+                        title="${vidCfg.title || 'Training Video'}" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen style="width:100%;height:100%;border:none;border-radius:15px;aspect-ratio:16/9;">
+                </iframe>
+            `;
+
+            const marksDisplay = document.querySelector('.marks-display');
+            if (marksDisplay && !document.getElementById('claimVideoBtn')) {
+                const claimDiv = document.createElement('div');
+                claimDiv.style.marginTop = '10px';
+                claimDiv.innerHTML = `
+                    <button id="claimVideoBtn" onclick="if(typeof awardVideoMarks === 'function'){awardVideoMarks();}else if(typeof window.claimVideoDefault === 'function'){window.claimVideoDefault();}" 
+                            class="claim-video-btn" 
+                            style="background: linear-gradient(45deg, #00ffff, #00b4d8); border: none; color: #000; padding: 10px 22px; border-radius: 20px; font-weight: 700; cursor: pointer; transition: transform 0.2s;">
+                        🎁 Finished Watching? Claim 50 Video Marks
+                    </button>
+                `;
+                marksDisplay.appendChild(claimDiv);
+            }
+        } else {
+            container.innerHTML = `
+                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="${vidCfg.poster || ''}" style="width:100%;border-radius:15px;display:block;">
+                    <source src="${targetUrl}" type="video/mp4">
+                    Your browser does not support HTML5 video streaming.
+                </video>
+            `;
+
+            const vid = document.getElementById('trainingVideo');
+            if (vid) {
+                vid.addEventListener('ended', function() {
+                    if (typeof awardVideoMarks === 'function') {
+                        awardVideoMarks();
+                    } else if (typeof window.claimVideoDefault === 'function') {
+                        window.claimVideoDefault();
+                    }
+                });
+            }
+        }
+    }
+
+    // ── Dynamic MCQs Sync ──
+    let lastLoadedMcqHash = null;
+
+    function syncDynamicMcqs(mcqs) {
+        if (!Array.isArray(mcqs) || mcqs.length === 0) return;
+        const hash = JSON.stringify(mcqs);
+        if (hash === lastLoadedMcqHash) return;
+        lastLoadedMcqHash = hash;
+
+        // 1. If page has dedicated updater
+        if (typeof window.applyDynamicQuizQuestions === 'function') {
+            window.applyDynamicQuizQuestions(mcqs);
+        }
+
+        // 2. If window.quizQuestions exists
+        if (Array.isArray(window.quizQuestions)) {
+            window.quizQuestions.splice(0, window.quizQuestions.length, ...mcqs);
+        }
+    }
+
+    window.claimVideoDefault = function() {
+        if (window.videoWatched) {
+            if (typeof showNotification === 'function') showNotification('Video marks already awarded!', 'info');
+            return;
+        }
+        window.videoWatched = true;
+        if (typeof updateScore === 'function') updateScore(50, 'video_completed');
+        if (typeof showNotification === 'function') showNotification('Video Complete! You earned 50 marks!', 'success');
+        if (typeof celebrateVideoCompletion === 'function') celebrateVideoCompletion();
+        const btn = document.getElementById('claimVideoBtn');
+        if (btn) { btn.disabled = true; btn.textContent = '✅ 50 Video Marks Awarded!'; }
+        if (typeof saveToDatabase === 'function' && window.currentUserName) saveToDatabase();
+    };
+
     let lastKnownLock = null;
 
     async function checkLock() {
@@ -223,7 +327,7 @@
             const data = await res.json();
             if (!data.success) return;
 
-            const isCurrentLocked = !!(data.locked || (data.activityLocks && data.activityLocks[currentActivity.id]));
+            const isCurrentLocked = !!(data.locked || (currentActivity.id !== 'index' && data.activityLocks && data.activityLocks[currentActivity.id]));
 
             if (isCurrentLocked) {
                 showLockBanner(data.locked);
@@ -246,8 +350,18 @@
             if (data.activityLocks) {
                 updateNavLocks(data.activityLocks);
             }
+
+            // Sync dynamic module video & MCQs
+            if (currentActivity && currentActivity.id) {
+                if (data.moduleVideos && data.moduleVideos[currentActivity.id]) {
+                    syncDynamicVideo(data.moduleVideos[currentActivity.id]);
+                }
+                if (data.moduleMcqs && data.moduleMcqs[currentActivity.id]) {
+                    syncDynamicMcqs(data.moduleMcqs[currentActivity.id]);
+                }
+            }
         } catch(e) {
-            console.warn('Failed to verify activity lock status:', e);
+            console.warn('Failed to verify activity settings status:', e);
         }
     }
 
@@ -258,7 +372,7 @@
         checkLock();
     }
 
-    // Live continuous polling: updates without requiring a page refresh
+    // Live continuous polling
     setInterval(checkLock, 2500);
 
     // Instant check when switching tabs or window focus
