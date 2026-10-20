@@ -18,7 +18,7 @@
     <!-- jsPDF Library & Certificate Assets -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=3"></script>
+    <script src="certificate.js?v=4"></script>
     <script src="activity-lock.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -760,7 +760,7 @@
             { name: 'Guardian', threshold: 150, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
         ];
 
-        const quizQuestions = [
+        window.quizQuestions = [
             {
                 question: "According to the video (Chapter 0:30), what is Social Engineering?",
                 options: [
@@ -817,6 +817,13 @@
                 explanation: "Always slow down and pause. Never use phone numbers or links provided in the suspicious message. Verify independently through official channels and report it immediately."
             }
         ];
+        let quizQuestions = window.quizQuestions;
+
+        window.applyDynamicQuizQuestions = function(newMcqs) {
+            if (Array.isArray(newMcqs) && newMcqs.length > 0) {
+                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
+            }
+        };
 
         // State Management
         let currentUserName = '';
@@ -1026,6 +1033,17 @@
         window.addEventListener('load', function () {
             updateScoreVisual();
             updateProgressBar();
+
+            const savedName = localStorage.getItem('ogdcl_user_name');
+            const savedEmpId = localStorage.getItem('ogdcl_emp_id');
+            const savedDept = localStorage.getItem('ogdcl_dept');
+            const savedDesig = localStorage.getItem('ogdcl_desig');
+
+            if (savedName && document.getElementById('userNameStart')) document.getElementById('userNameStart').value = savedName;
+            if (savedEmpId && document.getElementById('userEmpIdStart')) document.getElementById('userEmpIdStart').value = savedEmpId;
+            if (savedDept && document.getElementById('userDepartmentStart')) document.getElementById('userDepartmentStart').value = savedDept;
+            if (savedDesig && document.getElementById('userDesignationStart')) document.getElementById('userDesignationStart').value = savedDesig;
+
             showNotification('Welcome! Watch the video (50 marks) and take the quiz (100 marks)!', 'success');
         });
 
@@ -1340,28 +1358,28 @@
             quizSection.innerHTML = `
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
-                    <h2 style="color: #ba55d3; margin-bottom: 10px; font-size: 2.2rem;">Activity 3 Complete!</h2>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 3 Complete!</h2>
                     <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Social Engineering Defense Assessment.</p>
                     
                     <!-- Official OGDCL Certificate Preview Card -->
-                    <div style="background: linear-gradient(135deg, rgba(20, 20, 45, 0.95), rgba(35, 20, 60, 0.95)); border: 2px solid #ba55d3; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(186, 85, 211, 0.35); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #ba55d3, #9370db); color: #fff; padding: 6px 20px; border-radius: 0 0 0 15px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                    <div style="background: linear-gradient(135deg, rgba(11, 25, 44, 0.95), rgba(0, 40, 70, 0.95)); border: 2px solid #00ffff; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(0, 255, 255, 0.35); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #00b4d8, #0077b6); color: #fff; padding: 6px 20px; border-radius: 0 0 0 15px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
                             Official Certificate
                         </div>
                         
                         <div style="text-align: center; margin-bottom: 14px;">
                             <img src="ogdcl-logo.png" alt="OGDCL" style="height: 36px; object-fit: contain; margin-bottom: 6px;" onerror="this.style.display='none'"><br>
                             <div style="font-size: 0.95rem; letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; font-weight: 800;">OIL & GAS DEVELOPMENT COMPANY LTD</div>
-                            <div style="font-size: 0.8rem; letter-spacing: 1px; color: #da70d6; font-weight: 700;">CYBERSECURITY DEPARTMENT</div>
+                            <div style="font-size: 0.8rem; letter-spacing: 1px; color: #48cae4; font-weight: 700;">CYBERSECURITY DEPARTMENT</div>
                             <div style="font-size: 0.72rem; color: #cbd5e0; letter-spacing: 0.8px;">ISLAMABAD, PAKISTAN</div>
                         </div>
 
-                        <div style="border-top: 1px solid rgba(186,85,211,0.3); border-bottom: 1px solid rgba(186,85,211,0.3); padding: 12px 0; margin: 12px 0;">
+                        <div style="border-top: 1px solid rgba(0,255,255,0.3); border-bottom: 1px solid rgba(0,255,255,0.3); padding: 12px 0; margin: 12px 0;">
                             <div style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #a0aec0;">Certificate of Completion</div>
                             <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
                             <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
-                                Has successfully demonstrated operational competence in<br>
-                                <strong style="color: #ba55d3;">Activity 3: Social Engineering Defense & Human Firewall</strong>
+                                Has successfully demonstrated operational compliance in<br>
+                                <strong style="color: #48cae4;">Activity 3: Social Engineering Defense & Human Firewall</strong>
                             </div>
                         </div>
 
@@ -1397,11 +1415,11 @@
                     <!-- Action Buttons -->
                     <div style="margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
                         <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #ba55d3, #9370db); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(186, 85, 211, 0.45); display: inline-flex; align-items: center; gap: 8px;">
+                                style="background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45); display: inline-flex; align-items: center; gap: 8px;">
                             📄 Download PDF Certificate
                         </button>
                         <button onclick="resetQuiz()" 
-                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer;">
+                                style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer;">
                             🔄 Retake Quiz
                         </button>
                         <a href="index.html" 
