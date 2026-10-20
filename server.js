@@ -12,6 +12,8 @@ import './api/db.js';
 import getUsersHandler from './api/get-users.js';
 import saveUsernameHandler from './api/save-username.js';
 import adminSettingsHandler from './api/admin-settings.js';
+import uploadVideoHandler from './api/upload-video.js';
+import listVideosHandler from './api/list-videos.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,15 +22,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const publicDir = path.join(__dirname, 'public');
 
-// Middleware: Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Middleware: Body parsing (supports large video uploads up to 100mb)
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 // Middleware: Global CORS & Security Headers
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, x-filename, X-Requested-With');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -52,6 +54,8 @@ const wrapHandler = (handler) => async (req, res, next) => {
 app.all('/api/get-users', wrapHandler(getUsersHandler));
 app.all('/api/save-username', wrapHandler(saveUsernameHandler));
 app.all('/api/admin-settings', wrapHandler(adminSettingsHandler));
+app.all('/api/upload-video', wrapHandler(uploadVideoHandler));
+app.all('/api/list-videos', wrapHandler(listVideosHandler));
 
 // Health check endpoint for load balancers / monitoring
 app.get('/health', (req, res) => {
