@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard – OGDCL</title>
+  <title>Admin Dashboard – OGDCL Cybersecurity Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
@@ -16,9 +16,10 @@
       --border: rgba(255,255,255,0.08);
       --border-bright: rgba(255,255,255,0.14);
       --text: #f0f0ff;
-      --text-muted: rgba(240,240,255,0.45);
-      --text-dim: rgba(240,240,255,0.25);
+      --text-muted: rgba(240,240,255,0.55);
+      --text-dim: rgba(240,240,255,0.3);
       --accent: #6c63ff;
+      --accent-hover: #7c74ff;
       --accent-2: #00d2ff;
       --danger: #ef4444;
       --success: #22c55e;
@@ -38,30 +39,30 @@
       position: fixed;
       top: 0; left: 0;
       height: 100vh;
-      width: 240px;
-      background: rgba(12,12,24,0.95);
+      width: 250px;
+      background: rgba(12,12,24,0.96);
       border-right: 1px solid var(--border);
       backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      padding: 28px 0;
+      padding: 24px 0;
       z-index: 100;
     }
 
     .sidebar-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 20px 28px;
+      gap: 12px;
+      padding: 0 20px 24px;
       border-bottom: 1px solid var(--border);
     }
 
     .sidebar-logo .icon {
-      width: 38px; height: 38px;
+      width: 40px; height: 40px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
+      font-size: 20px;
       flex-shrink: 0;
     }
 
@@ -72,9 +73,8 @@
     }
 
     .sidebar-logo .version {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       color: var(--text-dim);
-      font-weight: 400;
     }
 
     .sidebar-nav {
@@ -83,6 +83,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      overflow-y: auto;
     }
 
     .nav-label {
@@ -98,22 +99,24 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: 10px;
       cursor: pointer;
       color: var(--text-muted);
-      font-size: 0.87rem;
+      font-size: 0.88rem;
       font-weight: 500;
       transition: background 0.2s, color 0.2s;
       border: none;
       background: none;
       width: 100%;
       text-decoration: none;
+      text-align: left;
+      font-family: inherit;
     }
 
     .nav-item:hover { background: var(--surface-hover); color: var(--text); }
-    .nav-item.active { background: rgba(108,99,255,0.15); color: #a78bfa; }
-    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-item.active { background: rgba(108,99,255,0.18); color: #a78bfa; font-weight: 600; }
+    .nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; }
 
     .sidebar-footer {
       padding: 16px 12px 0;
@@ -122,7 +125,7 @@
 
     /* ─── Main ─── */
     .main {
-      margin-left: 240px;
+      margin-left: 250px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -130,8 +133,8 @@
 
     /* ─── Topbar ─── */
     .topbar {
-      height: 64px;
-      background: rgba(7,8,15,0.8);
+      height: 68px;
+      background: rgba(7,8,15,0.85);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(20px);
       display: flex;
@@ -142,21 +145,10 @@
       z-index: 50;
     }
 
-    .topbar-left h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    .topbar-left p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
+    .topbar-left h2 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px; }
+    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
 
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
 
     .admin-pill {
       display: flex;
@@ -176,6 +168,8 @@
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 12px;
+      font-weight: 700;
+      color: #fff;
     }
 
     .logout-btn {
@@ -191,14 +185,477 @@
       font-weight: 500;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
     }
     .logout-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
 
     /* ─── Content ─── */
     .content { padding: 28px; flex: 1; }
 
-    /* ─── Lock Banner ─── */
+    /* ─── Buttons ─── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+      text-decoration: none;
+    }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-bright); }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover { background: #ef4444; color: #fff; }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: #fcd34d;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover { background: #f59e0b; color: #000; }
+
+    /* ─── MODULE NAVIGATION BAR ─── */
+    .module-nav-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .module-nav-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding: 4px;
+    }
+
+    .module-nav-bar::-webkit-scrollbar { height: 4px; }
+    .module-nav-bar::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+
+    .mod-tab {
+      flex: 1;
+      min-width: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: inherit;
+      text-align: left;
+    }
+
+    .mod-tab:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.06);
+    }
+
+    .mod-tab.active {
+      background: linear-gradient(135deg, rgba(108,99,255,0.18), rgba(0,210,255,0.12));
+      border-color: rgba(108,99,255,0.45);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.15);
+    }
+
+    .mod-tab-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .mod-icon { font-size: 18px; }
+    .mod-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-muted);
+    }
+    .mod-tab.active .mod-badge {
+      background: rgba(108,99,255,0.35);
+      color: #e0e7ff;
+    }
+
+    .mod-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mod-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+    .mod-tab.active .mod-sub { color: rgba(240,240,255,0.7); }
+
+    /* ─── Active Module Header Banner ─── */
+    .module-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .module-banner-left { display: flex; align-items: center; gap: 14px; }
+    .module-banner-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .module-banner-title { font-size: 1.15rem; font-weight: 700; }
+    .module-banner-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    .module-banner-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .live-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,210,255,0.1);
+      border: 1px solid rgba(0,210,255,0.3);
+      color: #38bdf8;
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .live-link-btn:hover { background: rgba(0,210,255,0.2); }
+
+    /* ─── Two-Column Content Workspace ─── */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Card Panels ─── */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+    }
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ─── Forms ─── */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: rgba(108,99,255,0.6);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+    }
+    .form-textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
+    .form-hint { font-size: 0.72rem; color: var(--text-dim); }
+
+    /* ─── Source Type Segmented Radio ─── */
+    .segmented-control {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .seg-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .seg-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.3);
+    }
+
+    /* ─── Video Live Preview Box ─── */
+    .video-preview-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      aspect-ratio: 16/9;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-preview-wrap video, .video-preview-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .preview-placeholder {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ─── Upload Dropzone ─── */
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.015);
+    }
+    .upload-box:hover {
+      border-color: var(--accent);
+      background: rgba(108,99,255,0.05);
+    }
+    .upload-progress {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .upload-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.3s;
+    }
+
+    /* ─── MCQs List & Cards ─── */
+    .mcq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 680px;
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+    }
+    .mcq-list::-webkit-scrollbar { width: 5px; }
+    .mcq-list::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 5px; }
+
+    .mcq-card {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .mcq-card:hover { border-color: rgba(255,255,255,0.12); }
+
+    .mcq-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mcq-number-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(108,99,255,0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(108,99,255,0.35);
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      transition: all 0.2s;
+    }
+    .option-row.is-correct {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.4);
+    }
+
+    .option-prefix {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      width: 18px;
+    }
+    .option-row.is-correct .option-prefix { color: #86efac; }
+
+    .option-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.86rem;
+      outline: none;
+      padding: 4px 0;
+    }
+
+    .correct-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .correct-btn:hover { border-color: rgba(34,197,94,0.4); color: #86efac; }
+    .option-row.is-correct .correct-btn {
+      background: #22c55e;
+      color: #000;
+      border-color: #22c55e;
+      font-weight: 700;
+    }
+
+    /* ─── Lock Banner & Individual Grid ─── */
     .lock-banner {
       display: flex;
       align-items: center;
@@ -208,22 +665,10 @@
       margin-bottom: 24px;
       border: 1px solid;
       transition: all 0.3s;
-      animation: fadeIn 0.4s ease;
     }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-
-    .lock-banner.unlocked {
-      background: rgba(34,197,94,0.08);
-      border-color: rgba(34,197,94,0.2);
-    }
-    .lock-banner.locked {
-      background: rgba(239,68,68,0.08);
-      border-color: rgba(239,68,68,0.25);
-    }
-
+    .lock-banner.unlocked { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+    .lock-banner.locked { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
     .lock-banner-info { display: flex; align-items: center; gap: 14px; }
-
     .lock-status-icon {
       width: 48px; height: 48px;
       border-radius: 14px;
@@ -233,7 +678,6 @@
     }
     .unlocked .lock-status-icon { background: rgba(34,197,94,0.12); }
     .locked .lock-status-icon { background: rgba(239,68,68,0.12); }
-
     .lock-banner-title { font-size: 1rem; font-weight: 600; }
     .lock-banner-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
 
@@ -243,31 +687,19 @@
       gap: 8px;
       padding: 10px 20px;
       border-radius: 10px;
-      font-family: 'Inter', sans-serif;
+      font-family: inherit;
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       border: none;
-      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-      white-space: nowrap;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .lock-toggle-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .lock-toggle-btn.lock-action {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: #fff;
-      box-shadow: 0 4px 16px rgba(239,68,68,0.3);
-    }
-    .lock-toggle-btn.unlock-action {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff;
-      box-shadow: 0 4px 16px rgba(34,197,94,0.3);
-    }
-    .lock-toggle-btn:hover:not(:disabled) { transform: translateY(-2px); }
+    .lock-toggle-btn.lock-action { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; box-shadow: 0 4px 16px rgba(239,68,68,0.3); }
+    .lock-toggle-btn.unlock-action { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.3); }
 
-    /* ─── Individual Activity Grid ─── */
     .activity-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -279,100 +711,25 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 14px;
       transition: all 0.25s ease;
     }
-    .activity-card.locked {
-      background: rgba(239, 68, 68, 0.06);
-      border-color: rgba(239, 68, 68, 0.25);
-    }
-    .activity-card.unlocked {
-      background: rgba(34, 197, 94, 0.04);
-      border-color: rgba(34, 197, 94, 0.18);
-    }
-    .activity-card:hover {
-      border-color: var(--border-bright);
-      transform: translateY(-2px);
-    }
-    .act-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .act-icon {
-      font-size: 22px;
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .act-badge {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding: 3px 8px;
-      border-radius: 100px;
-    }
-    .act-badge.badge-unlocked {
-      background: rgba(34,197,94,0.15);
-      color: #86efac;
-      border: 1px solid rgba(34,197,94,0.3);
-    }
-    .act-badge.badge-locked {
-      background: rgba(239,68,68,0.15);
-      color: #fca5a5;
-      border: 1px solid rgba(239,68,68,0.3);
-    }
-    .act-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    .act-desc {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      line-height: 1.4;
-      flex-grow: 1;
-    }
+    .activity-card.locked { background: rgba(239, 68, 68, 0.06); border-color: rgba(239, 68, 68, 0.25); }
+    .activity-card.unlocked { background: rgba(34, 197, 94, 0.04); border-color: rgba(34, 197, 94, 0.18); }
+    .act-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .act-icon { font-size: 22px; width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; }
+    .act-badge { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 100px; }
+    .act-badge.badge-unlocked { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .act-badge.badge-locked { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .act-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .act-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
     .act-action-btn {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: 9px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      width: 100%; padding: 9px 12px; border-radius: 9px; font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
     }
-    .act-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .act-action-btn.btn-lock {
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.3);
-      color: #fca5a5;
-    }
-    .act-action-btn.btn-lock:hover:not(:disabled) {
-      background: #ef4444;
-      color: #fff;
-    }
-    .act-action-btn.btn-unlock {
-      background: rgba(34,197,94,0.15);
-      border: 1px solid rgba(34,197,94,0.35);
-      color: #86efac;
-    }
-    .act-action-btn.btn-unlock:hover:not(:disabled) {
-      background: #22c55e;
-      color: #fff;
-    }
+    .act-action-btn.btn-lock { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .act-action-btn.btn-lock:hover { background: #ef4444; color: #fff; }
+    .act-action-btn.btn-unlock { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #86efac; }
+    .act-action-btn.btn-unlock:hover { background: #22c55e; color: #fff; }
 
     /* ─── Stats Grid ─── */
     .stats-grid {
@@ -381,321 +738,83 @@
       gap: 16px;
       margin-bottom: 24px;
     }
-
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 20px;
-      transition: border-color 0.2s, background 0.2s;
     }
-    .stat-card:hover { background: var(--surface-hover); border-color: var(--border-bright); }
-
-    .stat-label {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-      margin-bottom: 10px;
-    }
-
+    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
     .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -1px;
+      font-size: 2rem; font-weight: 700; letter-spacing: -1px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
+    .stat-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
 
-    .stat-sub {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
+    /* ─── Search & Table ─── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .section-title { font-size: 1rem; font-weight: 600; }
+    .section-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
-    /* ─── Table Section ─── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .section-title {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    .section-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .section-actions { display: flex; gap: 10px; }
-
-    .btn-secondary {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-    }
-    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-bright); }
-
-    .btn-primary {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 16px rgba(108,99,255,0.25);
-    }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    /* Search */
-    .search-bar {
-      position: relative;
-      margin-bottom: 16px;
-    }
+    .search-bar { position: relative; margin-bottom: 16px; }
     .search-bar input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px 10px 40px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px 10px 40px; color: var(--text); font-family: inherit; font-size: 0.88rem; outline: none;
     }
-    .search-bar input:focus {
-      border-color: rgba(108,99,255,0.5);
-      box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
-    }
-    .search-bar input::placeholder { color: var(--text-dim); }
-    .search-icon {
-      position: absolute;
-      left: 13px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-dim);
-      font-size: 15px;
-      pointer-events: none;
-    }
+    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 15px; }
 
-    /* Table */
-    .table-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead tr {
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      padding: 12px 16px;
-      text-align: left;
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 13px 16px;
-      font-size: 0.85rem;
-      color: var(--text);
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      vertical-align: middle;
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    tbody tr {
-      transition: background 0.15s;
-    }
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); }
+    th { padding: 12px 16px; text-align: left; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+    td { padding: 13px 16px; font-size: 0.85rem; color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
     tbody tr:hover { background: rgba(255,255,255,0.03); }
 
-    .user-name-cell {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .user-name-cell { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-    .user-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .badge-level {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
+    .badge-level { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; }
     .badge-expert { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
     .badge-advanced { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
     .badge-intermediate { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
     .badge-beginner { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.25); }
-    
+
     .badge-activity {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      background: rgba(0, 245, 160, 0.08);
-      color: var(--accent);
-      border: 1px solid rgba(0, 245, 160, 0.2);
-      white-space: nowrap;
+      display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem;
+      font-weight: 600; background: rgba(0, 245, 160, 0.08); color: var(--accent); border: 1px solid rgba(0, 245, 160, 0.2);
     }
 
-    .score-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .score-bar {
-      width: 60px; height: 6px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .score-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      border-radius: 3px;
-      transition: width 0.6s ease;
-    }
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-bar { width: 60px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 3px; }
 
-    /* Loading / Empty / Error states */
-    .state-row td {
-      text-align: center;
-      padding: 56px 24px;
-      color: var(--text-muted);
-    }
-
-    .loading-dots span {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin: 0 3px;
-      animation: bounce 1.2s ease-in-out infinite;
-    }
-    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-      40% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Toast notification */
-    .toast {
-      position: fixed;
-      bottom: 28px; right: 28px;
-      background: rgba(20,20,40,0.95);
-      border: 1px solid var(--border-bright);
-      backdrop-filter: blur(20px);
-      border-radius: 12px;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.88rem;
-      font-weight: 500;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-      z-index: 1000;
-      transform: translateY(80px);
-      opacity: 0;
-      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s;
-      min-width: 280px;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { border-color: rgba(34,197,94,0.3); }
-    .toast.error { border-color: rgba(239,68,68,0.3); }
-
-    /* Pagination */
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
     .page-btns { display: flex; gap: 6px; }
-
     .page-btn {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      font-family: 'Inter', sans-serif;
-      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-muted); font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    .page-btn:hover { background: var(--surface-hover); color: var(--text); }
     .page-btn.active { background: rgba(108,99,255,0.2); color: #a78bfa; border-color: rgba(108,99,255,0.35); }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .sidebar { width: 60px; }
-      .sidebar-logo .name, .sidebar-logo .version, .nav-item span:not(.nav-icon), .nav-label { display: none; }
-      .main { margin-left: 60px; }
-      .nav-item { justify-content: center; padding: 10px 0; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px; background: rgba(20,20,40,0.96); border: 1px solid var(--border-bright);
+      backdrop-filter: blur(20px); border-radius: 12px; padding: 14px 20px; display: flex; align-items: center;
+      gap: 10px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 16px 40px rgba(0,0,0,0.5); z-index: 1000;
+      transform: translateY(80px); opacity: 0; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s; min-width: 280px;
     }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,0.4); }
+    .toast.error { border-color: rgba(239,68,68,0.4); }
 
-    @media (max-width: 600px) {
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .content { padding: 16px; }
-      .lock-banner { flex-direction: column; gap: 14px; align-items: flex-start; }
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .sidebar { width: 68px; }
+      .sidebar-logo .name, .sidebar-logo .version, .nav-item span:not(.nav-icon), .nav-label { display: none; }
+      .main { margin-left: 68px; }
+      .nav-item { justify-content: center; padding: 12px 0; }
     }
   </style>
 </head>
@@ -707,23 +826,28 @@
       <img src="ogdcl-logo.png" alt="Logo" style="height:34px;object-fit:contain;" />
       <div>
         <div class="name">Admin Portal</div>
+        <div class="version">OGDCL CyberShield</div>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-label">Menu</div>
-      <a class="nav-item active" href="#" onclick="showSection('users')">
-        <span class="nav-icon">👥</span><span>Users</span>
-      </a>
-      <a class="nav-item" href="#" onclick="showSection('settings')">
-        <span class="nav-icon">⚙️</span><span>Settings</span>
-      </a>
-      <div class="nav-label">Tools</div>
+      <div class="nav-label">Management</div>
+      <button class="nav-item active" id="btnNavContent" onclick="showSection('content')">
+        <span class="nav-icon">🎬</span><span>Content & MCQs</span>
+      </button>
+      <button class="nav-item" id="btnNavUsers" onclick="showSection('users')">
+        <span class="nav-icon">👥</span><span>Users & Reports</span>
+      </button>
+      <button class="nav-item" id="btnNavLocks" onclick="showSection('locks')">
+        <span class="nav-icon">🔒</span><span>Activity Locks</span>
+      </button>
+
+      <div class="nav-label">Quick Actions</div>
       <button class="nav-item" onclick="exportExcel()">
         <span class="nav-icon">📊</span><span>Export Excel</span>
       </button>
-      <button class="nav-item" onclick="refreshUsers()">
-        <span class="nav-icon">🔄</span><span>Refresh</span>
+      <button class="nav-item" onclick="refreshData()">
+        <span class="nav-icon">🔄</span><span>Refresh Data</span>
       </button>
     </nav>
 
@@ -739,8 +863,8 @@
     <!-- Topbar -->
     <header class="topbar">
       <div class="topbar-left">
-        <h2 id="pageTitle">User Management</h2>
-        <p id="pageSubtitle">View participant records & control activity locks</p>
+        <h2 id="pageTitle">Content & Assessment Manager</h2>
+        <p id="pageSubtitle">Change training videos and MCQ quizzes for Index and Activities 1 to 4</p>
       </div>
       <div class="topbar-right">
         <div class="admin-pill">
@@ -751,207 +875,964 @@
       </div>
     </header>
 
-    <!-- Content -->
+    <!-- Content Workspace -->
     <div class="content" id="mainContent">
 
-      <!-- Global Lock Banner -->
-      <div class="lock-banner unlocked" id="lockBanner">
-        <div class="lock-banner-info">
-          <div class="lock-status-icon" id="lockIcon">🟢</div>
-          <div>
-            <div class="lock-banner-title" id="lockTitle">Site Activities Unlocked</div>
-            <div class="lock-banner-desc" id="lockDesc">Users can access all quizzes, videos, and interactive features.</div>
+      <!-- ======================================================== -->
+      <!-- SECTION 1: CONTENT & ASSESSMENT MANAGER (VIDEOS & MCQS)  -->
+      <!-- ======================================================== -->
+      <section id="sectionContent">
+        
+        <!-- Module Navigation Bar with 5 requested tabs -->
+        <div class="module-nav-container">
+          <div class="module-nav-bar" id="moduleNavBar">
+            <button class="mod-tab active" data-mod="index" onclick="selectModule('index')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🏠</span>
+                <span class="mod-badge" id="badge-index">5 MCQs</span>
+              </div>
+              <div class="mod-title">Index</div>
+              <div class="mod-sub">Overview & Home Page</div>
+            </button>
+
+            <button class="mod-tab" data-mod="activity_1" onclick="selectModule('activity_1')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🎣</span>
+                <span class="mod-badge" id="badge-activity_1">5 MCQs</span>
+              </div>
+              <div class="mod-title">Activity 1</div>
+              <div class="mod-sub">Executive Phishing Defense</div>
+            </button>
+
+            <button class="mod-tab" data-mod="activity_2" onclick="selectModule('activity_2')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🔐</span>
+                <span class="mod-badge" id="badge-activity_2">5 MCQs</span>
+              </div>
+              <div class="mod-title">Activity 2</div>
+              <div class="mod-sub">Password & Multi-Factor Auth</div>
+            </button>
+
+            <button class="mod-tab" data-mod="activity_3" onclick="selectModule('activity_3')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🧠</span>
+                <span class="mod-badge" id="badge-activity_3">5 MCQs</span>
+              </div>
+              <div class="mod-title">Activity 3</div>
+              <div class="mod-sub">Social Engineering Defense</div>
+            </button>
+
+            <button class="mod-tab" data-mod="activity_4" onclick="selectModule('activity_4')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🛡️</span>
+                <span class="mod-badge" id="badge-activity_4">5 MCQs</span>
+              </div>
+              <div class="mod-title">Activity 4</div>
+              <div class="mod-sub">Data Privacy & Compliance</div>
+            </button>
           </div>
         </div>
-        <button class="lock-toggle-btn lock-action" id="lockBtn" onclick="toggleLock()">
-          🔒 Lock All Activities
-        </button>
-      </div>
 
-      <!-- Individual Activity Controls -->
-      <div style="margin-bottom: 24px;">
-        <div class="section-header" style="margin-bottom:12px;">
-          <div>
-            <div class="section-title">Individual Activity Controls</div>
-            <div class="section-sub">Lock or unlock specific modules independently for all users</div>
+        <!-- Active Module Header Banner -->
+        <div class="module-banner">
+          <div class="module-banner-left">
+            <div class="module-banner-icon" id="bannerIcon">🏠</div>
+            <div>
+              <div class="module-banner-title" id="bannerTitle">Index: Cybersecurity Overview</div>
+              <div class="module-banner-sub" id="bannerDesc">Foundational awareness video and introductory assessment questions.</div>
+            </div>
+          </div>
+          <div class="module-banner-actions">
+            <a href="index.html" target="_blank" class="live-link-btn" id="bannerPageLink">
+              🔗 Open Live Page ↗
+            </a>
           </div>
         </div>
-        <div class="activity-grid" id="activityGrid"></div>
-      </div>
 
-      <!-- Stats -->
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-label">Total Users</div>
-          <div class="stat-value" id="statTotal">—</div>
-          <div class="stat-sub">Registered participants</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Avg Score</div>
-          <div class="stat-value" id="statAvgScore">—</div>
-          <div class="stat-sub">Points across all users</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Avg Accuracy</div>
-          <div class="stat-value" id="statAvgAccuracy">—%</div>
-          <div class="stat-sub">Quiz performance</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Completed Videos</div>
-          <div class="stat-value" id="statVideos">—</div>
-          <div class="stat-sub">Video completions</div>
-        </div>
-      </div>
+        <!-- Two Column Editor: Video (Left) + MCQs (Right) -->
+        <div class="content-grid">
 
-      <!-- Users Table -->
-      <div class="section-header">
-        <div>
-          <div class="section-title">All Users</div>
-          <div class="section-sub" id="tableCount">Loading...</div>
-        </div>
-        <div class="section-actions">
-          <button class="btn-secondary" onclick="refreshUsers()">🔄 Refresh</button>
-          <button class="btn-primary" onclick="exportExcel()" id="exportBtn">📊 Export Excel</button>
-        </div>
-      </div>
+          <!-- ─── LEFT: VIDEO MANAGEMENT ─── -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title"><span>🎥</span> Training Video Configuration</div>
+                <div class="panel-sub">Change source (MP4 file or YouTube) for this module</div>
+              </div>
+              <button class="btn-reset" onclick="resetCurrentVideo()" title="Restore factory default video for this module">
+                🔄 Reset Video
+              </button>
+            </div>
 
-      <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 200px;">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…" oninput="filterUsers()" />
-        </div>
-        <select id="activityFilter" onchange="filterUsers()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: 'Inter', sans-serif; outline: none; cursor: pointer;">
-          <option value="all">🌐 All Activities</option>
-          <option value="Activity 1">Activity 1 (Phishing)</option>
-          <option value="Activity 2">Activity 2 (Passwords/MFA)</option>
-          <option value="Activity 3">Activity 3 (Social Engineering)</option>
-          <option value="Activity 4">Activity 4 (Data Privacy)</option>
-        </select>
-      </div>
+            <!-- Video Source Type Selector -->
+            <div class="form-group">
+              <label class="form-label">Video Source Type</label>
+              <div class="segmented-control">
+                <button class="seg-btn active" id="btnSourceMp4" type="button" onclick="setVideoSourceType('mp4')">
+                  📹 MP4 Video (Direct File / URL)
+                </button>
+                <button class="seg-btn" id="btnSourceYoutube" type="button" onclick="setVideoSourceType('youtube')">
+                  🔴 YouTube Embed
+                </button>
+              </div>
+            </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Emp ID</th>
-              <th>Department</th>
-              <th>Designation</th>
-              <th>Activity</th>
-              <th>Level</th>
-              <th>Score</th>
-              <th>Accuracy</th>
-              <th>Video</th>
-              <th>Quiz Marks</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="usersTableBody">
-            <tr class="state-row">
-              <td colspan="12">
-                <div class="loading-dots">
-                  <span></span><span></span><span></span>
+            <!-- MP4 File Upload Box -->
+            <div id="mp4UploadSection">
+              <div class="upload-box" onclick="document.getElementById('videoFileInput').click()">
+                <div style="font-size: 26px; margin-bottom: 6px;">📤</div>
+                <div style="font-size: 0.85rem; font-weight: 600;">Click to Upload New MP4 Video</div>
+                <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">Supports .mp4, .webm (saves to public/videos/)</div>
+                <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;" onchange="handleVideoFileUpload(event)" />
+                <div class="upload-progress" id="uploadProgress">
+                  <div class="upload-progress-bar" id="uploadProgressBar"></div>
                 </div>
-                <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <div id="uploadStatusText" style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
+              </div>
+            </div>
 
-        <div class="pagination" id="paginationBar">
-          <span id="paginationInfo">—</span>
-          <div class="page-btns" id="pageBtns"></div>
+            <!-- Video URL Input -->
+            <div class="form-group">
+              <label class="form-label" id="lblVideoUrl">Video URL / File Path</label>
+              <input type="text" class="form-input" id="inputVideoUrl" placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..." oninput="onVideoUrlChange()" />
+              <div class="form-hint" id="videoUrlHint">Local relative path (e.g. videos/filename.mp4) or direct streaming URL.</div>
+            </div>
+
+            <!-- Poster Image URL (for MP4) -->
+            <div class="form-group" id="posterGroup">
+              <label class="form-label">Video Poster Image (Optional)</label>
+              <input type="text" class="form-input" id="inputVideoPoster" placeholder="videos/phishing-awareness_poster.jpg" oninput="onVideoUrlChange()" />
+            </div>
+
+            <!-- Video Title & Description -->
+            <div class="form-group">
+              <label class="form-label">Video Title</label>
+              <input type="text" class="form-input" id="inputVideoTitle" placeholder="e.g. Executive Phishing Defense" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Video Description</label>
+              <textarea class="form-textarea" id="inputVideoDesc" placeholder="Brief summary of what participants will learn..."></textarea>
+            </div>
+
+            <!-- Live Video Player Preview -->
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="form-label">Live Video Preview</label>
+                <button type="button" class="btn-secondary" style="padding:4px 10px; font-size:0.72rem;" onclick="refreshVideoPreview()">
+                  ▶️ Refresh Preview
+                </button>
+              </div>
+              <div class="video-preview-wrap" id="videoPreviewWrap">
+                <div class="preview-placeholder">Loading preview…</div>
+              </div>
+            </div>
+
+            <!-- Save Video Button -->
+            <div>
+              <button class="btn-primary" style="width: 100%; justify-content: center; padding: 11px;" id="btnSaveVideo" onclick="saveCurrentVideo()">
+                💾 Save Video Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- ─── RIGHT: MCQs / QUIZ QUESTIONS MANAGEMENT ─── -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">
+                  <span>❓</span> Assessment Questions (<span id="mcqCountHeader">5</span>)
+                </div>
+                <div class="panel-sub" id="mcqMarksSummary">20 Marks per question | Total 100 Quiz Marks</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-reset" onclick="resetCurrentMcqs()" title="Reset all MCQs to default questions">
+                  🔄 Reset MCQs
+                </button>
+                <button class="btn-secondary" onclick="addNewMcqQuestion()">
+                  ➕ Add Question
+                </button>
+              </div>
+            </div>
+
+            <!-- Questions List -->
+            <div class="mcq-list" id="mcqListContainer">
+              <!-- Dynamically populated question cards -->
+            </div>
+
+            <!-- Actions Bar -->
+            <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 16px;">
+              <button class="btn-secondary" onclick="addNewMcqQuestion()">
+                ➕ Add Another Question
+              </button>
+              <button class="btn-primary" id="btnSaveMcqs" onclick="saveCurrentMcqs()">
+                💾 Save All MCQs for this Module
+              </button>
+            </div>
+          </div>
+
         </div>
-      </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 2: USERS & REPORTS                               -->
+      <!-- ======================================================== -->
+      <section id="sectionUsers" style="display:none;">
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value" id="statTotal">—</div>
+            <div class="stat-sub">Registered participants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Score</div>
+            <div class="stat-value" id="statAvgScore">—</div>
+            <div class="stat-sub">Points across all users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Accuracy</div>
+            <div class="stat-value" id="statAvgAccuracy">—%</div>
+            <div class="stat-sub">Quiz performance</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed Videos</div>
+            <div class="stat-value" id="statVideos">—</div>
+            <div class="stat-sub">Video completions</div>
+          </div>
+        </div>
+
+        <!-- Users Table Header -->
+        <div class="section-header">
+          <div>
+            <div class="section-title">All Participant Records</div>
+            <div class="section-sub" id="tableCount">Loading records…</div>
+          </div>
+          <div class="section-actions">
+            <button class="btn-secondary" onclick="fetchUsers()">🔄 Refresh</button>
+            <button class="btn-primary" onclick="exportExcel()">📊 Export Excel</button>
+          </div>
+        </div>
+
+        <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="position: relative; flex: 1; min-width: 200px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…" oninput="filterUsers()" />
+          </div>
+          <select id="activityFilter" onchange="filterUsers()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
+            <option value="all">🌐 All Modules</option>
+            <option value="Activity 1">Activity 1 (Phishing)</option>
+            <option value="Activity 2">Activity 2 (Passwords/MFA)</option>
+            <option value="Activity 3">Activity 3 (Social Engineering)</option>
+            <option value="Activity 4">Activity 4 (Data Privacy)</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Emp ID</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Activity</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Accuracy</th>
+                <th>Video</th>
+                <th>Quiz Marks</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr class="state-row"><td colspan="12" style="text-align:center;padding:40px;">Loading users…</td></tr>
+            </tbody>
+          </table>
+
+          <div class="pagination" id="paginationBar">
+            <span id="paginationInfo">—</span>
+            <div class="page-btns" id="pageBtns"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SECTION 3: ACTIVITY LOCKS & SECURITY CONTROLS            -->
+      <!-- ======================================================== -->
+      <section id="sectionLocks" style="display:none;">
+        <!-- Global Lock Banner -->
+        <div class="lock-banner unlocked" id="lockBanner">
+          <div class="lock-banner-info">
+            <div class="lock-status-icon" id="lockIcon">🟢</div>
+            <div>
+              <div class="lock-banner-title" id="lockTitle">Site Activities Unlocked</div>
+              <div class="lock-banner-desc" id="lockDesc">Users can access all quizzes, videos, and interactive features.</div>
+            </div>
+          </div>
+          <button class="lock-toggle-btn lock-action" id="lockBtn" onclick="toggleLock()">
+            🔒 Lock All Activities
+          </button>
+        </div>
+
+        <!-- Individual Activity Controls -->
+        <div style="margin-bottom: 24px;">
+          <div class="section-header" style="margin-bottom:12px;">
+            <div>
+              <div class="section-title">Individual Activity Controls</div>
+              <div class="section-sub">Lock or unlock specific modules independently for all participants</div>
+            </div>
+          </div>
+          <div class="activity-grid" id="activityGrid"></div>
+        </div>
+      </section>
+
     </div>
   </main>
 
-  <!-- Toast -->
+  <!-- Toast Notification -->
   <div class="toast" id="toast">
     <span id="toastIcon">✅</span>
-    <span id="toastMsg">Done!</span>
+    <span id="toastMsg">Saved successfully!</span>
   </div>
 
   <script>
     const ADMIN_TOKEN   = 'cybershield-admin-2024';
     const API_USERS     = '/api/get-users';
     const API_SETTINGS  = '/api/admin-settings';
+    const API_UPLOAD    = '/api/upload-video';
 
     // Auth guard
     if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
       window.location.replace('admin-login.html');
     }
 
-    // ── State ──
-    let allUsers      = [];
-    let filtered      = [];
-    let isLocked      = false;
-    let lockLoading   = false;
-    let actLoading    = {};
-    let activityLocks = {
-      activity_1: false,
-      activity_2: false,
-      activity_3: false,
-      activity_4: false
+    // Module Metadata configuration
+    const MODULES_META = {
+      index: {
+        id: 'index',
+        name: 'Index',
+        title: 'Index: Cybersecurity Awareness Overview',
+        desc: 'Introductory awareness video and fundamental cybersecurity quiz.',
+        icon: '🏠',
+        pageUrl: 'index.html',
+        pageName: 'Home / Index Page'
+      },
+      activity_1: {
+        id: 'activity_1',
+        name: 'Activity 1',
+        title: 'Activity 1: The Executive Target & Phishing Defense',
+        desc: 'Spear-phishing, business email compromise, deepfakes, and verification protocols.',
+        icon: '🎣',
+        pageUrl: 'phishing-week.html',
+        pageName: 'Activity 1: The Executive Target'
+      },
+      activity_2: {
+        id: 'activity_2',
+        name: 'Activity 2',
+        title: 'Activity 2: Password Security & Multi-Factor Authentication',
+        desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
+        icon: '🔐',
+        pageUrl: 'mfa-week.html',
+        pageName: 'Activity 2: Password Protection'
+      },
+      activity_3: {
+        id: 'activity_3',
+        name: 'Activity 3',
+        title: 'Activity 3: Social Engineering Defense Training',
+        desc: 'Pretexting, human manipulation, psychological urgency, and human firewall defenses.',
+        icon: '🧠',
+        pageUrl: 'social-engineering-week.html',
+        pageName: 'Activity 3: Social Engineering'
+      },
+      activity_4: {
+        id: 'activity_4',
+        name: 'Activity 4',
+        title: 'Activity 4: Data Privacy & Corporate Asset Protection',
+        desc: 'Personally identifiable information (PII), clean desk policies, and confidentiality.',
+        icon: '🛡️',
+        pageUrl: 'privacy-week.html',
+        pageName: 'Activity 4: Data Privacy'
+      }
     };
-    const PAGE_SIZE   = 15;
-    let currentPage   = 1;
 
     const ACTIVITIES = [
-      {
-        id: 'activity_1',
-        title: 'Activity 1: The Executive Target',
-        desc: 'Executive spear-phishing & cyber threat landscape module.',
-        icon: '🎣',
-        url: 'phishing-week.html'
-      },
-      {
-        id: 'activity_2',
-        title: 'Activity 2: Password Protection',
-        desc: 'Password security, Bitwarden, and Multi-Factor Authentication.',
-        icon: '🔐',
-        url: 'mfa-week.html'
-      },
-      {
-        id: 'activity_3',
-        title: 'Activity 3: Social Engineering',
-        desc: 'Pretexting, human manipulation, and human firewall defenses.',
-        icon: '🧠',
-        url: 'social-engineering-week.html'
-      },
-      {
-        id: 'activity_4',
-        title: 'Activity 4: Data Privacy',
-        desc: 'Corporate data protection & confidential information protocols.',
-        icon: '🛡️',
-        url: 'privacy-week.html'
-      }
+      { id: 'activity_1', title: 'Activity 1: The Executive Target', desc: 'Executive spear-phishing & cyber threat landscape module.', icon: '🎣', url: 'phishing-week.html' },
+      { id: 'activity_2', title: 'Activity 2: Password Protection', desc: 'Password security, Bitwarden, and Multi-Factor Authentication.', icon: '🔐', url: 'mfa-week.html' },
+      { id: 'activity_3', title: 'Activity 3: Social Engineering', desc: 'Pretexting, human manipulation, and human firewall defenses.', icon: '🧠', url: 'social-engineering-week.html' },
+      { id: 'activity_4', title: 'Activity 4: Data Privacy', desc: 'Corporate data protection & confidential information protocols.', icon: '🛡️', url: 'privacy-week.html' }
     ];
 
-    // ── Init ──
+    // ── Global State ──
+    let currentModuleId  = 'index';
+    let moduleVideosData = {};
+    let moduleMcqsData   = {};
+    let allUsers         = [];
+    let filtered         = [];
+    let isLocked         = false;
+    let lockLoading      = false;
+    let actLoading       = {};
+    let activityLocks    = { activity_1: false, activity_2: false, activity_3: false, activity_4: false };
+    const PAGE_SIZE      = 15;
+    let currentPage      = 1;
+
+    // ── Initialization ──
     async function init() {
       renderActivityCards();
-      await Promise.all([fetchLockStatus(), fetchUsers()]);
+      await fetchSettings();
+      fetchUsers();
     }
 
-    // ── Lock Status ──
-    async function fetchLockStatus() {
+    // ── Switch Main Sections ──
+    function showSection(section) {
+      const secContent = document.getElementById('sectionContent');
+      const secUsers   = document.getElementById('sectionUsers');
+      const secLocks   = document.getElementById('sectionLocks');
+      const titleEl    = document.getElementById('pageTitle');
+      const subEl      = document.getElementById('pageSubtitle');
+
+      document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => el.classList.remove('active'));
+
+      if (section === 'content') {
+        secContent.style.display = 'block';
+        secUsers.style.display   = 'none';
+        secLocks.style.display   = 'none';
+        document.getElementById('btnNavContent').classList.add('active');
+        titleEl.textContent = 'Content & Assessment Manager';
+        subEl.textContent   = 'Change training videos and MCQ quizzes for Index and Activities 1 to 4';
+      } else if (section === 'users') {
+        secContent.style.display = 'none';
+        secUsers.style.display   = 'block';
+        secLocks.style.display   = 'none';
+        document.getElementById('btnNavUsers').classList.add('active');
+        titleEl.textContent = 'User Management & Metrics';
+        subEl.textContent   = 'View participant records, test performance, and export Excel data';
+      } else if (section === 'locks') {
+        secContent.style.display = 'none';
+        secUsers.style.display   = 'none';
+        secLocks.style.display   = 'block';
+        document.getElementById('btnNavLocks').classList.add('active');
+        titleEl.textContent = 'Activity Locks & Security Controls';
+        subEl.textContent   = 'Control global site lock and individual module locks in real-time';
+      }
+    }
+
+    // ── Fetch Site Settings (Locks, Videos, MCQs) ──
+    async function fetchSettings() {
       try {
-        const res  = await fetch(API_SETTINGS);
+        const res = await fetch(API_SETTINGS, { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
-          applyLockState(data.locked);
+          isLocked = !!data.locked;
+          applyLockState(isLocked);
           if (data.activityLocks) {
             activityLocks = { ...activityLocks, ...data.activityLocks };
             renderActivityCards();
           }
+          if (data.moduleVideos) {
+            moduleVideosData = data.moduleVideos;
+          }
+          if (data.moduleMcqs) {
+            moduleMcqsData = data.moduleMcqs;
+          }
+          updateAllTabBadges();
+          selectModule(currentModuleId);
         }
       } catch (e) {
-        console.warn('Could not fetch lock status', e);
+        console.warn('Could not fetch settings:', e);
       }
     }
 
+    // ── Module Selection (Index, Activity 1, 2, 3, 4) ──
+    function selectModule(modId) {
+      currentModuleId = modId;
+      const meta = MODULES_META[modId];
+      if (!meta) return;
+
+      // Update Nav Tabs Active Class
+      document.querySelectorAll('.mod-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.getAttribute('data-mod') === modId);
+      });
+
+      // Update Banner Info
+      document.getElementById('bannerIcon').textContent = meta.icon;
+      document.getElementById('bannerTitle').textContent = meta.title;
+      document.getElementById('bannerDesc').textContent  = meta.desc;
+      const liveLink = document.getElementById('bannerPageLink');
+      liveLink.href = meta.pageUrl;
+      liveLink.innerHTML = `🔗 Open Live Page (${meta.pageUrl}) ↗`;
+
+      // Render Video Editor for this module
+      renderVideoEditor(modId);
+
+      // Render MCQ Editor for this module
+      renderMcqEditor(modId);
+    }
+
+    function updateAllTabBadges() {
+      Object.keys(MODULES_META).forEach(id => {
+        const badge = document.getElementById(`badge-${id}`);
+        if (badge) {
+          const count = (moduleMcqsData[id] || []).length;
+          badge.textContent = `${count} MCQ${count !== 1 ? 's' : ''}`;
+        }
+      });
+    }
+
+    // ========================================================
+    // VIDEO MANAGEMENT LOGIC
+    // ========================================================
+    function renderVideoEditor(modId) {
+      const vid = moduleVideosData[modId] || {};
+      const sourceType = vid.sourceType === 'youtube' ? 'youtube' : 'mp4';
+
+      setVideoSourceType(sourceType, false);
+      document.getElementById('inputVideoUrl').value = vid.url || '';
+      document.getElementById('inputVideoPoster').value = vid.poster || '';
+      document.getElementById('inputVideoTitle').value = vid.title || MODULES_META[modId].title;
+      document.getElementById('inputVideoDesc').value = vid.desc || MODULES_META[modId].desc;
+
+      refreshVideoPreview();
+    }
+
+    function setVideoSourceType(type, triggerPreview = true) {
+      const btnMp4 = document.getElementById('btnSourceMp4');
+      const btnYt  = document.getElementById('btnSourceYoutube');
+      const uploadSec = document.getElementById('mp4UploadSection');
+      const posterGrp = document.getElementById('posterGroup');
+      const lblUrl = document.getElementById('lblVideoUrl');
+      const hintUrl = document.getElementById('videoUrlHint');
+
+      if (type === 'youtube') {
+        btnYt.classList.add('active');
+        btnMp4.classList.remove('active');
+        uploadSec.style.display = 'none';
+        posterGrp.style.display = 'none';
+        lblUrl.textContent = 'YouTube Video or Embed URL';
+        hintUrl.textContent = 'Paste any YouTube URL (e.g. watch?v=... or youtu.be/...). It is auto-converted to embed.';
+      } else {
+        btnMp4.classList.add('active');
+        btnYt.classList.remove('active');
+        uploadSec.style.display = 'block';
+        posterGrp.style.display = 'block';
+        lblUrl.textContent = 'MP4 Video URL / Local File Path';
+        hintUrl.textContent = 'Local path (e.g. videos/filename.mp4) or direct streaming MP4 link.';
+      }
+
+      if (triggerPreview) refreshVideoPreview();
+    }
+
+    function isCurrentSourceYoutube() {
+      return document.getElementById('btnSourceYoutube').classList.contains('active');
+    }
+
+    function formatYouTubeEmbedUrl(url) {
+      if (!url) return '';
+      url = url.trim();
+      if (url.includes('youtube.com/embed/')) return url;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      if (match && match[2].length === 11) {
+        return `https://www.youtube.com/embed/${match[2]}?enablejsapi=1&rel=0`;
+      }
+      return url;
+    }
+
+    function onVideoUrlChange() {
+      // Auto-preview on URL change with debounce
+      clearTimeout(window._vidUrlTimer);
+      window._vidUrlTimer = setTimeout(refreshVideoPreview, 600);
+    }
+
+    function refreshVideoPreview() {
+      const isYt = isCurrentSourceYoutube();
+      let rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
+      const poster = (document.getElementById('inputVideoPoster').value || '').trim();
+      const previewWrap = document.getElementById('videoPreviewWrap');
+
+      if (!rawUrl) {
+        previewWrap.innerHTML = `<div class="preview-placeholder">Enter a video URL or upload a file above to preview.</div>`;
+        return;
+      }
+
+      if (isYt) {
+        const embedUrl = formatYouTubeEmbedUrl(rawUrl);
+        document.getElementById('inputVideoUrl').value = embedUrl;
+        previewWrap.innerHTML = `
+          <iframe src="${embedUrl}" title="Preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        `;
+      } else {
+        previewWrap.innerHTML = `
+          <video controls preload="metadata" playsinline poster="${poster}">
+            <source src="${rawUrl}" type="video/mp4">
+            Your browser does not support HTML5 video preview.
+          </video>
+        `;
+      }
+    }
+
+    async function handleVideoFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const progressBox = document.getElementById('uploadProgress');
+      const progressBar = document.getElementById('uploadProgressBar');
+      const statusText  = document.getElementById('uploadStatusText');
+
+      progressBox.style.display = 'block';
+      progressBar.style.width = '20%';
+      statusText.style.display = 'block';
+      statusText.textContent = `Reading ${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)...`;
+
+      const reader = new FileReader();
+      reader.onload = async function() {
+        progressBar.style.width = '60%';
+        statusText.textContent = `Uploading to server...`;
+
+        try {
+          const res = await fetch(API_UPLOAD, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-token': ADMIN_TOKEN
+            },
+            body: JSON.stringify({
+              filename: file.name,
+              base64Data: reader.result
+            })
+          });
+
+          const data = await res.json();
+          if (data.success && data.url) {
+            progressBar.style.width = '100%';
+            statusText.textContent = `✅ Uploaded successfully as ${data.filename}!`;
+            document.getElementById('inputVideoUrl').value = data.url;
+            setVideoSourceType('mp4', true);
+            showToast(`Video uploaded: ${data.filename}`, 'success');
+          } else {
+            throw new Error(data.error || 'Upload failed');
+          }
+        } catch (err) {
+          statusText.textContent = `❌ Upload failed: ${err.message}`;
+          showToast(`Upload failed: ${err.message}`, 'error');
+        }
+      };
+
+      reader.onerror = function() {
+        statusText.textContent = '❌ Could not read local file';
+        showToast('File read error', 'error');
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    async function saveCurrentVideo() {
+      const isYt = isCurrentSourceYoutube();
+      let rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
+      const poster = (document.getElementById('inputVideoPoster').value || '').trim();
+      const title = (document.getElementById('inputVideoTitle').value || '').trim();
+      const desc = (document.getElementById('inputVideoDesc').value || '').trim();
+
+      if (!rawUrl) {
+        showToast('Please specify a video URL or upload a video file', 'error');
+        return;
+      }
+
+      if (isYt) {
+        rawUrl = formatYouTubeEmbedUrl(rawUrl);
+        document.getElementById('inputVideoUrl').value = rawUrl;
+      }
+
+      const videoPayload = {
+        sourceType: isYt ? 'youtube' : 'mp4',
+        url: rawUrl,
+        poster: isYt ? '' : poster,
+        title: title || MODULES_META[currentModuleId].title,
+        desc: desc || MODULES_META[currentModuleId].desc
+      };
+
+      const btn = document.getElementById('btnSaveVideo');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Saving…';
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({
+            moduleId: currentModuleId,
+            video: videoPayload
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          if (data.moduleVideos) moduleVideosData = data.moduleVideos;
+          showToast(`🎥 Video settings saved for ${MODULES_META[currentModuleId].name}!`, 'success');
+          refreshVideoPreview();
+        } else {
+          showToast(data.error || 'Failed to save video settings', 'error');
+        }
+      } catch (e) {
+        showToast('Network error saving video settings', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💾 Save Video Settings';
+      }
+    }
+
+    async function resetCurrentVideo() {
+      const modName = MODULES_META[currentModuleId].name;
+      if (!confirm(`Reset training video to factory default for ${modName}?`)) return;
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({ resetModuleVideo: currentModuleId })
+        });
+        const data = await res.json();
+        if (data.success && data.moduleVideos) {
+          moduleVideosData = data.moduleVideos;
+          renderVideoEditor(currentModuleId);
+          showToast(`Video reset to default for ${modName}`, 'success');
+        }
+      } catch (e) {
+        showToast('Failed to reset video', 'error');
+      }
+    }
+
+    // ========================================================
+    // MCQ / QUIZ QUESTIONS MANAGEMENT LOGIC
+    // ========================================================
+    function renderMcqEditor(modId) {
+      const container = document.getElementById('mcqListContainer');
+      const mcqs = moduleMcqsData[modId] || [];
+
+      document.getElementById('mcqCountHeader').textContent = mcqs.length;
+      document.getElementById('mcqMarksSummary').textContent = `${mcqs.length} Questions | 20 Marks each (Total: ${mcqs.length * 20} Marks)`;
+      updateAllTabBadges();
+
+      if (mcqs.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:30px; color:var(--text-dim); border:1px dashed var(--border); border-radius:12px;">
+            No questions yet for this module. Click "Add Question" to create one.
+          </div>
+        `;
+        return;
+      }
+
+      const labels = ['A', 'B', 'C', 'D'];
+
+      container.innerHTML = mcqs.map((q, qIdx) => {
+        const options = Array.isArray(q.options) ? q.options : ['','','',''];
+        const correct = Number(q.correct) || 0;
+
+        return `
+          <div class="mcq-card" data-qidx="${qIdx}">
+            <div class="mcq-card-header">
+              <span class="mcq-number-badge">Question #${qIdx + 1}</span>
+              <button class="btn-danger" type="button" onclick="deleteMcqQuestion(${qIdx})">
+                🗑️ Delete
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Question Statement</label>
+              <textarea class="form-textarea" placeholder="Type question statement here..." oninput="updateMcqDraft()">${escHtml(q.question || '')}</textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Answer Options (Click button to select correct answer)</label>
+              <div class="options-grid">
+                ${labels.map((lbl, oIdx) => {
+                  const isCorrect = oIdx === correct;
+                  return `
+                    <div class="option-row ${isCorrect ? 'is-correct' : ''}" data-oidx="${oIdx}">
+                      <span class="option-prefix">${lbl})</span>
+                      <input type="text" class="option-input" placeholder="Option ${lbl} text..." value="${escHtml(options[oIdx] || '')}" oninput="updateMcqDraft()" />
+                      <button type="button" class="correct-btn" onclick="setMcqCorrect(${qIdx}, ${oIdx})">
+                        ${isCorrect ? '✅ Correct Answer' : 'Mark Correct'}
+                      </button>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Explanation / Learning Feedback</label>
+              <textarea class="form-textarea" style="min-height:55px;" placeholder="Explanation shown to participant after answering..." oninput="updateMcqDraft()">${escHtml(q.explanation || '')}</textarea>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setMcqCorrect(qIdx, oIdx) {
+      if (!moduleMcqsData[currentModuleId]) moduleMcqsData[currentModuleId] = [];
+      if (moduleMcqsData[currentModuleId][qIdx]) {
+        // Collect current input values from DOM first so nothing is lost
+        collectMcqsFromDom();
+        moduleMcqsData[currentModuleId][qIdx].correct = oIdx;
+        renderMcqEditor(currentModuleId);
+      }
+    }
+
+    function addNewMcqQuestion() {
+      collectMcqsFromDom();
+      if (!moduleMcqsData[currentModuleId]) moduleMcqsData[currentModuleId] = [];
+      moduleMcqsData[currentModuleId].push({
+        question: 'New Question: What is the recommended cybersecurity protocol?',
+        options: [
+          'Option A description',
+          'Option B description (Correct answer)',
+          'Option C description',
+          'Option D description'
+        ],
+        correct: 1,
+        explanation: 'Always follow verified security procedures and independent multi-channel verification.'
+      });
+      renderMcqEditor(currentModuleId);
+
+      // Scroll to the new question card
+      setTimeout(() => {
+        const list = document.getElementById('mcqListContainer');
+        list.scrollTop = list.scrollHeight;
+      }, 50);
+    }
+
+    function deleteMcqQuestion(qIdx) {
+      collectMcqsFromDom();
+      const mcqs = moduleMcqsData[currentModuleId] || [];
+      if (!confirm(`Delete Question #${qIdx + 1}?`)) return;
+
+      mcqs.splice(qIdx, 1);
+      renderMcqEditor(currentModuleId);
+      showToast('Question deleted', 'info');
+    }
+
+    function collectMcqsFromDom() {
+      const cards = document.querySelectorAll('#mcqListContainer .mcq-card');
+      const updatedList = [];
+
+      cards.forEach((card, idx) => {
+        const textareas = card.querySelectorAll('textarea');
+        const questionText = textareas[0] ? textareas[0].value.trim() : '';
+        const explanationText = textareas[1] ? textareas[1].value.trim() : '';
+
+        const optInputs = card.querySelectorAll('.option-input');
+        const options = [];
+        optInputs.forEach(inp => options.push(inp.value.trim()));
+
+        // Find which option is selected as correct
+        let correctIdx = 0;
+        const optRows = card.querySelectorAll('.option-row');
+        optRows.forEach((row, oIdx) => {
+          if (row.classList.contains('is-correct')) {
+            correctIdx = oIdx;
+          }
+        });
+
+        updatedList.push({
+          question: questionText || `Question ${idx + 1}`,
+          options: options.length >= 2 ? options : ['Option A', 'Option B', 'Option C', 'Option D'],
+          correct: correctIdx,
+          explanation: explanationText
+        });
+      });
+
+      moduleMcqsData[currentModuleId] = updatedList;
+      return updatedList;
+    }
+
+    function updateMcqDraft() {
+      // Keep state in sync without re-rendering DOM
+      collectMcqsFromDom();
+    }
+
+    async function saveCurrentMcqs() {
+      const mcqs = collectMcqsFromDom();
+
+      if (mcqs.length === 0) {
+        showToast('Please add at least one question before saving', 'error');
+        return;
+      }
+
+      for (let i = 0; i < mcqs.length; i++) {
+        if (!mcqs[i].question) {
+          showToast(`Question #${i + 1} statement cannot be empty`, 'error');
+          return;
+        }
+      }
+
+      const btn = document.getElementById('btnSaveMcqs');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Saving…';
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({
+            moduleId: currentModuleId,
+            mcqs: mcqs
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          if (data.moduleMcqs) moduleMcqsData = data.moduleMcqs;
+          showToast(`✅ ${mcqs.length} MCQs saved for ${MODULES_META[currentModuleId].name}!`, 'success');
+          renderMcqEditor(currentModuleId);
+        } else {
+          showToast(data.error || 'Failed to save questions', 'error');
+        }
+      } catch (e) {
+        showToast('Network error saving MCQs', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💾 Save All MCQs for this Module';
+      }
+    }
+
+    async function resetCurrentMcqs() {
+      const modName = MODULES_META[currentModuleId].name;
+      if (!confirm(`Reset all MCQs to default factory questions for ${modName}?`)) return;
+
+      try {
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({ resetModuleMcqs: currentModuleId })
+        });
+        const data = await res.json();
+        if (data.success && data.moduleMcqs) {
+          moduleMcqsData = data.moduleMcqs;
+          renderMcqEditor(currentModuleId);
+          showToast(`Default MCQs restored for ${modName}`, 'success');
+        }
+      } catch (e) {
+        showToast('Failed to reset MCQs', 'error');
+      }
+    }
+
+    // ========================================================
+    // ACTIVITY LOCKS LOGIC
+    // ========================================================
     function applyLockState(locked) {
       isLocked = locked;
       const banner = document.getElementById('lockBanner');
@@ -1002,7 +1883,6 @@
                 class="act-action-btn ${isActLocked && !isLocked ? 'btn-unlock' : 'btn-lock'}"
                 onclick="toggleActivityLock('${act.id}')"
                 ${loading || isLocked ? 'disabled' : ''}
-                title="${isLocked ? 'Unlock global site lock first' : ''}"
               >
                 ${loading ? '⏳ Updating…' : (isActLocked && !isLocked ? '🔓 Unlock Activity' : '🔒 Lock Activity')}
               </button>
@@ -1016,8 +1896,7 @@
       if (actLoading[actId] || isLocked) return;
 
       const act = ACTIVITIES.find(a => a.id === actId);
-      const currentlyLocked = !!activityLocks[actId];
-      const targetState = !currentlyLocked;
+      const targetState = !activityLocks[actId];
 
       const confirmed = confirm(
         targetState
@@ -1093,22 +1972,19 @@
             data.locked ? '🔒 All activities locked globally!' : '🔓 Global activities unlocked!',
             data.locked ? 'error' : 'success'
           );
-        } else {
-          showToast('❌ Failed to update lock state', 'error');
-          applyLockState(isLocked);
         }
       } catch (e) {
-        showToast('❌ Network error. Please retry.', 'error');
+        showToast('❌ Network error updating lock', 'error');
       } finally {
         lockLoading = false;
         btn.disabled = false;
-        renderActivityCards();
       }
     }
 
-    // ── Users ──
+    // ========================================================
+    // USERS REPORTING & TABLE LOGIC
+    // ========================================================
     async function fetchUsers() {
-      setTableLoading(true);
       try {
         const res  = await fetch(API_USERS);
         const data = await res.json();
@@ -1120,34 +1996,10 @@
           renderTable();
           document.getElementById('tableCount').textContent =
             `${allUsers.length} user${allUsers.length !== 1 ? 's' : ''} registered`;
-        } else {
-          setTableError('Failed to load users.');
         }
       } catch (e) {
-        setTableError('Network error. Check your connection.');
+        console.warn('Error loading users', e);
       }
-    }
-
-    function refreshUsers() { fetchUsers(); }
-
-    function filterUsers() {
-      const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      const actFilter = document.getElementById('activityFilter') ? document.getElementById('activityFilter').value : 'all';
-
-      filtered = allUsers.filter(u => {
-        const matchesQuery = !q || (
-          (u.userName || '').toLowerCase().includes(q) ||
-          (u.employeeId || '').toLowerCase().includes(q) ||
-          (u.department || '').toLowerCase().includes(q) ||
-          (u.designation || '').toLowerCase().includes(q) ||
-          (u.level || '').toLowerCase().includes(q) ||
-          (u.activity || '').toLowerCase().includes(q)
-        );
-        const matchesAct = actFilter === 'all' || (u.activity || '').toLowerCase().includes(actFilter.toLowerCase());
-        return matchesQuery && matchesAct;
-      });
-      currentPage = 1;
-      renderTable();
     }
 
     function renderStats() {
@@ -1165,6 +2017,24 @@
       document.getElementById('statVideos').textContent = videos;
     }
 
+    function filterUsers() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const actFilter = document.getElementById('activityFilter').value;
+
+      filtered = allUsers.filter(u => {
+        const matchesQuery = !q || (
+          (u.userName || '').toLowerCase().includes(q) ||
+          (u.employeeId || '').toLowerCase().includes(q) ||
+          (u.department || '').toLowerCase().includes(q) ||
+          (u.designation || '').toLowerCase().includes(q)
+        );
+        const matchesAct = actFilter === 'all' || (u.activity || '').toLowerCase().includes(actFilter.toLowerCase());
+        return matchesQuery && matchesAct;
+      });
+      currentPage = 1;
+      renderTable();
+    }
+
     function renderTable() {
       const tbody = document.getElementById('usersTableBody');
       const total = filtered.length;
@@ -1175,7 +2045,7 @@
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
       if (slice.length === 0) {
-        tbody.innerHTML = `<tr class="state-row"><td colspan="12">😕 No users found.</td></tr>`;
+        tbody.innerHTML = `<tr class="state-row"><td colspan="12" style="text-align:center;padding:40px;color:var(--text-dim)">😕 No user records match the search filter.</td></tr>`;
         renderPagination(0, 0);
         return;
       }
@@ -1193,8 +2063,7 @@
         const score = u.score || 0;
         const acc   = u.accuracy || 0;
         const video = u.videoCompleted ? '✅' : '❌';
-        
-        // Calculate quizMarks robustly: use stored quizMarks, or correctAnswers * 20, or (score - videoMarks)
+
         let quiz = 0;
         if (u.quizMarks !== undefined && u.quizMarks !== null && u.quizMarks !== '') {
           quiz = Number(u.quizMarks);
@@ -1265,7 +2134,7 @@
       renderTable();
     }
 
-    // ── Export ──
+    // ── Export to Excel ──
     function exportExcel() {
       if (!allUsers.length) { showToast('❌ No data to export', 'error'); return; }
       const ws = XLSX.utils.json_to_sheet(allUsers.map(u => {
@@ -1303,6 +2172,12 @@
     }
 
     // ── Helpers ──
+    function refreshData() {
+      fetchSettings();
+      fetchUsers();
+      showToast('Data refreshed', 'success');
+    }
+
     function getLevelBadge(level) {
       const l = (level || '').toLowerCase();
       if (l.includes('expert'))       return 'badge-expert';
@@ -1312,23 +2187,7 @@
     }
 
     function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    function setTableLoading(on) {
-      if (!on) return;
-      document.getElementById('usersTableBody').innerHTML = `
-        <tr class="state-row">
-          <td colspan="12">
-            <div class="loading-dots"><span></span><span></span><span></span></div>
-            <div style="margin-top:10px;font-size:0.82rem;">Loading users…</div>
-          </td>
-        </tr>`;
-    }
-
-    function setTableError(msg) {
-      document.getElementById('usersTableBody').innerHTML = `
-        <tr class="state-row"><td colspan="12">⚠️ ${msg}</td></tr>`;
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     let toastTimer;
@@ -1337,18 +2196,12 @@
       document.getElementById('toastMsg').textContent = msg;
       toast.className = `toast ${type} show`;
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3200);
+      toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3400);
     }
 
     function logout() {
       sessionStorage.removeItem('adminToken');
       window.location.replace('admin-login.html');
-    }
-
-    function showSection(section) {
-      // Simple stub for future section switching
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      event.currentTarget.classList.add('active');
     }
 
     init();
