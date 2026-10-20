@@ -18,7 +18,7 @@
     <!-- jsPDF Library & Certificate Assets -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=3"></script>
+    <script src="certificate.js?v=4"></script>
     <script src="activity-lock.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -818,7 +818,7 @@
         let securityLevelAchieved = "Privacy Novice";
 
         // Quiz Questions Data (5 Questions = 100 Marks)
-        const quizQuestions = [
+        window.quizQuestions = [
             {
                 question: "Which of the following is considered Personally Identifiable Information (PII) and corporate confidential data that must be strictly protected under OGDCL's privacy policy?",
                 options: [
@@ -875,6 +875,13 @@
                 explanation: "The Principle of Least Privilege ensures that users and applications are provided only the minimum level of access necessary for their legitimate business duties, drastically minimizing exposure risks."
             }
         ];
+        let quizQuestions = window.quizQuestions;
+
+        window.applyDynamicQuizQuestions = function(newMcqs) {
+            if (Array.isArray(newMcqs) && newMcqs.length > 0) {
+                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
+            }
+        };
 
         // Mobile Menu Toggle
         const hamburger = document.getElementById('hamburger');
