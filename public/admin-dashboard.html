@@ -39,7 +39,7 @@
       position: fixed;
       top: 0; left: 0;
       height: 100vh;
-      width: 250px;
+      width: 265px;
       background: rgba(12,12,24,0.96);
       border-right: 1px solid var(--border);
       backdrop-filter: blur(20px);
@@ -82,41 +82,108 @@
       padding: 20px 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       overflow-y: auto;
     }
 
     .nav-label {
       font-size: 0.65rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.2px;
       color: var(--text-dim);
-      padding: 12px 8px 6px;
+      padding: 12px 10px 6px;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
       padding: 10px 14px;
-      border-radius: 10px;
+      border-radius: 11px;
       cursor: pointer;
       color: var(--text-muted);
       font-size: 0.88rem;
       font-weight: 500;
-      transition: background 0.2s, color 0.2s;
-      border: none;
+      transition: all 0.2s;
+      border: 1px solid transparent;
       background: none;
       width: 100%;
       text-decoration: none;
       text-align: left;
       font-family: inherit;
+      position: relative;
     }
 
-    .nav-item:hover { background: var(--surface-hover); color: var(--text); }
-    .nav-item.active { background: rgba(108,99,255,0.18); color: #a78bfa; font-weight: 600; }
-    .nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; }
+    .nav-item:hover { 
+      background: var(--surface-hover); 
+      color: var(--text);
+      transform: translateX(2px);
+    }
+    .nav-item.active { 
+      background: rgba(108,99,255,0.18); 
+      border-color: rgba(108,99,255,0.35);
+      color: #fff; 
+      font-weight: 600; 
+      box-shadow: 0 4px 16px rgba(108,99,255,0.15);
+    }
+    .nav-item .nav-icon { 
+      font-size: 18px; 
+      width: 24px; 
+      text-align: center; 
+      flex-shrink: 0; 
+    }
+    .nav-item-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      line-height: 1.25;
+    }
+    .nav-item-label {
+      font-size: 0.86rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: inherit;
+    }
+    .nav-item-sub {
+      font-size: 0.69rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .nav-item.active .nav-item-sub {
+      color: rgba(196,181,253,0.75);
+    }
+    .nav-item-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .nav-item.active .nav-item-badge {
+      background: rgba(108,99,255,0.35);
+      color: #c4b5fd;
+    }
+    .nav-item-badge.badge-has-vid {
+      background: rgba(34,197,94,0.15);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .nav-item-badge.badge-no-vid {
+      background: rgba(239,68,68,0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
 
     .sidebar-footer {
       padding: 16px 12px 0;
@@ -125,7 +192,7 @@
 
     /* ─── Main ─── */
     .main {
-      margin-left: 250px;
+      margin-left: 265px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -551,6 +618,242 @@
       transition: width 0.3s;
     }
 
+    /* ─── Current Video Status & Delete Banner ─── */
+    .current-video-banner {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.25s ease;
+    }
+    .current-video-banner.has-video {
+      background: rgba(34,197,94,0.05);
+      border-color: rgba(34,197,94,0.25);
+    }
+    .current-video-banner.no-video {
+      background: rgba(239,68,68,0.05);
+      border-color: rgba(239,68,68,0.25);
+    }
+    .current-video-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .current-video-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+    .has-video .current-video-icon {
+      background: rgba(34,197,94,0.15);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+    .no-video .current-video-icon {
+      background: rgba(239,68,68,0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+    .current-video-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .current-video-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 280px;
+      margin-top: 2px;
+    }
+    .btn-delete-video {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #fca5a5;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-delete-video:hover {
+      background: #ef4444;
+      color: #fff;
+      border-color: #ef4444;
+      box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-delete-video:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ─── Server Video Picker List ─── */
+    .server-video-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 6px;
+      transition: background 0.2s;
+    }
+    .server-video-row:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .server-video-name {
+      font-size: 0.80rem;
+      font-weight: 500;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .server-video-meta {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── Confirmation Modal ─── */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-card {
+      background: #111322;
+      border: 1px solid var(--border-bright);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      overflow: hidden;
+      animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px) scale(0.97); }
+      to { transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .modal-icon-danger {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .modal-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .modal-body {
+      padding: 22px 24px;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .modal-checkbox-row {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+    }
+    .modal-checkbox-row label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .modal-checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--danger);
+      cursor: pointer;
+    }
+    .modal-actions {
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+    }
+    .btn-danger-action {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-danger-action:hover {
+      box-shadow: 0 4px 16px rgba(239,68,68,0.4);
+      transform: translateY(-1px);
+    }
+
     /* ─── MCQs List & Cards ─── */
     .mcq-list {
       display: flex;
@@ -831,29 +1134,98 @@
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-label">Management</div>
-      <button class="nav-item active" id="btnNavContent" onclick="showSection('content')">
-        <span class="nav-icon">🎬</span><span>Content & MCQs</span>
-      </button>
-      <button class="nav-item" id="btnNavUsers" onclick="showSection('users')">
-        <span class="nav-icon">👥</span><span>Users & Reports</span>
-      </button>
-      <button class="nav-item" id="btnNavLocks" onclick="showSection('locks')">
-        <span class="nav-icon">🔒</span><span>Activity Locks</span>
+      <div class="nav-label">Training Modules</div>
+      
+      <!-- Index (Home) -->
+      <button class="nav-item active" id="navMod-index" onclick="navToModule('index')" title="Manage Index Overview & Video">
+        <span class="nav-icon">🏠</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Index</span>
+          <span class="nav-item-sub">Overview & Video</span>
+        </div>
+        <span class="nav-item-badge" id="sideBadge-index">Video</span>
       </button>
 
-      <div class="nav-label">Quick Actions</div>
+      <!-- Activity 1 -->
+      <button class="nav-item" id="navMod-activity_1" onclick="navToModule('activity_1')" title="Manage Activity 1: Phishing Defense">
+        <span class="nav-icon">🎣</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Activity 1</span>
+          <span class="nav-item-sub">Phishing Defense</span>
+        </div>
+        <span class="nav-item-badge" id="sideBadge-activity_1">Video</span>
+      </button>
+
+      <!-- Activity 2 -->
+      <button class="nav-item" id="navMod-activity_2" onclick="navToModule('activity_2')" title="Manage Activity 2: Password Security & MFA">
+        <span class="nav-icon">🔐</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Activity 2</span>
+          <span class="nav-item-sub">Password & MFA</span>
+        </div>
+        <span class="nav-item-badge" id="sideBadge-activity_2">Video</span>
+      </button>
+
+      <!-- Activity 3 -->
+      <button class="nav-item" id="navMod-activity_3" onclick="navToModule('activity_3')" title="Manage Activity 3: Social Engineering">
+        <span class="nav-icon">🧠</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Activity 3</span>
+          <span class="nav-item-sub">Social Engineering</span>
+        </div>
+        <span class="nav-item-badge" id="sideBadge-activity_3">Video</span>
+      </button>
+
+      <!-- Activity 4 -->
+      <button class="nav-item" id="navMod-activity_4" onclick="navToModule('activity_4')" title="Manage Activity 4: Data Privacy">
+        <span class="nav-icon">🛡️</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Activity 4</span>
+          <span class="nav-item-sub">Data Privacy</span>
+        </div>
+        <span class="nav-item-badge" id="sideBadge-activity_4">Video</span>
+      </button>
+
+      <div class="nav-label" style="margin-top: 14px;">Portal Management</div>
+      <button class="nav-item" id="btnNavUsers" onclick="showSection('users')">
+        <span class="nav-icon">👥</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Users & Reports</span>
+          <span class="nav-item-sub">Scores & Records</span>
+        </div>
+      </button>
+      <button class="nav-item" id="btnNavLocks" onclick="showSection('locks')">
+        <span class="nav-icon">🔒</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Activity Locks</span>
+          <span class="nav-item-sub">Access Control</span>
+        </div>
+      </button>
+
+      <div class="nav-label" style="margin-top: 14px;">Quick Actions</div>
       <button class="nav-item" onclick="exportExcel()">
-        <span class="nav-icon">📊</span><span>Export Excel</span>
+        <span class="nav-icon">📊</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Export Excel</span>
+          <span class="nav-item-sub">Download .xlsx</span>
+        </div>
       </button>
       <button class="nav-item" onclick="refreshData()">
-        <span class="nav-icon">🔄</span><span>Refresh Data</span>
+        <span class="nav-icon">🔄</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Refresh Data</span>
+          <span class="nav-item-sub">Sync Settings</span>
+        </div>
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <button class="nav-item" onclick="logout()" style="width:100%">
-        <span class="nav-icon">🚪</span><span>Logout</span>
+        <span class="nav-icon">🚪</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Logout</span>
+          <span class="nav-item-sub">End Session</span>
+        </div>
       </button>
     </div>
   </aside>
@@ -957,69 +1329,37 @@
             <div class="panel-header">
               <div>
                 <div class="panel-title"><span>🎥</span> Training Video Configuration</div>
-                <div class="panel-sub">Change source (MP4 file or YouTube) for this module</div>
+                <div class="panel-sub" id="currentModuleVideoSub">Manage video for Index module</div>
               </div>
               <button class="btn-reset" onclick="resetCurrentVideo()" title="Restore factory default video for this module">
-                🔄 Reset Video
+                🔄 Factory Reset
               </button>
             </div>
 
-            <!-- Video Source Type Selector -->
-            <div class="form-group">
-              <label class="form-label">Video Source Type</label>
-              <div class="segmented-control">
-                <button class="seg-btn active" id="btnSourceMp4" type="button" onclick="setVideoSourceType('mp4')">
-                  📹 MP4 Video (Direct File / URL)
-                </button>
-                <button class="seg-btn" id="btnSourceYoutube" type="button" onclick="setVideoSourceType('youtube')">
-                  🔴 YouTube Embed
-                </button>
-              </div>
-            </div>
-
-            <!-- MP4 File Upload Box -->
-            <div id="mp4UploadSection">
-              <div class="upload-box" onclick="document.getElementById('videoFileInput').click()">
-                <div style="font-size: 26px; margin-bottom: 6px;">📤</div>
-                <div style="font-size: 0.85rem; font-weight: 600;">Click to Upload New MP4 Video</div>
-                <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">Supports .mp4, .webm (saves to public/videos/)</div>
-                <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;" onchange="handleVideoFileUpload(event)" />
-                <div class="upload-progress" id="uploadProgress">
-                  <div class="upload-progress-bar" id="uploadProgressBar"></div>
+            <!-- Current Active Video Status Banner with Delete Button -->
+            <div class="current-video-banner has-video" id="currentVideoBanner">
+              <div class="current-video-info">
+                <div class="current-video-icon" id="currentVideoStatusIcon">🎬</div>
+                <div style="min-width:0;">
+                  <div class="current-video-title">
+                    <span id="currentVideoStatusTitle">Current Active Video</span>
+                    <span class="badge" id="currentVideoTypeBadge" style="font-size:0.68rem; padding:1px 7px; border-radius:4px; background:rgba(108,99,255,0.25); color:#c4b5fd;">MP4</span>
+                  </div>
+                  <div class="current-video-sub" id="currentVideoStatusSub">videos/phishing-awareness.mp4</div>
                 </div>
-                <div id="uploadStatusText" style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
               </div>
-            </div>
-
-            <!-- Video URL Input -->
-            <div class="form-group">
-              <label class="form-label" id="lblVideoUrl">Video URL / File Path</label>
-              <input type="text" class="form-input" id="inputVideoUrl" placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..." oninput="onVideoUrlChange()" />
-              <div class="form-hint" id="videoUrlHint">Local relative path (e.g. videos/filename.mp4) or direct streaming URL.</div>
-            </div>
-
-            <!-- Poster Image URL (for MP4) -->
-            <div class="form-group" id="posterGroup">
-              <label class="form-label">Video Poster Image (Optional)</label>
-              <input type="text" class="form-input" id="inputVideoPoster" placeholder="videos/phishing-awareness_poster.jpg" oninput="onVideoUrlChange()" />
-            </div>
-
-            <!-- Video Title & Description -->
-            <div class="form-group">
-              <label class="form-label">Video Title</label>
-              <input type="text" class="form-input" id="inputVideoTitle" placeholder="e.g. Executive Phishing Defense" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Video Description</label>
-              <textarea class="form-textarea" id="inputVideoDesc" placeholder="Brief summary of what participants will learn..."></textarea>
+              <div class="current-video-actions">
+                <button class="btn-delete-video" id="btnDeleteCurrentVideo" type="button" onclick="confirmDeleteCurrentVideo()" title="Remove/Delete current video">
+                  🗑️ Delete Video
+                </button>
+              </div>
             </div>
 
             <!-- Live Video Player Preview -->
             <div class="form-group">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <label class="form-label">Live Video Preview</label>
-                <button type="button" class="btn-secondary" style="padding:4px 10px; font-size:0.72rem;" onclick="refreshVideoPreview()">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <label class="form-label" style="margin:0;">Live Video Preview</label>
+                <button type="button" class="btn-secondary" style="padding:3px 9px; font-size:0.72rem;" onclick="refreshVideoPreview()">
                   ▶️ Refresh Preview
                 </button>
               </div>
@@ -1028,11 +1368,88 @@
               </div>
             </div>
 
-            <!-- Save Video Button -->
-            <div>
-              <button class="btn-primary" style="width: 100%; justify-content: center; padding: 11px;" id="btnSaveVideo" onclick="saveCurrentVideo()">
-                💾 Save Video Settings
-              </button>
+            <!-- Section Divider: Add / Replace Video -->
+            <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 18px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <label class="form-label" style="font-size:0.86rem; font-weight:700; color:#fff; margin:0;">
+                  ➕ Add / Replace Video
+                </label>
+                <span style="font-size:0.72rem; color:var(--text-dim);">Select file or streaming source</span>
+              </div>
+
+              <!-- Video Source Type Selector (MP4 Upload vs YouTube vs Server Library) -->
+              <div class="form-group">
+                <div class="segmented-control">
+                  <button class="seg-btn active" id="btnSourceMp4" type="button" onclick="setVideoSourceType('mp4')">
+                    📤 Upload MP4
+                  </button>
+                  <button class="seg-btn" id="btnSourceYoutube" type="button" onclick="setVideoSourceType('youtube')">
+                    🔴 YouTube Link
+                  </button>
+                  <button class="seg-btn" id="btnSourceLibrary" type="button" onclick="setVideoSourceType('library')">
+                    🗃️ Server Library
+                  </button>
+                </div>
+              </div>
+
+              <!-- MP4 File Upload Box -->
+              <div id="mp4UploadSection">
+                <div class="upload-box" onclick="document.getElementById('videoFileInput').click()">
+                  <div style="font-size:28px; margin-bottom:4px;">📤</div>
+                  <div style="font-size:0.86rem; font-weight:600; color:#fff;">Click to Choose or Drag New MP4 Video</div>
+                  <div style="font-size:0.74rem; color:var(--text-dim); margin-top:3px;">Supports .mp4, .webm (saves directly to public/videos/)</div>
+                  <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;" onchange="handleVideoFileUpload(event)" />
+                  <div class="upload-progress" id="uploadProgress">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                  </div>
+                  <div id="uploadStatusText" style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
+                </div>
+              </div>
+
+              <!-- Server Library Picker Box -->
+              <div id="serverLibrarySection" style="display:none;" class="form-group">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label class="form-label" style="margin:0;">Videos Already on Server</label>
+                  <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem;" onclick="loadServerVideosLibrary()">🔄 Refresh</button>
+                </div>
+                <div id="serverVideosListContainer" style="max-height:160px; overflow-y:auto; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px; padding:6px;">
+                  <div style="color:var(--text-dim); font-size:0.78rem; text-align:center; padding:12px;">Loading server files…</div>
+                </div>
+              </div>
+
+              <!-- Video URL Input -->
+              <div class="form-group" style="margin-top:14px;">
+                <label class="form-label" id="lblVideoUrl">Video URL / File Path</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" class="form-input" id="inputVideoUrl" placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..." oninput="onVideoUrlChange()" />
+                  <button type="button" class="btn-secondary" style="padding:0 12px; white-space:nowrap;" onclick="clearVideoUrlInput()" title="Clear URL input">✕</button>
+                </div>
+                <div class="form-hint" id="videoUrlHint">Local relative path (e.g. videos/filename.mp4) or direct streaming URL.</div>
+              </div>
+
+              <!-- Poster Image URL (for MP4) -->
+              <div class="form-group" id="posterGroup">
+                <label class="form-label">Video Poster Image (Optional)</label>
+                <input type="text" class="form-input" id="inputVideoPoster" placeholder="videos/phishing-awareness_poster.jpg" oninput="onVideoUrlChange()" />
+              </div>
+
+              <!-- Video Title & Description -->
+              <div class="form-group">
+                <label class="form-label">Video Title</label>
+                <input type="text" class="form-input" id="inputVideoTitle" placeholder="e.g. Executive Phishing Defense" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Video Description</label>
+                <textarea class="form-textarea" id="inputVideoDesc" placeholder="Brief summary of what participants will learn..."></textarea>
+              </div>
+
+              <!-- Save Video Button -->
+              <div style="margin-top:16px;">
+                <button class="btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.92rem;" id="btnSaveVideo" onclick="saveCurrentVideo()">
+                  💾 Save & Publish Video Settings
+                </button>
+              </div>
             </div>
           </div>
 
