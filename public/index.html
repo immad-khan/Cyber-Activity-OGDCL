@@ -7,7 +7,8 @@
     <title>Cybersecurity Shield - Awareness & Digital Safety</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=3"></script>
+    <script src="certificate.js?v=4"></script>
+    <script src="activity-lock.js"></script>
 
     <style>
         * {
@@ -995,6 +996,21 @@
             </div>
         </section>
 
+        <section class="video-section" style="padding: 40px 0;">
+            <div class="container">
+                <h2 class="section-title">Cybersecurity Awareness Overview</h2>
+                <div class="video-container" style="max-width: 880px; margin: 0 auto 30px; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(0,255,255,0.3);">
+                    <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg" style="width:100%;display:block;">
+                        <source src="videos/phishing-awareness.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="marks-display" style="text-align: center; margin-bottom: 20px;">
+                    <span class="marks-badge" style="background: rgba(0,255,255,0.15); border: 1px solid rgba(0,255,255,0.4); color: #00ffff; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;">Introductory Module</span>
+                </div>
+            </div>
+        </section>
+
         <section class="interactive-section">
             <div class="container">
                 <h2 class="section-title">Test Your Knowledge</h2>
@@ -1063,7 +1079,7 @@
             { name: 'Guardian', threshold: 300, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
         ];
 
-        const quizQuestions = [
+        window.quizQuestions = [
             {
                 question: "Which of these makes the strongest password?",
                 options: ["Password123", "mypassword", "M7$kL9#pR2@qN8!", "123456789"],
@@ -1095,6 +1111,34 @@
                 explanation: "2FA combines something you know (password) with something you have (phone/token), making unauthorized access extremely difficult."
             }
         ];
+        let quizQuestions = window.quizQuestions;
+
+        window.applyDynamicQuizQuestions = function(newMcqs) {
+            if (Array.isArray(newMcqs) && newMcqs.length > 0) {
+                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
+                if (typeof renderCurrentIndexQuestion === 'function') {
+                    renderCurrentIndexQuestion();
+                }
+            }
+        };
+
+        function renderCurrentIndexQuestion() {
+            if (!quizQuestions || quizQuestions.length === 0) return;
+            const quiz = quizQuestions[currentQuizIndex % quizQuestions.length];
+            const qEl = document.getElementById('quiz-question');
+            if (qEl) qEl.textContent = quiz.question;
+            const optionsDiv = document.getElementById('quiz-options');
+            if (optionsDiv) {
+                optionsDiv.innerHTML = '';
+                quiz.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'quiz-button';
+                    button.textContent = option;
+                    button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
+                    optionsDiv.appendChild(button);
+                });
+            }
+        }
 
         let currentQuizIndex = 0;
 
