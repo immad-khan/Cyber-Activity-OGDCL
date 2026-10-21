@@ -27,7 +27,8 @@ const DEFAULT_MODULE_VIDEOS = {
     url: 'videos/phishing-awareness.mp4',
     poster: 'videos/phishing-awareness_poster.jpg',
     pageUrl: 'index.html',
-    pageName: 'Home / Index Page'
+    pageName: 'Home / Index Page',
+    enabled: true
   },
   activity_1: {
     id: 'activity_1',
