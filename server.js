@@ -68,12 +68,16 @@ app.get('/health', (req, res) => {
 app.use(
   express.static(publicDir, {
     extensions: ['html'], // e.g. /mfa-week automatically resolves to /mfa-week.html
-    maxAge: '1h',
+    maxAge: 0,
     setHeaders: (res, filePath) => {
       // Optimize video caching & streaming headers
       if (filePath.endsWith('.mp4') || filePath.endsWith('.webm')) {
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else if (filePath.endsWith('.html') || filePath.endsWith('.js')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
       }
     }
   })
