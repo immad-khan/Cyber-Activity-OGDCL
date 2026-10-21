@@ -10,13 +10,15 @@
     "index": {
       "id": "index",
       "name": "Index",
-      "title": "Cybersecurity Awareness Overview",
-      "desc": "Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.",
+      "title": "Featured Cybersecurity Spotlight",
+      "desc": "Official executive training and cyber defense briefing for OGDCL personnel.",
       "sourceType": "mp4",
       "url": "videos/phishing-awareness.mp4",
       "poster": "videos/phishing-awareness_poster.jpg",
       "pageUrl": "index.html",
-      "pageName": "Home / Index Page"
+      "pageName": "Home / Index Page",
+      "enabled": true,
+      "updatedAt": "2026-10-20T20:22:13.661Z"
     },
     "activity_1": {
       "id": "activity_1",
