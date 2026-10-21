@@ -227,6 +227,35 @@
     let currentLoadedVideoType = null;
 
     function syncDynamicVideo(vidCfg) {
+        // Handle landing page (index) dynamic visibility & headings
+        const landingSec = document.getElementById('landingVideoSection');
+        if (landingSec) {
+            const isShown = vidCfg && (vidCfg.enabled !== false);
+            landingSec.style.display = isShown ? 'block' : 'none';
+            if (isShown) {
+                const titleEl = document.getElementById('landingVideoTitle');
+                if (titleEl && vidCfg.title) titleEl.textContent = vidCfg.title;
+                const subEl = document.getElementById('landingVideoSubtitle');
+                if (subEl) {
+                    subEl.textContent = vidCfg.desc || '';
+                    subEl.style.display = vidCfg.desc ? 'block' : 'none';
+                }
+                const container = document.getElementById('landingVideoContainer');
+                if (container && (!vidCfg.url || !vidCfg.url.trim())) {
+                    container.innerHTML = `
+                        <div style="padding: 60px 24px; text-align: center; background: radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, rgba(10, 15, 30, 0.95) 100%);">
+                            <div style="font-size: 3.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 16px rgba(0,255,255,0.4));">🎬</div>
+                            <h3 style="font-size: 1.35rem; color: #00ffff; margin-bottom: 8px; font-weight: 600;">Featured Awareness Video</h3>
+                            <p style="color: rgba(255, 255, 255, 0.75); font-size: 0.95rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">This video briefing is currently being updated by the administrator. Check back shortly or explore the activities below!</p>
+                        </div>
+                    `;
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+
         if (!vidCfg || !vidCfg.url) return;
         const container = document.querySelector('.video-container');
         if (!container) return;
