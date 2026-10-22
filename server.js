@@ -3,6 +3,7 @@
 // Serves static assets, video streaming, and routes backend API requests.
 
 import express from 'express';
+import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import os from 'os';
@@ -26,6 +27,18 @@ const publicDir = path.join(__dirname, 'public');
 // Middleware: Body parsing (supports large video uploads up to 100mb)
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+
+// Middleware: High-performance Gzip / Deflate compression for text, HTML, JS, CSS, JSON
+app.use(compression({
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    // Never compress video byte streams
+    if (req.headers['range'] || (res.getHeader('Content-Type') && String(res.getHeader('Content-Type')).startsWith('video/'))) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
 
 // Middleware: Global CORS & Security Headers
 app.use((req, res, next) => {
@@ -70,14 +83,22 @@ app.use(
     extensions: ['html'], // e.g. /mfa-week automatically resolves to /mfa-week.html
     maxAge: 0,
     setHeaders: (res, filePath) => {
-      // Optimize video caching & streaming headers
+      // 1. Video files: Long-term cache with byte-range support
       if (filePath.endsWith('.mp4') || filePath.endsWith('.webm')) {
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      } else if (filePath.endsWith('.html') || filePath.endsWith('.js')) {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Expires', '0');
+      }
+      // 2. Images: Cache for 7 days with revalidation
+      else if (/\.(png|jpe?g|webp|svg|ico|gif)$/i.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+      }
+      // 3. JavaScript & CSS: Cache with stale-while-revalidate (HTML query params ?v=X bust cache on deploy)
+      else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+        res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+      }
+      // 4. HTML: Validate with server (returns 304 if unchanged, avoiding full download)
+      else if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache');
       }
     }
   })
