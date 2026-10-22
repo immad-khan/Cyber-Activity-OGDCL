@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 2: Password Protection - OGDCL</title>
+    <title>Activity 1: Password Protection - OGDCL</title>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
@@ -599,10 +599,10 @@
                 
                 <div class="weeks-buttons" id="weekMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
-                    <a href="phishing-week.html" class="week-button">Activity 1</a>
-                    <a href="mfa-week.html" class="week-button active">Activity 2</a>
-                    <a href="social-engineering-week.html" class="week-button">Activity 3</a>
-                    <a href="privacy-week.html" class="week-button">Activity 4</a>
+                    <a href="mfa-week.html" class="week-button active">Activity 1</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 2</a>
+                    <a href="privacy-week.html" class="week-button">Activity 3</a>
+                    <a href="phishing-week.html" class="week-button">Activity 4</a>
                 </div>
                 
                 <div class="score-display">
@@ -620,7 +620,7 @@
     </header>
 
     <section class="hero">
-        <h1>Activity 2: Password Protection</h1>
+        <h1>Activity 1: Password Protection</h1>
         <p>Strong passwords and smart security habits keep everyone safe.</p>
     </section>
 
@@ -876,7 +876,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_start', {
                     'event_category': 'engagement',
-                    'event_label': 'Activity 2 Quiz Started',
+                    'event_label': 'Activity 1 Quiz Started',
                     'user_name': userName
                 });
             }
@@ -901,7 +901,7 @@
                     quizMarks: correctAnswers * 20,
                     correctAnswers,
                     totalQuestions,
-                    activity: 'Activity 2: Password Protection'
+                    activity: 'Activity 1: Password Protection'
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -920,7 +920,7 @@
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'data_saved', {
                             'event_category': 'completion',
-                            'event_label': 'Activity 2 Completed',
+                            'event_label': 'Activity 1 Completed',
                             'value': userScore
                         });
                     }
@@ -958,7 +958,7 @@
                         if (typeof gtag !== 'undefined') {
                             gtag('event', 'video_complete', {
                                 'event_category': 'engagement',
-                                'event_label': 'Activity 2 Video Completed'
+                                'event_label': 'Activity 1 Video Completed'
                             });
                         }
                     }
@@ -1287,7 +1287,7 @@
             quizSection.innerHTML = `
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 2 Complete!</h2>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 1 Complete!</h2>
                     <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Password Protection & Multi-Factor Authentication Assessment.</p>
                     
                     <!-- Official OGDCL Certificate Preview Card -->
@@ -1308,7 +1308,7 @@
                             <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
                             <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
                                 Has successfully demonstrated operational compliance in<br>
-                                <strong style="color: #48cae4;">Activity 2: Password Protection & Multi-Factor Authentication</strong>
+                                <strong style="color: #48cae4;">Activity 1: Password Protection & Multi-Factor Authentication</strong>
                             </div>
                         </div>
 
@@ -1365,7 +1365,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_complete', {
                     'event_category': 'completion',
-                    'event_label': 'Activity 2 Quiz Completed',
+                    'event_label': 'Activity 1 Quiz Completed',
                     'value': userScore
                 });
             }
@@ -1398,7 +1398,7 @@
                     score: userScore,
                     accuracy: accuracy,
                     level: currentLevel.name,
-                    activity: 'Activity 2: Password Protection & Multi-Factor Authentication',
+                    activity: 'Activity 1: Password Protection & Multi-Factor Authentication',
                     date: currentDate
                 });
 
@@ -1408,7 +1408,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'certificate_generated', {
                         'event_category': 'completion',
-                        'event_label': 'Activity 2 Certificate',
+                        'event_label': 'Activity 1 Certificate',
                         'value': userScore
                     });
                 }
@@ -1481,7 +1481,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'quiz_reset', {
                         'event_category': 'engagement',
-                        'event_label': 'Activity 2 Quiz Reset'
+                        'event_label': 'Activity 1 Quiz Reset'
                     });
                 }
             }
