@@ -541,6 +541,87 @@
             font-weight: 600;
         }
 
+        .name-input-section {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .name-input-section p {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .name-input-section input {
+            padding: 14px 18px;
+            border: 2px solid #4ecdc4;
+            border-radius: 12px;
+            background: rgba(78, 205, 196, 0.1);
+            color: white;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .name-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .name-input-grid input {
+            margin-bottom: 0 !important;
+        }
+
+        .name-input-section input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+            background: linear-gradient(45deg, #26c6da, #00ffff);
+        }
+
+        .user-name-display {
+            background: rgba(78, 205, 196, 0.12);
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            text-align: center;
+        }
+
+        .user-name-display p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
         .footer {
             background: rgba(0, 0, 0, 0.6);
             padding: 60px 0;
@@ -1015,16 +1096,31 @@
                 <h2 class="section-title">Test Your Knowledge</h2>
                 <div class="security-quiz">
                     <h3>Quick Security Quiz</h3>
-                    <p id="quiz-question">Which of these makes the strongest password?</p>
-                    <div id="quiz-options">
-                        <button class="quiz-button"
-                            onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'mypassword')">mypassword</button>
-                        <button class="quiz-button"
-                            onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, '123456789')">123456789</button>
+
+                    <div id="name-input-section" class="name-input-section">
+                        <p>Enter your details to begin the assessment.</p>
+                        <div class="name-input-grid">
+                            <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
+                            <input type="text" id="userDepartmentStart" placeholder="Department *" required />
+                            <input type="text" id="userDesignationStart" placeholder="Designation *" required />
+                        </div>
+                        <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
-                    <div id="quiz-result"></div>
+
+                    <div id="quiz-content" style="display: none;">
+                        <div class="user-name-display">
+                            <p>
+                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Emp ID:</strong> <span id="displayUserEmpId" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Dept:</strong> <span id="displayUserDept" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Designation:</strong> <span id="displayUserDesig" style="color: #00ffff;"></span>
+                            </p>
+                        </div>
+                        <p id="quiz-question"></p>
+                        <div id="quiz-options"></div>
+                        <div id="quiz-result"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1045,6 +1141,7 @@
 
     <script>
         const { jsPDF } = window.jspdf;
+        const API_ENDPOINT = '/api/save-username';
 
         let userInteractions = {};
         let sessionStartTime = Date.now();
@@ -1053,7 +1150,116 @@
         let correctAnswers = 0;
         let totalQuestions = 0;
         let securityLevelAchieved = 'Beginner';
+        let currentUserName = '';
+        let currentEmployeeId = '';
+        let currentDepartment = '';
+        let currentDesignation = '';
+        let currentQuizIndex = 0;
         let scrollDepth = 0;
+        window.videoWatched = false;
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function loadStoredUserData() {
+            try {
+                const n = localStorage.getItem('ogdcl_user_name') || '';
+                const e = localStorage.getItem('ogdcl_emp_id') || '';
+                const d = localStorage.getItem('ogdcl_dept') || '';
+                const des = localStorage.getItem('ogdcl_desig') || '';
+
+                if (n) { currentUserName = n; }
+                if (e) { currentEmployeeId = e; }
+                if (d) { currentDepartment = d; }
+                if (des) { currentDesignation = des; }
+
+                const elName = document.getElementById('userNameStart');
+                const elEmp = document.getElementById('userEmpIdStart');
+                const elDept = document.getElementById('userDepartmentStart');
+                const elDes = document.getElementById('userDesignationStart');
+
+                if (elName && n) elName.value = n;
+                if (elEmp && e) elEmp.value = e;
+                if (elDept && d) elDept.value = d;
+                if (elDes && des) elDes.value = des;
+            } catch (err) {
+                console.warn('Could not read from localStorage', err);
+            }
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('userNameStart');
+            const empIdInput = document.getElementById('userEmpIdStart');
+            const deptInput = document.getElementById('userDepartmentStart');
+            const desigInput = document.getElementById('userDesignationStart');
+
+            const userName = nameInput ? nameInput.value.trim() : '';
+            const empId = empIdInput ? empIdInput.value.trim() : '';
+            const dept = deptInput ? deptInput.value.trim() : '';
+            const desig = desigInput ? desigInput.value.trim() : '';
+
+            if (!userName || userName.length < 2) {
+                showNotification('Please enter your full name!', 'warning');
+                nameInput?.focus();
+                return;
+            }
+            if (!empId) {
+                showNotification('Please enter your Employee ID!', 'warning');
+                empIdInput?.focus();
+                return;
+            }
+            if (!dept) {
+                showNotification('Please enter your Department!', 'warning');
+                deptInput?.focus();
+                return;
+            }
+            if (!desig) {
+                showNotification('Please enter your Designation!', 'warning');
+                desigInput?.focus();
+                return;
+            }
+
+            currentUserName = userName;
+            currentEmployeeId = empId;
+            currentDepartment = dept;
+            currentDesignation = desig;
+
+            try {
+                localStorage.setItem('ogdcl_user_name', userName);
+                localStorage.setItem('ogdcl_emp_id', empId);
+                localStorage.setItem('ogdcl_dept', dept);
+                localStorage.setItem('ogdcl_desig', desig);
+            } catch (e) {}
+
+            currentQuizIndex = 0;
+            totalQuestions = 0;
+            correctAnswers = 0;
+
+            const nameSec = document.getElementById('name-input-section');
+            const quizContent = document.getElementById('quiz-content');
+            if (nameSec) nameSec.style.display = 'none';
+            if (quizContent) quizContent.style.display = 'block';
+
+            const dName = document.getElementById('displayUserName');
+            const dEmp = document.getElementById('displayUserEmpId');
+            const dDept = document.getElementById('displayUserDept');
+            const dDes = document.getElementById('displayUserDesig');
+
+            if (dName) dName.textContent = userName;
+            if (dEmp) dEmp.textContent = empId;
+            if (dDept) dDept.textContent = dept;
+            if (dDes) dDes.textContent = desig;
+
+            renderCurrentIndexQuestion();
+            showNotification(`Welcome ${userName} (${empId})! Quiz started.`, 'success');
+        }
 
         const SCORING = {
             tip_interaction: 10,
@@ -1121,9 +1327,13 @@
 
         function renderCurrentIndexQuestion() {
             if (!quizQuestions || quizQuestions.length === 0) return;
-            const quiz = quizQuestions[currentQuizIndex % quizQuestions.length];
+            if (currentQuizIndex >= quizQuestions.length) {
+                showQuizCompletion();
+                return;
+            }
+            const quiz = quizQuestions[currentQuizIndex];
             const qEl = document.getElementById('quiz-question');
-            if (qEl) qEl.textContent = quiz.question;
+            if (qEl) qEl.innerHTML = `<strong>Question ${currentQuizIndex + 1}/${quizQuestions.length}:</strong><br>${quiz.question}`;
             const optionsDiv = document.getElementById('quiz-options');
             if (optionsDiv) {
                 optionsDiv.innerHTML = '';
@@ -1131,13 +1341,16 @@
                     const button = document.createElement('button');
                     button.className = 'quiz-button';
                     button.textContent = option;
-                    button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
+                    button.onclick = () => {
+                        optionsDiv.querySelectorAll('.quiz-button').forEach(btn => btn.disabled = true);
+                        handleQuizAnswer(index === quiz.correct, option);
+                    };
                     optionsDiv.appendChild(button);
                 });
             }
+            const resEl = document.getElementById('quiz-result');
+            if (resEl) resEl.innerHTML = '';
         }
-
-        let currentQuizIndex = 0;
 
         function toggleMenu() {
             const hamburger = document.querySelector('.hamburger');
@@ -1423,15 +1636,15 @@
             });
 
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-            const currentQuestion = quizQuestions[currentQuizIndex];
+            const currentQuestion = quizQuestions[currentQuizIndex] || {};
 
             if (isCorrect) {
                 resultDiv.innerHTML = `
                     <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
-                        <div style="font-size: 2.5rem; margin-bottom: 15px;">✅ +${bonusPoints} points!</div>
-                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Perfect! Outstanding security knowledge!</h4>
-                        <p>${currentQuestion.explanation}</p>
-                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
+                        <div style="font-size: 2.2rem; margin-bottom: 12px;">✅ +${bonusPoints} points!</div>
+                        <h4 style="margin-bottom: 12px; font-size: 1.25rem;">Perfect! Outstanding security knowledge!</h4>
+                        <p>${currentQuestion.explanation || ''}</p>
+                        <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
                             📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
                         </div>
                     </div>
@@ -1440,10 +1653,10 @@
             } else {
                 resultDiv.innerHTML = `
                     <div style="color: #ffd93d; margin-top: 30px; padding: 25px; background: rgba(255, 217, 61, 0.15); border-radius: 20px; border: 2px solid rgba(255, 217, 61, 0.4);">
-                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📚 Keep learning!</div>
-                        <h4 style="margin-bottom: 15px; font-size: 1.3rem;">Good effort!</h4>
-                        <p>${currentQuestion.explanation}</p>
-                        <div style="margin-top: 20px; font-size: 1rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
+                        <div style="font-size: 2.2rem; margin-bottom: 12px;">📚 Keep learning!</div>
+                        <h4 style="margin-bottom: 12px; font-size: 1.25rem;">Good effort!</h4>
+                        <p>${currentQuestion.explanation || ''}</p>
+                        <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
                             📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
                         </div>
                     </div>
@@ -1454,95 +1667,224 @@
             if (totalQuestions >= quizQuestions.length) {
                 setTimeout(() => {
                     showQuizCompletion();
-                }, 3000);
+                }, 2500);
             } else {
-                setTimeout(showNewQuizQuestion, 4000);
+                currentQuizIndex++;
+                setTimeout(renderCurrentIndexQuestion, 3000);
             }
         }
 
-        function showNewQuizQuestion() {
-            currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
-            const quiz = quizQuestions[currentQuizIndex];
+        async function saveToDatabase(override = {}) {
+            try {
+                const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
+                const name = (override.userName || (nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
 
-            document.getElementById('quiz-question').textContent = quiz.question;
-            const optionsDiv = document.getElementById('quiz-options');
-            optionsDiv.innerHTML = '';
+                if (!name) {
+                    console.log('Skipping save: no username provided yet');
+                    return null;
+                }
 
-            quiz.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'quiz-button';
-                button.textContent = option;
-                button.onclick = () => handleQuizAnswer(index === quiz.correct, option);
-                optionsDiv.appendChild(button);
-            });
+                const empInput = document.getElementById('userEmpId') || document.getElementById('userEmpIdEnd') || document.getElementById('userEmpIdStart');
+                const deptInput = document.getElementById('userDepartment') || document.getElementById('userDepartmentEnd') || document.getElementById('userDepartmentStart');
+                const desigInput = document.getElementById('userDesignation') || document.getElementById('userDesignationEnd') || document.getElementById('userDesignationStart');
 
-            document.getElementById('quiz-result').innerHTML = '';
+                const empId = (override.employeeId || (empInput ? empInput.value.trim() : '') || currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || 'OGDCL-EMP').trim();
+                const dept = (override.department || (deptInput ? deptInput.value.trim() : '') || currentDepartment || localStorage.getItem('ogdcl_dept') || 'General').trim();
+                const desig = (override.designation || (desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
+
+                currentUserName = name;
+                currentEmployeeId = empId;
+                currentDepartment = dept;
+                currentDesignation = desig;
+
+                try {
+                    localStorage.setItem('ogdcl_user_name', name);
+                    localStorage.setItem('ogdcl_emp_id', empId);
+                    localStorage.setItem('ogdcl_dept', dept);
+                    localStorage.setItem('ogdcl_desig', desig);
+                } catch (e) {}
+
+                const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
+                const currentLevel = getCurrentSecurityLevel();
+                const videoMarks = window.videoWatched ? 50 : 0;
+                const quizMarks = correctAnswers > 0 ? (correctAnswers * 25) : Math.max(0, userScore - videoMarks);
+
+                const payload = {
+                    userName: name,
+                    employeeId: empId,
+                    department: dept,
+                    designation: desig,
+                    score: userScore || (quizMarks + videoMarks),
+                    level: currentLevel.name,
+                    accuracy: accuracy,
+                    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    videoCompleted: !!window.videoWatched,
+                    videoMarks: videoMarks,
+                    quizMarks: quizMarks,
+                    correctAnswers: correctAnswers || (totalQuestions || 5),
+                    totalQuestions: totalQuestions || 5,
+                    activity: 'Index: Cybersecurity Awareness Overview'
+                };
+
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    console.log('Quiz data saved to admin dashboard:', data);
+                    showNotification('✅ Quiz results saved to Admin Portal!', 'success');
+                    return data;
+                } else {
+                    console.error('Error saving quiz results:', data);
+                    showNotification('Could not save to database', 'warning');
+                    return null;
+                }
+            } catch (error) {
+                console.error('Network error saving to database:', error);
+                showNotification('Network error. Data not saved.', 'error');
+                return null;
+            }
         }
 
         function showQuizCompletion() {
             const quizContainer = document.querySelector('.security-quiz');
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
             const currentLevel = getCurrentSecurityLevel();
+            const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || '';
+            const displayEmpId = currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || '';
+            const displayDept = currentDepartment || localStorage.getItem('ogdcl_dept') || '';
+            const displayDesig = currentDesignation || localStorage.getItem('ogdcl_desig') || '';
+
+            if (displayName) {
+                saveToDatabase();
+            }
 
             quizContainer.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
+                <div style="text-align: center; padding: 40px 20px;">
                     <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
                     <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 2.5rem;">Quiz Complete!</h2>
-                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px 0;">
-                        <h3 style="color: #4ecdc4; margin-bottom: 15px;">Your Performance</h3>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions: ${totalQuestions}/${quizQuestions.length}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers}</p>
+                    
+                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px auto; max-width: 600px; border: 2px solid rgba(0, 255, 255, 0.3);">
+                        <h3 style="color: #4ecdc4; margin-bottom: 15px; font-size: 1.5rem;">Your Performance</h3>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions: ${totalQuestions || 5}/${quizQuestions.length}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers || 5}</p>
                         <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
                         <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
                         <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Score: ${userScore} points</p>
                     </div>
-                    <div style="margin-top: 30px;">
-                        <input type="text" id="userName" placeholder="Enter your name for certificate" 
-                               style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.1rem; text-align: center; margin-bottom: 20px; width: 100%; max-width: 300px;" />
+
+                    <div style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <input type="text" id="userName" placeholder="Enter your full name for certificate *" value="${escHtml(displayName)}"
+                               style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.15rem; text-align: center; margin-bottom: 15px; width: 100%; max-width: 360px;" />
                         <br>
-                        <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 600; cursor: pointer; margin: 10px;">
-                            Generate PDF Certificate
-                        </button>
-                        <button onclick="resetQuiz()" 
-                                style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin: 10px;">
-                            Retake Quiz
-                        </button>
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                            <input type="text" id="userEmpId" placeholder="Employee ID (optional)" value="${escHtml(displayEmpId)}"
+                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
+                            <input type="text" id="userDepartment" placeholder="Department (optional)" value="${escHtml(displayDept)}"
+                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
+                            <input type="text" id="userDesignation" placeholder="Designation (optional)" value="${escHtml(displayDesig)}"
+                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
+                        </div>
+                        <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                            <button id="genCertBtn" onclick="generateCertificate()" 
+                                    style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 32px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);">
+                                Generate PDF Certificate
+                            </button>
+                            <button onclick="resetQuiz()" 
+                                    style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                                Retake Quiz
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         async function generateCertificate() {
-            const nameInput = document.getElementById('userName');
-            const enteredName = nameInput.value.trim();
+            const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
+            const enteredName = ((nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
 
-            if (!enteredName) {
-                showNotification('Please enter your name!', 'warning');
-                nameInput.focus();
+            if (!enteredName || enteredName.length < 2) {
+                showNotification('Please enter your name for certificate!', 'warning');
+                nameInput?.focus();
                 return;
             }
 
-            const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+            const empInput = document.getElementById('userEmpId') || document.getElementById('userEmpIdEnd') || document.getElementById('userEmpIdStart');
+            const enteredEmpId = ((empInput ? empInput.value.trim() : '') || currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || 'OGDCL-EMP').trim();
+
+            const deptInput = document.getElementById('userDepartment') || document.getElementById('userDepartmentEnd') || document.getElementById('userDepartmentStart');
+            const enteredDept = ((deptInput ? deptInput.value.trim() : '') || currentDepartment || localStorage.getItem('ogdcl_dept') || 'General').trim();
+
+            const desigInput = document.getElementById('userDesignation') || document.getElementById('userDesignationEnd') || document.getElementById('userDesignationStart');
+            const enteredDesig = ((desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
+
+            currentUserName = enteredName;
+            currentEmployeeId = enteredEmpId;
+            currentDepartment = enteredDept;
+            currentDesignation = enteredDesig;
+
+            try {
+                localStorage.setItem('ogdcl_user_name', enteredName);
+                localStorage.setItem('ogdcl_emp_id', enteredEmpId);
+                localStorage.setItem('ogdcl_dept', enteredDept);
+                localStorage.setItem('ogdcl_desig', enteredDesig);
+            } catch (e) {}
+
+            const btn = document.getElementById('genCertBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳ Saving & Generating...';
+            }
+
+            showNotification('Saving data to Admin Dashboard and preparing PDF certificate...', 'info');
+
+            // 1. SAVE TO DATABASE (SENDS DATA TO ADMIN DASHBOARD)
+            await saveToDatabase({
+                userName: enteredName,
+                employeeId: enteredEmpId,
+                department: enteredDept,
+                designation: enteredDesig
+            });
+
+            // 2. GENERATE AND DOWNLOAD PDF CERTIFICATE
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
             const currentLevel = getCurrentSecurityLevel();
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            showNotification('Generating official OGDCL certificate...', 'info');
-
             try {
-                window.downloadOGDCLCertificate({
-                    userName: enteredName,
-                    score: userScore,
-                    accuracy: accuracy,
-                    level: currentLevel.name,
-                    activity: 'Cybersecurity Awareness Program',
-                    date: currentDate
-                });
-                showNotification(`Certificate generated for ${enteredName}!`, 'success');
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-                showNotification('Error generating certificate. Please try again.', 'error');
+                if (typeof window.downloadOGDCLCertificate === 'function') {
+                    window.downloadOGDCLCertificate({
+                        userName: enteredName,
+                        employeeId: enteredEmpId,
+                        department: enteredDept,
+                        designation: enteredDesig,
+                        score: userScore,
+                        accuracy: accuracy,
+                        level: currentLevel.name,
+                        activity: 'Cybersecurity Awareness Overview',
+                        date: currentDate
+                    });
+                    showNotification(`✅ Official certificate generated and saved for ${enteredName}!`, 'success');
+                } else {
+                    showNotification(`✅ Data saved to Admin Dashboard for ${enteredName}!`, 'success');
+                }
+            } catch (err) {
+                console.error('Error generating PDF:', err);
+                showNotification('Data saved to Admin Portal! PDF export encountered an issue.', 'warning');
             }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '✅ Certificate Downloaded & Saved';
+            }
+        }
+
+        async function generateCertificateFromEnd() {
+            return generateCertificate();
         }
 
         function resetQuiz() {
@@ -1554,19 +1896,51 @@
                 const quizContainer = document.querySelector('.security-quiz');
                 quizContainer.innerHTML = `
                     <h3>Quick Security Quiz</h3>
-                    <p id="quiz-question">Which of these makes the strongest password?</p>
-                    <div id="quiz-options">
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'Password123')">Password123</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, 'mypassword')">mypassword</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(true, 'M7$kL9#pR2@qN8!')">M7$kL9#pR2@qN8!</button>
-                        <button class="quiz-button" onclick="handleQuizAnswer(false, '123456789')">123456789</button>
+
+                    <div id="name-input-section" class="name-input-section">
+                        <p>Enter your details to begin the assessment.</p>
+                        <div class="name-input-grid">
+                            <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
+                            <input type="text" id="userDepartmentStart" placeholder="Department *" required />
+                            <input type="text" id="userDesignationStart" placeholder="Designation *" required />
+                        </div>
+                        <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
-                    <div id="quiz-result"></div>
+
+                    <div id="quiz-content" style="display: none;">
+                        <div class="user-name-display">
+                            <p>
+                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Emp ID:</strong> <span id="displayUserEmpId" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Dept:</strong> <span id="displayUserDept" style="color: #00ffff;"></span> &nbsp;|&nbsp;
+                                <strong>Designation:</strong> <span id="displayUserDesig" style="color: #00ffff;"></span>
+                            </p>
+                        </div>
+                        <p id="quiz-question"></p>
+                        <div id="quiz-options"></div>
+                        <div id="quiz-result"></div>
+                    </div>
                 `;
 
-                showNotification('Quiz reset! Start fresh!', 'info');
+                loadStoredUserData();
+                showNotification('Quiz reset! Ready for a fresh start.', 'info');
             }
         }
+
+        function awardVideoMarks() {
+            if (!window.videoWatched) {
+                window.videoWatched = true;
+                updateScore(50, 'video_completed');
+                showNotification('🎬 Video Complete! You earned 50 marks!', 'success');
+                if (currentUserName) {
+                    saveToDatabase();
+                }
+            } else {
+                showNotification('Video marks already awarded!', 'info');
+            }
+        }
+        window.awardVideoMarks = awardVideoMarks;
 
         const securityTips = [
             'Use a password manager - it generates complex passwords safely!',
@@ -1623,8 +1997,16 @@
         }
 
         window.addEventListener('load', function () {
+            loadStoredUserData();
             updateScoreVisual();
             updateProgressBar();
+
+            const v = document.getElementById('trainingVideo');
+            if (v) {
+                v.addEventListener('ended', function () {
+                    awardVideoMarks();
+                });
+            }
 
             showNotification('Welcome to Cybersecurity Shield! Earn points by exploring!', 'success');
 
