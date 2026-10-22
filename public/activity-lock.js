@@ -3,21 +3,21 @@
 
 (function() {
     const ACTIVITY_CONFIG = {
-        'phishing-week': {
-            id: 'activity_1',
-            name: 'Activity 1: The Executive Target'
-        },
         'mfa-week': {
-            id: 'activity_2',
-            name: 'Activity 2: Password Protection'
+            id: 'activity_1',
+            name: 'Activity 1: Password Protection'
         },
         'social-engineering-week': {
-            id: 'activity_3',
-            name: 'Activity 3: Social Engineering'
+            id: 'activity_2',
+            name: 'Activity 2: Social Engineering'
         },
         'privacy-week': {
+            id: 'activity_3',
+            name: 'Activity 3: Data Privacy'
+        },
+        'phishing-week': {
             id: 'activity_4',
-            name: 'Activity 4: Data Privacy'
+            name: 'Activity 4: The Executive Target'
         },
         'index': {
             id: 'index',
@@ -197,10 +197,10 @@
 
     function updateNavLocks(activityLocks) {
         const pageLookup = {
-            activity_1: 'phishing-week.html',
-            activity_2: 'mfa-week.html',
-            activity_3: 'social-engineering-week.html',
-            activity_4: 'privacy-week.html'
+            activity_1: 'mfa-week.html',
+            activity_2: 'social-engineering-week.html',
+            activity_3: 'privacy-week.html',
+            activity_4: 'phishing-week.html'
         };
 
         Object.entries(activityLocks).forEach(([actId, isLocked]) => {
