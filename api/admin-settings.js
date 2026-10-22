@@ -76,17 +76,25 @@ const DEFAULT_MODULE_VIDEOS = {
     pageUrl: 'phishing-week.html',
     pageName: 'Activity 4: The Executive Target'
   },
-  activity_banner: {
-    id: 'activity_banner',
-    name: 'Shared Activity Video',
-    title: 'Activity Video Briefing',
-    desc: 'Watch this shared cybersecurity briefing before starting the activities.',
-    sourceType: 'mp4',
-    url: '',
-    poster: '',
-    pageUrl: 'mfa-week.html',
-    pageName: 'Activities 1–4: Shared video above hero sections',
-    enabled: true
+  activity_1_banner: {
+    id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing',
+    desc: 'Watch this video briefing before starting Activity 1.', sourceType: 'mp4', url: '', poster: '',
+    pageUrl: 'mfa-week.html', pageName: 'Activity 1: Shared hero video', enabled: true
+  },
+  activity_2_banner: {
+    id: 'activity_2_banner', name: 'Activity 2 Banner Video', title: 'Activity 2 Video Briefing',
+    desc: 'Watch this video briefing before starting Activity 2.', sourceType: 'mp4', url: '', poster: '',
+    pageUrl: 'social-engineering-week.html', pageName: 'Activity 2: Shared hero video', enabled: true
+  },
+  activity_3_banner: {
+    id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing',
+    desc: 'Watch this video briefing before starting Activity 3.', sourceType: 'mp4', url: '', poster: '',
+    pageUrl: 'privacy-week.html', pageName: 'Activity 3: Shared hero video', enabled: true
+  },
+  activity_4_banner: {
+    id: 'activity_4_banner', name: 'Activity 4 Banner Video', title: 'Activity 4 Video Briefing',
+    desc: 'Watch this video briefing before starting Activity 4.', sourceType: 'mp4', url: '', poster: '',
+    pageUrl: 'phishing-week.html', pageName: 'Activity 4: Shared hero video', enabled: true
   }
 };
 
@@ -369,35 +377,23 @@ function mergeModuleVideos(savedVideos) {
 
 // Read settings from local fallback JSON file (with /tmp support for serverless like Vercel)
 function readFallbackFile() {
-  // Try main file first (works on local servers, always has the latest data)
-  try {
-    if (fs.existsSync(FALLBACK_FILE)) {
-      const raw = fs.readFileSync(FALLBACK_FILE, 'utf-8');
-      const data = JSON.parse(raw);
+  // Prefer the most recently written copy. On read-only/serverless hosts the
+  // writable temp copy can be newer than the bundled file after an admin save.
+  const candidates = [FALLBACK_FILE, TMP_FALLBACK_FILE]
+    .filter((file) => fs.existsSync(file))
+    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+  for (const file of candidates) {
+    try {
+      const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
       return {
         locked: data.locked ?? false,
         activityLocks: { ...DEFAULT_ACTIVITY_LOCKS, ...(data.activityLocks || {}) },
         moduleVideos: mergeModuleVideos(data.moduleVideos),
         moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) }
       };
+    } catch (e) {
+      console.warn(`⚠️ Could not read settings fallback file ${file}:`, e.message);
     }
-  } catch (e) {
-    console.warn('⚠️ Could not read main settings fallback file:', e.message);
-  }
-  // Try /tmp fallback (for serverless environments like Vercel where main file is read-only)
-  try {
-    if (fs.existsSync(TMP_FALLBACK_FILE)) {
-      const raw = fs.readFileSync(TMP_FALLBACK_FILE, 'utf-8');
-      const data = JSON.parse(raw);
-      return {
-        locked: data.locked ?? false,
-        activityLocks: { ...DEFAULT_ACTIVITY_LOCKS, ...(data.activityLocks || {}) },
-        moduleVideos: mergeModuleVideos(data.moduleVideos),
-        moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) }
-      };
-    }
-  } catch (e) {
-    console.warn('⚠️ Could not read tmp settings fallback file:', e.message);
   }
   return {
     locked: false,
