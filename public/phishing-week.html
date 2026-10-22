@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 1: The Executive Target - OGDCL</title>
+    <title>Activity 4: The Executive Target - OGDCL</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
@@ -618,10 +618,10 @@
 
                 <div class="weeks-buttons" id="weekMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
-                    <a href="phishing-week.html" class="week-button active">Activity 1</a>
-                    <a href="mfa-week.html" class="week-button">Activity 2</a>
-                    <a href="social-engineering-week.html" class="week-button">Activity 3</a>
-                    <a href="privacy-week.html" class="week-button">Activity 4</a>
+                    <a href="mfa-week.html" class="week-button">Activity 1</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 2</a>
+                    <a href="privacy-week.html" class="week-button">Activity 3</a>
+                    <a href="phishing-week.html" class="week-button active">Activity 4</a>
                 </div>
 
                 <div class="score-display">
@@ -639,7 +639,7 @@
     </header>
 
     <section class="hero">
-        <h1>Activity 1: The Executive Target</h1>
+        <h1>Activity 4: The Executive Target</h1>
         <p>When You Lead, You're on the Front Line.</p>
     </section>
 
@@ -903,7 +903,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_start', {
                     'event_category': 'engagement',
-                    'event_label': 'Activity 1 Quiz Started',
+                    'event_label': 'Activity 4 Quiz Started',
                     'user_name': userName
                 });
             }
@@ -928,7 +928,7 @@
                     quizMarks: correctAnswers * 20,
                     correctAnswers,
                     totalQuestions,
-                    activity: 'Activity 1: The Executive Target'
+                    activity: 'Activity 4: The Executive Target'
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -947,7 +947,7 @@
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'data_saved', {
                             'event_category': 'completion',
-                            'event_label': 'Activity 1 Completed',
+                            'event_label': 'Activity 4 Completed',
                             'value': userScore
                         });
                     }
@@ -985,7 +985,7 @@
                         if (typeof gtag !== 'undefined') {
                             gtag('event', 'video_complete', {
                                 'event_category': 'engagement',
-                                'event_label': 'Activity 1 Video Completed'
+                                'event_label': 'Activity 4 Video Completed'
                             });
                         }
                     }
@@ -1313,7 +1313,7 @@
             quizSection.innerHTML = `
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 1 Complete!</h2>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 4 Complete!</h2>
                     <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Executive Target & Phishing Threat Defense Assessment.</p>
                     
                     <!-- Official OGDCL Certificate Preview Card -->
@@ -1334,7 +1334,7 @@
                             <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
                             <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
                                 Has successfully demonstrated operational compliance in<br>
-                                <strong style="color: #48cae4;">Activity 1: The Executive Target & Phishing Threat Defense</strong>
+                                <strong style="color: #48cae4;">Activity 4: The Executive Target & Phishing Threat Defense</strong>
                             </div>
                         </div>
 
@@ -1391,7 +1391,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_complete', {
                     'event_category': 'completion',
-                    'event_label': 'Activity 1 Quiz Completed',
+                    'event_label': 'Activity 4 Quiz Completed',
                     'value': userScore
                 });
             }
@@ -1424,7 +1424,7 @@
                     score: userScore,
                     accuracy: accuracy,
                     level: currentLevel.name,
-                    activity: 'Activity 1: The Executive Target & Phishing Threat Defense',
+                    activity: 'Activity 4: The Executive Target & Phishing Threat Defense',
                     date: currentDate
                 });
 
@@ -1434,7 +1434,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'certificate_generated', {
                         'event_category': 'completion',
-                        'event_label': 'Activity 1 Certificate',
+                        'event_label': 'Activity 4 Certificate',
                         'value': userScore
                     });
                 }
@@ -1507,7 +1507,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'quiz_reset', {
                         'event_category': 'engagement',
-                        'event_label': 'Activity 1 Quiz Reset'
+                        'event_label': 'Activity 4 Quiz Reset'
                     });
                 }
             }
