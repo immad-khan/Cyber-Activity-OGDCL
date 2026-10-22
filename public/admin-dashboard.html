@@ -1950,19 +1950,18 @@
               </div>
             </div>
 
-            <!-- Index Landing Page Video Section Toggle & Heading Controls -->
-            <div class="visibility-toggle-card" id="indexVisibilityCard">
+            <!-- Video Section Visibility Toggle -->
+            <div class="visibility-toggle-card" id="videoVisibilityCard">
               <div class="visibility-toggle-left">
                 <div class="visibility-icon" id="visibilityIcon">👁️</div>
                 <div>
-                  <div class="visibility-title">Landing Page Video Section Visibility</div>
-                  <div class="visibility-desc">Toggle whether the video section is shown or totally removed on the home
-                    page (just above Cybersecurity Statistics).</div>
+                  <div class="visibility-title" id="videoVisibilityTitle">Video Section Visibility</div>
+                  <div class="visibility-desc" id="videoVisibilityDesc">Toggle whether this video section is visible to visitors.</div>
                 </div>
               </div>
-              <button type="button" class="toggle-switch-btn active" id="btnToggleLandingVisibility"
-                onclick="toggleLandingVideoVisibility()" title="Toggle visibility of video section on landing page">
-                <span id="lblLandingVisibility"> Section Visible</span>
+              <button type="button" class="toggle-switch-btn active" id="btnToggleVideoVisibility"
+                onclick="toggleCurrentModuleVideoVisibility()" title="Toggle visibility of video section">
+                <span id="lblVideoVisibility"> Section Visible</span>
               </button>
             </div>
 
@@ -2530,7 +2529,12 @@
               sideBadge.title = 'Video section is hidden from landing page';
             }
           } else {
-            if (hasVid) {
+            const isShown = vid.enabled !== false && vid.enabled !== 'false' && vid.enabled !== 0 && vid.enabled !== '0';
+            if (!isShown) {
+              sideBadge.textContent = 'Hidden';
+              sideBadge.className = 'nav-item-badge badge-no-vid';
+              sideBadge.title = 'Activity video section is hidden from visitors';
+            } else if (hasVid) {
               sideBadge.textContent = 'Video';
               sideBadge.className = 'nav-item-badge badge-has-vid';
               sideBadge.title = `Active video: ${vid.url}`;
@@ -2544,14 +2548,14 @@
       });
     }
 
-    // ── Index Landing Page Visibility State & Controls ──
-    let isIndexVideoVisible = true;
+    // ── Module Video Visibility State & Controls ──
+    let isCurrentVideoVisible = true;
 
-    async function toggleLandingVideoVisibility() {
-      isIndexVideoVisible = !isIndexVideoVisible;
-      updateLandingVisibilityUI(isIndexVideoVisible);
-      if (!moduleVideosData.index) moduleVideosData.index = {};
-      moduleVideosData.index.enabled = isIndexVideoVisible;
+    async function toggleCurrentModuleVideoVisibility() {
+      isCurrentVideoVisible = !isCurrentVideoVisible;
+      updateVideoVisibilityUI(isCurrentVideoVisible);
+      if (!moduleVideosData[currentModuleId]) moduleVideosData[currentModuleId] = {};
+      moduleVideosData[currentModuleId].enabled = isCurrentVideoVisible;
       updateSidebarBadges();
 
       try {
@@ -2562,38 +2566,34 @@
             'x-admin-token': ADMIN_TOKEN
           },
           body: JSON.stringify({
-            moduleId: 'index',
+            moduleId: currentModuleId,
             video: {
-              ...(moduleVideosData.index || {}),
-              enabled: isIndexVideoVisible
+              ...(moduleVideosData[currentModuleId] || {}),
+              enabled: isCurrentVideoVisible
             }
           })
         });
         const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Could not update video visibility');
         if (data.success && data.moduleVideos) {
           moduleVideosData = data.moduleVideos;
           updateSidebarBadges();
         }
-        showToast(
-          isIndexVideoVisible
-            ? '👁️ Landing page video section is now VISIBLE to visitors!'
-            : '🙈 Landing page video section is now HIDDEN from visitors!',
-          'success'
-        );
+        const sectionName = currentModuleId === 'index' ? 'Landing page video section' : `${MODULES_META[currentModuleId].name} video section`;
+        showToast(`${sectionName} is now ${isCurrentVideoVisible ? 'VISIBLE' : 'HIDDEN'} to visitors!`, 'success');
       } catch (err) {
-        showToast(
-          isIndexVideoVisible
-            ? '👁️ Section set to VISIBLE (Click Save to confirm).'
-            : '🙈 Section set to HIDDEN (Click Save to confirm).',
-          'info'
-        );
+        isCurrentVideoVisible = !isCurrentVideoVisible;
+        moduleVideosData[currentModuleId].enabled = isCurrentVideoVisible;
+        updateVideoVisibilityUI(isCurrentVideoVisible);
+        updateSidebarBadges();
+        showToast('Could not save video visibility. Please try again.', 'error');
       }
     }
 
-    function updateLandingVisibilityUI(visible) {
-      const card = document.getElementById('indexVisibilityCard');
-      const btn = document.getElementById('btnToggleLandingVisibility');
-      const lbl = document.getElementById('lblLandingVisibility');
+    function updateVideoVisibilityUI(visible) {
+      const card = document.getElementById('videoVisibilityCard');
+      const btn = document.getElementById('btnToggleVideoVisibility');
+      const lbl = document.getElementById('lblVideoVisibility');
       const icon = document.getElementById('visibilityIcon');
       if (!card || !btn || !lbl || !icon) return;
 
@@ -2618,29 +2618,29 @@
       const hasUrl = !!(vid.url && vid.url.trim());
       const sourceType = 'mp4';
 
-      // Index Landing Page Video Section Controls
-      const indexVisCard = document.getElementById('indexVisibilityCard');
+      // Video Section Visibility and heading controls
+      const visibilityTitle = document.getElementById('videoVisibilityTitle');
+      const visibilityDesc = document.getElementById('videoVisibilityDesc');
       const hintTitle = document.getElementById('hintVideoTitle');
       const hintDesc = document.getElementById('hintVideoDesc');
       const lblTitle = document.getElementById('lblVideoTitle');
       const lblDesc = document.getElementById('lblVideoDesc');
 
       if (modId === 'index') {
-        if (indexVisCard) indexVisCard.style.display = 'flex';
+        if (visibilityTitle) visibilityTitle.textContent = 'Landing Page Video Section Visibility';
+        if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether the video section appears on the home page, above Cybersecurity Statistics.';
         if (lblTitle) lblTitle.textContent = 'Landing Page Section Heading (Shown above video on home page)';
         if (lblDesc) lblDesc.textContent = 'Landing Page Section Subheading / Description';
-        if (hintTitle) hintTitle.style.display = 'block';
-        if (hintDesc) hintDesc.style.display = 'block';
-
-        isIndexVideoVisible = vid.enabled !== false;
-        updateLandingVisibilityUI(isIndexVideoVisible);
       } else {
-        if (indexVisCard) indexVisCard.style.display = 'none';
-        if (lblTitle) lblTitle.textContent = 'Video Title';
-        if (lblDesc) lblDesc.textContent = 'Video Description';
-        if (hintTitle) hintTitle.style.display = 'none';
-        if (hintDesc) hintDesc.style.display = 'none';
+        if (visibilityTitle) visibilityTitle.textContent = 'Activity Video Section Visibility';
+        if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether this video section appears above the activity hero section.';
+        if (lblTitle) lblTitle.textContent = 'Video Section Heading (Shown above the activity hero section)';
+        if (lblDesc) lblDesc.textContent = 'Video Section Paragraph / Description';
       }
+      if (hintTitle) hintTitle.style.display = 'block';
+      if (hintDesc) hintDesc.style.display = 'block';
+      isCurrentVideoVisible = !(vid.enabled === false || vid.enabled === 'false' || vid.enabled === 0 || vid.enabled === '0');
+      updateVideoVisibilityUI(isCurrentVideoVisible);
 
       // Update Current Active Video Status Banner
       const banner = document.getElementById('currentVideoBanner');
@@ -2945,18 +2945,13 @@
       const title = (document.getElementById('inputVideoTitle').value || '').trim();
       const desc = (document.getElementById('inputVideoDesc').value || '').trim();
 
-      if (!rawUrl) {
-        showToast('Please specify a video URL or upload a video file', 'error');
-        return;
-      }
-
       const videoPayload = {
         sourceType: 'mp4',
         url: rawUrl,
-        poster,
+        poster: rawUrl ? poster : '',
         title: title || MODULES_META[currentModuleId].title,
         desc: desc || MODULES_META[currentModuleId].desc,
-        enabled: currentModuleId === 'index' ? isIndexVideoVisible : (moduleVideosData[currentModuleId]?.enabled !== false)
+        enabled: isCurrentVideoVisible
       };
 
       const btn = document.getElementById('btnSaveVideo');
