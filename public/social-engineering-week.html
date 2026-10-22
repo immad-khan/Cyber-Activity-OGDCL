@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 3: Social Engineering Defense - OGDCL</title>
+    <title>Activity 2: Social Engineering Defense - OGDCL</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
@@ -651,10 +651,10 @@
 
                 <div class="weeks-buttons" id="weekMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
-                    <a href="phishing-week.html" class="week-button">Activity 1</a>
-                    <a href="mfa-week.html" class="week-button">Activity 2</a>
-                    <a href="social-engineering-week.html" class="week-button active">Activity 3</a>
-                    <a href="privacy-week.html" class="week-button">Activity 4</a>
+                    <a href="mfa-week.html" class="week-button">Activity 1</a>
+                    <a href="social-engineering-week.html" class="week-button active">Activity 2</a>
+                    <a href="privacy-week.html" class="week-button">Activity 3</a>
+                    <a href="phishing-week.html" class="week-button">Activity 4</a>
                 </div>
 
                 <div class="score-display">
@@ -672,7 +672,7 @@
     </header>
 
     <section class="hero">
-        <h1>Activity 3: Social Engineering Defense</h1>
+        <h1>Activity 2: Social Engineering Defense</h1>
         <p>Recognize Manipulation. Verify Identity. Protect OGDCL.</p>
     </section>
 
@@ -919,7 +919,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_start', {
                     'event_category': 'engagement',
-                    'event_label': 'Activity 3 Quiz Started',
+                    'event_label': 'Activity 2 Quiz Started',
                     'user_name': userName
                 });
             }
@@ -944,7 +944,7 @@
                     quizMarks: correctAnswers * SCORING.quiz_correct,
                     correctAnswers,
                     totalQuestions,
-                    activity: 'Activity 3: Social Engineering Defense'
+                    activity: 'Activity 2: Social Engineering Defense'
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -960,7 +960,7 @@
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'data_saved', {
                             'event_category': 'completion',
-                            'event_label': 'Activity 3 Completed',
+                            'event_label': 'Activity 2 Completed',
                             'value': userScore
                         });
                     }
@@ -1021,7 +1021,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'video_complete', {
                         'event_category': 'engagement',
-                        'event_label': 'Activity 3 Video Completed',
+                        'event_label': 'Activity 2 Video Completed',
                         'value': SCORING.video_completion
                     });
                 }
@@ -1358,7 +1358,7 @@
             quizSection.innerHTML = `
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 3 Complete!</h2>
+                    <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 2 Complete!</h2>
                     <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Social Engineering Defense Assessment.</p>
                     
                     <!-- Official OGDCL Certificate Preview Card -->
@@ -1379,7 +1379,7 @@
                             <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
                             <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
                                 Has successfully demonstrated operational compliance in<br>
-                                <strong style="color: #48cae4;">Activity 3: Social Engineering Defense & Human Firewall</strong>
+                                <strong style="color: #48cae4;">Activity 2: Social Engineering Defense & Human Firewall</strong>
                             </div>
                         </div>
 
@@ -1435,7 +1435,7 @@
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'quiz_complete', {
                     'event_category': 'completion',
-                    'event_label': 'Activity 3 Quiz Completed',
+                    'event_label': 'Activity 2 Quiz Completed',
                     'value': userScore
                 });
             }
@@ -1468,7 +1468,7 @@
                     score: userScore,
                     accuracy: accuracy,
                     level: currentLevel.name,
-                    activity: 'Activity 3: Social Engineering Awareness & Human Firewall Defense',
+                    activity: 'Activity 2: Social Engineering Awareness & Human Firewall Defense',
                     date: currentDate
                 });
 
@@ -1477,7 +1477,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'certificate_generated', {
                         'event_category': 'completion',
-                        'event_label': 'Activity 3 Certificate',
+                        'event_label': 'Activity 2 Certificate',
                         'value': userScore
                     });
                 }
@@ -1549,7 +1549,7 @@
                 if (typeof gtag !== 'undefined') {
                     gtag('event', 'quiz_reset', {
                         'event_category': 'engagement',
-                        'event_label': 'Activity 3 Quiz Reset'
+                        'event_label': 'Activity 2 Quiz Reset'
                     });
                 }
             }
