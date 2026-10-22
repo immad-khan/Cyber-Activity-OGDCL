@@ -230,7 +230,7 @@
         // Handle landing page (index) dynamic visibility & headings
         const landingSec = document.getElementById('landingVideoSection');
         if (landingSec) {
-            const isShown = vidCfg && (vidCfg.enabled !== false);
+            const isShown = vidCfg && !(vidCfg.enabled === false || vidCfg.enabled === 'false' || vidCfg.enabled === 0 || vidCfg.enabled === '0');
             landingSec.style.display = isShown ? 'block' : 'none';
             if (isShown) {
                 const titleEl = document.getElementById('landingVideoTitle');

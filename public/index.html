@@ -973,7 +973,7 @@
         </section>
 
         <!-- Dynamic Landing Page Video Section (Managed by Admin: Show/Hide, Heading & Video) -->
-        <section class="video-section" id="landingVideoSection" style="padding: 45px 0; display: block;">
+        <section class="video-section" id="landingVideoSection" style="padding: 45px 0; display: none;">
             <div class="container">
                 <h2 class="section-title" id="landingVideoTitle">Cybersecurity Awareness Overview</h2>
                 <p id="landingVideoSubtitle" style="text-align: center; max-width: 720px; margin: -10px auto 35px; color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; line-height: 1.5;">Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.</p>
@@ -1857,8 +1857,8 @@
                         const v = data.moduleVideos.index;
                         const sec = document.getElementById('landingVideoSection');
                         if (sec) {
-                            // Section is shown when enabled is not false; when disabled, totally removed from user view
-                            const isShown = (v.enabled !== false);
+                            // Section is shown when enabled is true; when disabled, totally removed from user view
+                            const isShown = !(v.enabled === false || v.enabled === 'false' || v.enabled === 0 || v.enabled === '0');
                             sec.style.display = isShown ? 'block' : 'none';
 
                             if (isShown) {

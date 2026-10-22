@@ -3,12 +3,14 @@
 
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 import { pool } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const FALLBACK_FILE = path.resolve(__dirname, '..', 'site-settings-fallback.json');
+const TMP_FALLBACK_FILE = path.join(os.tmpdir(), 'site-settings-fallback.json');
 
 const DEFAULT_ACTIVITY_LOCKS = {
   activity_1: false, // Activity 1: The Executive Target (Phishing)
@@ -344,10 +346,18 @@ let cachedSettings = null;
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 2500;
 
-let isTableInitialized = false;
 
-// Read settings from local fallback JSON file
+function mergeModuleVideos(savedVideos) {
+  const result = {};
+  for (const [key, def] of Object.entries(DEFAULT_MODULE_VIDEOS)) {
+    result[key] = { ...def, ...(savedVideos?.[key] || {}) };
+  }
+  return result;
+}
+
+// Read settings from local fallback JSON file (with /tmp support for serverless like Vercel)
 function readFallbackFile() {
+  // Try main file first (works on local servers, always has the latest data)
   try {
     if (fs.existsSync(FALLBACK_FILE)) {
       const raw = fs.readFileSync(FALLBACK_FILE, 'utf-8');
@@ -355,12 +365,27 @@ function readFallbackFile() {
       return {
         locked: data.locked ?? false,
         activityLocks: { ...DEFAULT_ACTIVITY_LOCKS, ...(data.activityLocks || {}) },
-        moduleVideos: { ...DEFAULT_MODULE_VIDEOS, ...(data.moduleVideos || {}) },
+        moduleVideos: mergeModuleVideos(data.moduleVideos),
         moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) }
       };
     }
   } catch (e) {
-    console.warn('⚠️ Could not read settings fallback file:', e.message);
+    console.warn('⚠️ Could not read main settings fallback file:', e.message);
+  }
+  // Try /tmp fallback (for serverless environments like Vercel where main file is read-only)
+  try {
+    if (fs.existsSync(TMP_FALLBACK_FILE)) {
+      const raw = fs.readFileSync(TMP_FALLBACK_FILE, 'utf-8');
+      const data = JSON.parse(raw);
+      return {
+        locked: data.locked ?? false,
+        activityLocks: { ...DEFAULT_ACTIVITY_LOCKS, ...(data.activityLocks || {}) },
+        moduleVideos: mergeModuleVideos(data.moduleVideos),
+        moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) }
+      };
+    }
+  } catch (e) {
+    console.warn('⚠️ Could not read tmp settings fallback file:', e.message);
   }
   return {
     locked: false,
@@ -372,15 +397,45 @@ function readFallbackFile() {
 
 // Write settings to local fallback JSON file
 function writeFallbackFile(data) {
+  const jsonStr = JSON.stringify(data, null, 2);
+  let wrote = false;
   try {
-    fs.writeFileSync(FALLBACK_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    fs.writeFileSync(FALLBACK_FILE, jsonStr, 'utf-8');
+    wrote = true;
   } catch (e) {
-    console.warn('⚠️ Could not write settings fallback file:', e.message);
+    // Expected on read-only serverless filesystems (e.g. Vercel)
+  }
+  try {
+    fs.writeFileSync(TMP_FALLBACK_FILE, jsonStr, 'utf-8');
+    wrote = true;
+  } catch (e) {
+    // Ignore /tmp write errors
+  }
+  if (!wrote) {
+    console.warn('⚠️ Could not write settings fallback file to disk or tmp');
   }
 }
 
+let isTableInitialized = false;
+let isDbReachable = true;
+let lastDbFailure = 0;
+const DB_RETRY_INTERVAL_MS = 60000; // Only retry connecting once every 60 seconds
+
+function shouldAttemptDb() {
+  if (!isDbReachable && (Date.now() - lastDbFailure < DB_RETRY_INTERVAL_MS)) {
+    return false;
+  }
+  return true;
+}
+
+function markDbFailed(err) {
+  isDbReachable = false;
+  lastDbFailure = Date.now();
+  console.warn('⚠️ [Settings] Database unavailable, using file fallback:', err?.message || 'Connection failed');
+}
+
 async function ensureTableOnce() {
-  if (isTableInitialized) return;
+  if (isTableInitialized || !shouldAttemptDb()) return;
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS site_settings (
@@ -419,18 +474,36 @@ async function ensureTableOnce() {
     `, [JSON.stringify(DEFAULT_MODULE_MCQS)]);
 
     isTableInitialized = true;
+    isDbReachable = true;
   } catch (err) {
-    console.warn('⚠️ [Settings] Table init warning (will use fallback):', err.message);
+    markDbFailed(err);
   }
 }
 
 // Kick off initialization once in background
 ensureTableOnce();
 
+async function saveDbSetting(key, value) {
+  if (!isDbReachable) return;
+  try {
+    await pool.query(
+      `INSERT INTO site_settings (key, value, updated_at)
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (key) DO UPDATE SET value = $2, updated_at = NOW()`,
+      [key, value]
+    );
+  } catch (e) {
+    markDbFailed(e);
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-token');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -448,42 +521,49 @@ export default async function handler(req, res) {
       let moduleMcqs = { ...DEFAULT_MODULE_MCQS };
       let dbLoaded = false;
 
-      try {
-        await ensureTableOnce();
-        const result = await pool.query(
-          "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs')"
-        );
+      if (shouldAttemptDb()) {
+        try {
+          await ensureTableOnce();
+          const result = await pool.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs')"
+          );
 
-        result.rows.forEach(row => {
-          if (row.key === 'site_locked') {
-            globalLocked = row.value === 'true';
-          } else if (row.key === 'activity_locks') {
-            try {
-              activityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...JSON.parse(row.value) };
-            } catch (e) {
-              console.warn('Error parsing activity_locks json', e);
+          result.rows.forEach(row => {
+            if (row.key === 'site_locked') {
+              globalLocked = row.value === 'true';
+            } else if (row.key === 'activity_locks') {
+              try {
+                activityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...JSON.parse(row.value) };
+              } catch (e) {
+                console.warn('Error parsing activity_locks json', e);
+              }
+            } else if (row.key === 'module_videos') {
+              try {
+                moduleVideos = mergeModuleVideos(JSON.parse(row.value));
+              } catch (e) {
+                console.warn('Error parsing module_videos json', e);
+              }
+            } else if (row.key === 'module_mcqs') {
+              try {
+                moduleMcqs = { ...DEFAULT_MODULE_MCQS, ...JSON.parse(row.value) };
+              } catch (e) {
+                console.warn('Error parsing module_mcqs json', e);
+              }
             }
-          } else if (row.key === 'module_videos') {
-            try {
-              moduleVideos = { ...DEFAULT_MODULE_VIDEOS, ...JSON.parse(row.value) };
-            } catch (e) {
-              console.warn('Error parsing module_videos json', e);
-            }
-          } else if (row.key === 'module_mcqs') {
-            try {
-              moduleMcqs = { ...DEFAULT_MODULE_MCQS, ...JSON.parse(row.value) };
-            } catch (e) {
-              console.warn('Error parsing module_mcqs json', e);
-            }
-          }
-        });
-        dbLoaded = true;
-      } catch (dbErr) {
+          });
+          dbLoaded = true;
+          isDbReachable = true;
+        } catch (dbErr) {
+          markDbFailed(dbErr);
+        }
+      }
+
+      if (!dbLoaded) {
         // Database not reachable, use fallback file
         const fb = readFallbackFile();
         globalLocked = fb.locked ?? false;
         activityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...(fb.activityLocks || {}) };
-        moduleVideos = { ...DEFAULT_MODULE_VIDEOS, ...(fb.moduleVideos || {}) };
+        moduleVideos = fb.moduleVideos || { ...DEFAULT_MODULE_VIDEOS };
         moduleMcqs = { ...DEFAULT_MODULE_MCQS, ...(fb.moduleMcqs || {}) };
       }
 
@@ -515,52 +595,48 @@ export default async function handler(req, res) {
       const fb = readFallbackFile();
       let curGlobal = fb.locked ?? false;
       let curActivityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...(fb.activityLocks || {}) };
-      let curModuleVideos = { ...DEFAULT_MODULE_VIDEOS, ...(fb.moduleVideos || {}) };
+      let curModuleVideos = fb.moduleVideos || { ...DEFAULT_MODULE_VIDEOS };
       let curModuleMcqs = { ...DEFAULT_MODULE_MCQS, ...(fb.moduleMcqs || {}) };
+
+      // Load latest values from database if available
+      if (shouldAttemptDb()) {
+        try {
+          await ensureTableOnce();
+          const result = await pool.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs')"
+          );
+          result.rows.forEach(row => {
+            if (row.key === 'site_locked') curGlobal = row.value === 'true';
+            else if (row.key === 'activity_locks') {
+              try { curActivityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...JSON.parse(row.value) }; } catch (e) {}
+            } else if (row.key === 'module_videos') {
+              try { curModuleVideos = mergeModuleVideos(JSON.parse(row.value)); } catch (e) {}
+            } else if (row.key === 'module_mcqs') {
+              try { curModuleMcqs = { ...DEFAULT_MODULE_MCQS, ...JSON.parse(row.value) }; } catch (e) {}
+            }
+          });
+          isDbReachable = true;
+        } catch (dbErr) {
+          markDbFailed(dbErr);
+        }
+      }
 
       // 1. Update Global Lock if provided
       if (typeof body.locked === 'boolean') {
         curGlobal = body.locked;
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('site_locked', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [curGlobal.toString()]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving locked state to file');
-        }
+        await saveDbSetting('site_locked', curGlobal.toString());
       }
 
       // 2. Update Specific Activity Lock if provided: { activityId: 'activity_1', activityLocked: true/false }
       if (body.activityId && typeof body.activityLocked === 'boolean') {
         curActivityLocks[body.activityId] = body.activityLocked;
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('activity_locks', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curActivityLocks)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving activityLocks to file');
-        }
+        await saveDbSetting('activity_locks', JSON.stringify(curActivityLocks));
       }
 
       // 3. Bulk Activity Locks if provided: { activityLocks: { activity_1: true, ... } }
       if (body.activityLocks && typeof body.activityLocks === 'object') {
         curActivityLocks = { ...curActivityLocks, ...body.activityLocks };
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('activity_locks', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curActivityLocks)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving activityLocks to file');
-        }
+        await saveDbSetting('activity_locks', JSON.stringify(curActivityLocks));
       }
 
       // 4. Update Specific Module Video: { moduleId: 'index' | 'activity_1'..4, video: { ... } }
@@ -572,48 +648,20 @@ export default async function handler(req, res) {
           id: modKey,
           updatedAt: new Date().toISOString()
         };
-
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_videos', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleVideos)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving moduleVideos to file');
-        }
+        await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
       }
 
       // 5. Bulk Module Videos if provided: { moduleVideos: { index: {...}, ... } }
       if (body.moduleVideos && typeof body.moduleVideos === 'object') {
         curModuleVideos = { ...curModuleVideos, ...body.moduleVideos };
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_videos', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleVideos)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving moduleVideos to file');
-        }
+        await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
       }
 
       // 6. Reset Module Video to Default if requested: { resetModuleVideo: 'activity_1' }
       if (body.resetModuleVideo && DEFAULT_MODULE_VIDEOS[body.resetModuleVideo]) {
         const modKey = body.resetModuleVideo;
         curModuleVideos[modKey] = { ...DEFAULT_MODULE_VIDEOS[modKey] };
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_videos', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleVideos)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving reset moduleVideos to file');
-        }
+        await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
       }
 
       // 6b. Delete / Clear Module Video if requested: { deleteModuleVideo: 'activity_1' }
@@ -626,16 +674,7 @@ export default async function handler(req, res) {
           sourceType: 'mp4',
           updatedAt: new Date().toISOString()
         };
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_videos', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleVideos)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving deleteModuleVideo to file');
-        }
+        await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
       }
 
       // 7. Update Specific Module MCQs: { moduleId: 'index' | 'activity_1'..4, mcqs: [ ... ] }
@@ -647,48 +686,20 @@ export default async function handler(req, res) {
           correct: Number(q.correct) >= 0 ? Number(q.correct) : 0,
           explanation: String(q.explanation || "").trim()
         }));
-
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_mcqs', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleMcqs)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving moduleMcqs to file');
-        }
+        await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
       }
 
       // 8. Bulk Module MCQs if provided: { moduleMcqs: { index: [...], ... } }
       if (body.moduleMcqs && typeof body.moduleMcqs === 'object') {
         curModuleMcqs = { ...curModuleMcqs, ...body.moduleMcqs };
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_mcqs', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleMcqs)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving moduleMcqs to file');
-        }
+        await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
       }
 
       // 9. Reset Module MCQs to Default: { resetModuleMcqs: 'activity_1' }
       if (body.resetModuleMcqs && DEFAULT_MODULE_MCQS[body.resetModuleMcqs]) {
         const modKey = body.resetModuleMcqs;
         curModuleMcqs[modKey] = JSON.parse(JSON.stringify(DEFAULT_MODULE_MCQS[modKey]));
-        try {
-          await pool.query(
-            `INSERT INTO site_settings (key, value, updated_at)
-             VALUES ('module_mcqs', $1, NOW())
-             ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()`,
-            [JSON.stringify(curModuleMcqs)]
-          );
-        } catch (e) {
-          console.warn('Fallback: saving reset moduleMcqs to file');
-        }
+        await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
       }
 
       // Always write to fallback file

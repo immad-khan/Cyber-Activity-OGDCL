@@ -2004,6 +2004,7 @@
           body: JSON.stringify({
             moduleId: 'index',
             video: {
+              ...(moduleVideosData.index || {}),
               enabled: isIndexVideoVisible
             }
           })
