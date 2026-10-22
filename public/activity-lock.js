@@ -227,6 +227,37 @@
     let currentLoadedVideoType = null;
 
     function syncDynamicVideo(vidCfg) {
+        const isEnabled = vidCfg && !(vidCfg.enabled === false || vidCfg.enabled === 'false' || vidCfg.enabled === 0 || vidCfg.enabled === '0');
+        const activitySection = document.getElementById('activityVideoSection');
+        let activityContainer = null;
+
+        if (activitySection) {
+            activitySection.style.display = isEnabled ? 'block' : 'none';
+            if (!isEnabled) return;
+
+            const titleEl = document.getElementById('activityVideoTitle');
+            if (titleEl && vidCfg.title) titleEl.textContent = vidCfg.title;
+            const subEl = document.getElementById('activityVideoSubtitle');
+            if (subEl) {
+                subEl.textContent = vidCfg.desc || '';
+                subEl.style.display = vidCfg.desc ? 'block' : 'none';
+            }
+
+            activityContainer = document.getElementById('activityVideoContainer');
+            if (activityContainer && (!vidCfg.url || !vidCfg.url.trim())) {
+                currentLoadedVideoUrl = null;
+                currentLoadedVideoType = null;
+                activityContainer.innerHTML = `
+                    <div style="padding:52px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.95)); aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:center;">
+                        <div style="font-size:3rem; margin-bottom:10px;">🎬</div>
+                        <h3 style="font-size:1.3rem; color:#00ffff; margin:0 0 8px;">Activity Video</h3>
+                        <p style="color:rgba(255,255,255,.75); font-size:.95rem; max-width:480px; margin:0 auto; line-height:1.5;">This video briefing is being updated by the administrator. Check back soon.</p>
+                    </div>
+                `;
+                return;
+            }
+        }
+
         // Handle landing page (index) dynamic visibility & headings
         const landingSec = document.getElementById('landingVideoSection');
         if (landingSec) {
@@ -257,7 +288,7 @@
         }
 
         if (!vidCfg || !vidCfg.url) return;
-        const container = document.querySelector('.video-container');
+        const container = activityContainer || document.querySelector('.video-container');
         if (!container) return;
 
         const targetType = vidCfg.sourceType === 'youtube' ? 'youtube' : 'mp4';
