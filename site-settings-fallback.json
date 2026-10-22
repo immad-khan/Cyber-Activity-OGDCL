@@ -23,47 +23,46 @@
     "activity_1": {
       "id": "activity_1",
       "name": "Activity 1",
-      "title": "The Executive Target & Phishing Defense",
-      "desc": "Executive spear-phishing, business email compromise, deepfakes, and verification protocols.",
-      "sourceType": "mp4",
-      "url": "videos/custom.mp4",
-      "poster": "videos/phishing-awareness_poster.jpg",
-      "pageUrl": "phishing-week.html",
-      "pageName": "Activity 1: The Executive Target",
-      "updatedAt": "2026-10-20T09:10:30.472Z"
-    },
-    "activity_2": {
-      "id": "activity_2",
-      "name": "Activity 2",
       "title": "Password Security & Multi-Factor Authentication",
       "desc": "Password policy, Bitwarden vault security, and multi-factor authentication defense.",
       "sourceType": "mp4",
       "url": "videos/Password_policy.mp4",
       "poster": "videos/Password_policy_poster.jpg",
       "pageUrl": "mfa-week.html",
-      "pageName": "Activity 2: Password Protection"
+      "pageName": "Activity 1: Password Protection"
     },
-    "activity_3": {
-      "id": "activity_3",
-      "name": "Activity 3",
+    "activity_2": {
+      "id": "activity_2",
+      "name": "Activity 2",
       "title": "Social Engineering Defense Training",
       "desc": "Recognize manipulation, verify identity, and defend against pretexting and human attacks.",
       "sourceType": "youtube",
       "url": "https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0",
       "poster": "",
       "pageUrl": "social-engineering-week.html",
-      "pageName": "Activity 3: Social Engineering"
+      "pageName": "Activity 2: Social Engineering"
     },
-    "activity_4": {
-      "id": "activity_4",
-      "name": "Activity 4",
+    "activity_3": {
+      "id": "activity_3",
+      "name": "Activity 3",
       "title": "Data Privacy & Corporate Asset Protection",
       "desc": "Safeguard sensitive corporate information, master PII standards, and defend company data.",
       "sourceType": "youtube",
       "url": "https://www.youtube.com/embed/aAfB0CQOdWQ?enablejsapi=1&rel=0",
       "poster": "",
       "pageUrl": "privacy-week.html",
-      "pageName": "Activity 4: Data Privacy"
+      "pageName": "Activity 3: Data Privacy"
+    },
+    "activity_4": {
+      "id": "activity_4",
+      "name": "Activity 4",
+      "title": "The Executive Target & Phishing Defense",
+      "desc": "Executive spear-phishing, business email compromise, deepfakes, and verification protocols.",
+      "sourceType": "mp4",
+      "url": "videos/phishing-awareness.mp4",
+      "poster": "videos/phishing-awareness_poster.jpg",
+      "pageUrl": "phishing-week.html",
+      "pageName": "Activity 4: The Executive Target"
     }
   },
   "moduleMcqs": {
@@ -126,63 +125,6 @@
     ],
     "activity_1": [
       {
-        "question": "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
-        "options": [
-          "Process immediately",
-          "Reply to email",
-          "Call CEO using known number",
-          "Forward to finance"
-        ],
-        "correct": 2,
-        "explanation": "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
-      },
-      {
-        "question": "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
-        "options": [
-          "Approve it",
-          "Ignore it",
-          "Deny and report to IT security",
-          "Approve and change password later"
-        ],
-        "correct": 2,
-        "explanation": "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
-      },
-      {
-        "question": "A LinkedIn connection requests your work email. What should you do?",
-        "options": [
-          "Share it",
-          "Share personal email instead",
-          "Politely decline",
-          "Share but ask not to spam"
-        ],
-        "correct": 2,
-        "explanation": "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
-      },
-      {
-        "question": "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
-        "options": [
-          "Provide credentials",
-          "Ask for email request",
-          "End call and verify through another channel",
-          "Share screen instead"
-        ],
-        "correct": 2,
-        "explanation": "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
-      },
-      {
-        "question": "What's the most secure type of multi-factor authentication for executives?",
-        "options": [
-          "SMS codes",
-          "Email codes",
-          "Hardware security keys",
-          "Authenticator app"
-        ],
-        "correct": 2,
-        "explanation": "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
-      }
-    ],
-    "activity_2": [
-      {
         "question": "What makes a password strong according to best practices?",
         "options": [
           "Using your birthday and name",
@@ -238,7 +180,7 @@
         "explanation": "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
       }
     ],
-    "activity_3": [
+    "activity_2": [
       {
         "question": "According to the video (Chapter 0:30), what is Social Engineering?",
         "options": [
@@ -295,7 +237,7 @@
         "explanation": "Always slow down and pause. Never use phone numbers or links provided in the suspicious message. Verify independently through official channels and report it immediately."
       }
     ],
-    "activity_4": [
+    "activity_3": [
       {
         "question": "Which of the following is considered Personally Identifiable Information (PII) and corporate confidential data that must be strictly protected under OGDCL's privacy policy?",
         "options": [
@@ -350,6 +292,63 @@
         ],
         "correct": 0,
         "explanation": "The Principle of Least Privilege ensures that users and applications are provided only the minimum level of access necessary for their legitimate business duties, drastically minimizing exposure risks."
+      }
+    ],
+    "activity_4": [
+      {
+        "question": "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
+        "options": [
+          "Process immediately",
+          "Reply to email",
+          "Call CEO using known number",
+          "Forward to finance"
+        ],
+        "correct": 2,
+        "explanation": "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
+      },
+      {
+        "question": "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
+        "options": [
+          "Approve it",
+          "Ignore it",
+          "Deny and report to IT security",
+          "Approve and change password later"
+        ],
+        "correct": 2,
+        "explanation": "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
+      },
+      {
+        "question": "A LinkedIn connection requests your work email. What should you do?",
+        "options": [
+          "Share it",
+          "Share personal email instead",
+          "Politely decline",
+          "Share but ask not to spam"
+        ],
+        "correct": 2,
+        "explanation": "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
+      },
+      {
+        "question": "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
+        "options": [
+          "Provide credentials",
+          "Ask for email request",
+          "End call and verify through another channel",
+          "Share screen instead"
+        ],
+        "correct": 2,
+        "explanation": "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
+      },
+      {
+        "question": "What's the most secure type of multi-factor authentication for executives?",
+        "options": [
+          "SMS codes",
+          "Email codes",
+          "Hardware security keys",
+          "Authenticator app"
+        ],
+        "correct": 2,
+        "explanation": "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
       }
     ]
   }
