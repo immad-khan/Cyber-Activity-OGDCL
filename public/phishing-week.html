@@ -338,6 +338,36 @@
             font-size: 0.9rem;
         }
 
+        .claim-video-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5253);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .claim-video-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            border-color: #ffffff;
+        }
+
+        .claim-video-btn:disabled {
+            background: linear-gradient(45deg, #2ec4b6, #20bf6b) !important;
+            border-color: #2ec4b6 !important;
+            color: #ffffff !important;
+            cursor: default !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
         .learning-points {
             margin-top: 25px;
             background: rgba(255, 255, 255, 0.05);
@@ -666,6 +696,11 @@
             <div class="marks-display">
                 <span class="marks-badge">Video: 50 marks</span>
                 <span class="marks-badge">Quiz: 100 marks</span>
+                <div style="margin-top: 10px;">
+                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                        🎁 Finished Watching? Claim 50 Video Marks
+                    </button>
+                </div>
             </div>
 
             <div class="learning-points">
@@ -811,7 +846,13 @@
                 showNotification('Video Complete! You earned 50 marks!', 'success');
                 celebrateVideoCompletion();
                 const btn = document.getElementById('claimVideoBtn');
-                if (btn) { btn.disabled = true; btn.textContent = '✅ 50 Video Marks Awarded!'; }
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = '✅ 50 Video Marks Awarded!';
+                    btn.style.background = 'linear-gradient(45deg, #2ec4b6, #20bf6b)';
+                    btn.style.color = '#ffffff';
+                    btn.style.cursor = 'default';
+                }
                 if (currentUserName) saveToDatabase();
             } else {
                 showNotification('You have already claimed your video marks!', 'info');
