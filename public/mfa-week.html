@@ -324,6 +324,36 @@
             font-size: 0.9rem;
         }
 
+        .claim-video-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00ffff, #00b4d8);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 25px;
+            color: #000000;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .claim-video-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6);
+            border-color: #ffffff;
+        }
+
+        .claim-video-btn:disabled {
+            background: linear-gradient(45deg, #2ec4b6, #20bf6b) !important;
+            border-color: #2ec4b6 !important;
+            color: #ffffff !important;
+            cursor: default !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
         .learning-points {
             margin-top: 25px;
             background: rgba(255, 255, 255, 0.05);
@@ -619,7 +649,7 @@
         </div>
     </header>
 
-    <section id="sharedActivityVideoSection" style="display:none; padding:42px 20px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.96));">
+    <section id="sharedActivityVideoSection" style="display:none; margin-top:115px; padding:20px 20px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.96));">
         <div style="max-width:900px; margin:0 auto;">
             <div id="sharedActivityVideoTitle" role="heading" aria-level="2" style="display:block!important; visibility:visible!important; opacity:1!important; position:relative; z-index:1; color:#00ffff!important; font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; line-height:1.25; margin:0 0 10px;">Activity Video Briefing</div>
             <p id="sharedActivityVideoSubtitle" style="max-width:720px; margin:0 auto 24px; color:rgba(255,255,255,.85); font-size:1.05rem; line-height:1.55;">Watch this shared cybersecurity briefing before starting the activities.</p>
@@ -647,6 +677,11 @@
             <div class="marks-display">
                 <span class="marks-badge">Video: 50 marks</span>
                 <span class="marks-badge">Quiz: 100 marks</span>
+                <div style="margin-top: 10px;">
+                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                        🎁 Finished Watching? Claim 50 Video Marks
+                    </button>
+                </div>
             </div>
             
             <div class="learning-points">
@@ -784,7 +819,13 @@
                 showNotification('Video Complete! You earned 50 marks!', 'success');
                 celebrateVideoCompletion();
                 const btn = document.getElementById('claimVideoBtn');
-                if (btn) { btn.disabled = true; btn.textContent = '✅ 50 Video Marks Awarded!'; }
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = '✅ 50 Video Marks Awarded!';
+                    btn.style.background = 'linear-gradient(45deg, #2ec4b6, #20bf6b)';
+                    btn.style.color = '#ffffff';
+                    btn.style.cursor = 'default';
+                }
                 if (currentUserName) saveToDatabase();
             } else {
                 showNotification('You have already claimed your video marks!', 'info');
