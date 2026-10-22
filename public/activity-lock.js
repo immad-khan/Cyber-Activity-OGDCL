@@ -227,33 +227,58 @@
     let currentLoadedVideoType = null;
 
     function syncDynamicVideo(vidCfg) {
-        // Handle landing page (index) dynamic visibility & headings
+        // Handle landing page (index) dynamic visibility, headings & video
         const landingSec = document.getElementById('landingVideoSection');
         if (landingSec) {
             const isShown = vidCfg && !(vidCfg.enabled === false || vidCfg.enabled === 'false' || vidCfg.enabled === 0 || vidCfg.enabled === '0');
             landingSec.style.display = isShown ? 'block' : 'none';
-            if (isShown) {
-                const titleEl = document.getElementById('landingVideoTitle');
-                if (titleEl && vidCfg.title) titleEl.textContent = vidCfg.title;
-                const subEl = document.getElementById('landingVideoSubtitle');
-                if (subEl) {
-                    subEl.textContent = vidCfg.desc || '';
-                    subEl.style.display = vidCfg.desc ? 'block' : 'none';
-                }
-                const container = document.getElementById('landingVideoContainer');
-                if (container && (!vidCfg.url || !vidCfg.url.trim())) {
-                    container.innerHTML = `
-                        <div style="padding: 60px 24px; text-align: center; background: radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, rgba(10, 15, 30, 0.95) 100%);">
-                            <div style="font-size: 3.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 16px rgba(0,255,255,0.4));">🎬</div>
-                            <h3 style="font-size: 1.35rem; color: #00ffff; margin-bottom: 8px; font-weight: 600;">Featured Awareness Video</h3>
-                            <p style="color: rgba(255, 255, 255, 0.75); font-size: 0.95rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">This video briefing is currently being updated by the administrator. Check back shortly or explore the activities below!</p>
-                        </div>
-                    `;
-                    return;
-                }
-            } else {
+            if (!isShown) return;
+
+            const titleEl = document.getElementById('landingVideoTitle');
+            if (titleEl && vidCfg.title) titleEl.textContent = vidCfg.title;
+            const subEl = document.getElementById('landingVideoSubtitle');
+            if (subEl) {
+                subEl.textContent = vidCfg.desc || '';
+                subEl.style.display = vidCfg.desc ? 'block' : 'none';
+            }
+            const container = document.getElementById('landingVideoContainer');
+            if (!container) return;
+
+            if (!vidCfg.url || !vidCfg.url.trim()) {
+                container.removeAttribute('data-loaded-src');
+                container.innerHTML = `
+                    <div style="padding: 60px 24px; text-align: center; background: radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, rgba(10, 15, 30, 0.95) 100%);">
+                        <div style="font-size: 3.5rem; margin-bottom: 12px; filter: drop-shadow(0 0 16px rgba(0,255,255,0.4));">🎬</div>
+                        <h3 style="font-size: 1.35rem; color: #00ffff; margin-bottom: 8px; font-weight: 600;">Featured Awareness Video</h3>
+                        <p style="color: rgba(255, 255, 255, 0.75); font-size: 0.95rem; max-width: 480px; margin: 0 auto; line-height: 1.5;">This video briefing is currently being updated by the administrator. Check back shortly or explore the activities below!</p>
+                    </div>
+                `;
                 return;
             }
+
+            const targetUrl = vidCfg.url.trim();
+            const currentSrc = container.getAttribute('data-loaded-src');
+            if (currentSrc !== targetUrl) {
+                container.setAttribute('data-loaded-src', targetUrl);
+                const isYt = vidCfg.sourceType === 'youtube' || targetUrl.includes('youtube.com') || targetUrl.includes('youtu.be');
+                if (isYt) {
+                    container.innerHTML = `
+                        <iframe src="${targetUrl}" title="${vidCfg.title || 'Awareness Video'}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block;">
+                        </iframe>
+                    `;
+                } else {
+                    const posterAttr = vidCfg.poster ? `poster="${vidCfg.poster}"` : '';
+                    container.innerHTML = `
+                        <video id="trainingVideo" src="${targetUrl}" controls controlsList="nodownload" preload="metadata" playsinline ${posterAttr} style="width:100%;aspect-ratio:16/9;display:block;">
+                            <source src="${targetUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                }
+            }
+            return; // Finished handling index page, do not fall through to activity video
         }
 
         if (!vidCfg || !vidCfg.url) return;
@@ -295,7 +320,7 @@
             }
         } else {
             container.innerHTML = `
-                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="${vidCfg.poster || ''}" style="width:100%;border-radius:15px;display:block;">
+                <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="${vidCfg.poster || ''}" style="width:100%;border-radius:15px;display:block;">
                     <source src="${targetUrl}" type="video/mp4">
                     Your browser does not support HTML5 video streaming.
                 </video>
@@ -321,11 +346,18 @@
 
         const isVisible = !(videoCfg.enabled === false || videoCfg.enabled === 'false' || videoCfg.enabled === 0 || videoCfg.enabled === '0');
         section.style.display = isVisible ? 'block' : 'none';
+        const nextHero = section.nextElementSibling;
+        if (nextHero && nextHero.classList.contains('hero')) {
+            nextHero.style.marginTop = isVisible ? '25px' : '';
+        }
         if (!isVisible) return;
 
         const title = document.getElementById('sharedActivityVideoTitle');
         const paragraph = document.getElementById('sharedActivityVideoSubtitle');
-        if (title && videoCfg.title) title.textContent = videoCfg.title;
+        if (title) {
+            title.textContent = videoCfg.title || 'Activity Video Briefing';
+            title.style.display = 'block';
+        }
         if (paragraph) {
             paragraph.textContent = videoCfg.desc || '';
             paragraph.style.display = videoCfg.desc ? 'block' : 'none';
@@ -347,14 +379,23 @@
         }
 
         if (container.dataset.loadedSrc === url && container.dataset.loadedPoster === posterUrl) return;
+        const video = document.createElement('video');
+        video.controls = true;
+        video.preload = 'auto';
+        video.playsInline = true;
+        video.setAttribute('controlsList', 'nodownload');
+        video.style.cssText = 'width:100%;display:block;border-radius:15px;';
+        if (posterUrl) video.poster = new URL(posterUrl, window.location.href).href;
+        video.src = new URL(url, window.location.href).href;
+        video.addEventListener('error', () => {
+            const mediaError = video.error;
+            container.dataset.loadedSrc = '';
+            container.innerHTML = `<p style="padding:20px;color:#ff8b8b;">Video could not be loaded (${mediaError ? `media error ${mediaError.code}` : 'network error'}). Check that the video URL is accessible.</p>`;
+        }, { once: true });
+        container.replaceChildren(video);
         container.dataset.loadedSrc = url;
         container.dataset.loadedPoster = posterUrl;
-        container.innerHTML = `
-            <video controls controlsList="nodownload" preload="metadata" playsinline poster="${posterUrl}" style="width:100%; display:block; border-radius:15px;">
-                <source src="${url}" type="video/mp4">
-                Your browser does not support HTML5 video streaming.
-            </video>
-        `;
+        video.load();
     }
 
     // ── Dynamic MCQs Sync ──
@@ -424,8 +465,9 @@
             }
 
             // Sync dynamic module video & MCQs
-            if (data.moduleVideos && data.moduleVideos.activity_banner) {
-                syncSharedActivityVideo(data.moduleVideos.activity_banner);
+            if (currentActivity && currentActivity.id !== 'index') {
+                const bannerVideo = data.moduleVideos && data.moduleVideos[`${currentActivity.id}_banner`];
+                if (bannerVideo) syncSharedActivityVideo(bannerVideo);
             }
             if (currentActivity && currentActivity.id) {
                 if (data.moduleVideos && data.moduleVideos[currentActivity.id]) {
@@ -447,8 +489,8 @@
         checkLock();
     }
 
-    // Live continuous polling
-    setInterval(checkLock, 2500);
+    // Background polling every 10 seconds (tab focus checks immediately)
+    setInterval(checkLock, 10000);
 
     // Instant check when switching tabs or window focus
     window.addEventListener('focus', checkLock);
