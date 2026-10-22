@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybersecurity Shield - Awareness & Digital Safety</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=4"></script>
-    <script src="activity-lock.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="cert-assets.js?v=3" defer></script>
+    <script src="certificate.js?v=4" defer></script>
+    <script src="activity-lock.js" defer></script>
 
     <style>
         * {
@@ -971,7 +971,7 @@
                         <span id="levelIcon">🔓</span>
                         <span id="levelName">Beginner</span>
                     </div>
-                    <div>Score: <span id="userScore">0</span></div>
+                    <div>Score: <span id="userScore">0</span>/100</div>
                     <div class="progress-container">
                         <div class="progress-bar" id="progressBar"></div>
                     </div>
@@ -1059,7 +1059,7 @@
                 <h2 class="section-title" id="landingVideoTitle">Cybersecurity Awareness Overview</h2>
                 <p id="landingVideoSubtitle" style="text-align: center; max-width: 720px; margin: -10px auto 35px; color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; line-height: 1.5;">Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.</p>
                 <div class="video-container" id="landingVideoContainer" style="max-width: 880px; margin: 0 auto 25px; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(0,255,255,0.3); background: #000;">
-                    <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg" style="width:100%;aspect-ratio:16/9;display:block;">
+                    <video id="trainingVideo" src="videos/phishing-awareness.mp4" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg" style="width:100%;aspect-ratio:16/9;display:block;">
                         <source src="videos/phishing-awareness.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -1140,7 +1140,6 @@
     </div>
 
     <script>
-        const { jsPDF } = window.jspdf;
         const API_ENDPOINT = '/api/save-username';
 
         let userInteractions = {};
@@ -1262,24 +1261,24 @@
         }
 
         const SCORING = {
-            tip_interaction: 10,
-            quiz_correct: 25,
-            quiz_attempt: 5,
+            tip_interaction: 5,
+            quiz_correct: 20,
+            quiz_attempt: 0,
             floating_tip: 5,
-            hero_button: 10,
-            threat_alert_button: 10,
-            time_bonus_per_minute: 2,
-            completion_bonus: 50,
-            week1_button: 15
+            hero_button: 5,
+            threat_alert_button: 5,
+            time_bonus_per_minute: 0,
+            completion_bonus: 0,
+            week1_button: 5
         };
 
         const SECURITY_LEVELS = [
             { name: 'Beginner', threshold: 0, color: '#ff6b6b', icon: '🔓', bgColor: 'rgba(255, 107, 107, 0.2)' },
-            { name: 'Aware', threshold: 50, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
-            { name: 'Cautious', threshold: 100, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
-            { name: 'Secure', threshold: 150, color: '#4ecdc4', icon: '🔐', bgColor: 'rgba(78, 205, 196, 0.2)' },
-            { name: 'Expert', threshold: 200, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
-            { name: 'Guardian', threshold: 300, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
+            { name: 'Aware', threshold: 20, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
+            { name: 'Cautious', threshold: 40, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
+            { name: 'Secure', threshold: 60, color: '#4ecdc4', icon: '🔐', bgColor: 'rgba(78, 205, 196, 0.2)' },
+            { name: 'Expert', threshold: 80, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
+            { name: 'Guardian', threshold: 100, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
         ];
 
         window.quizQuestions = [
@@ -1440,16 +1439,10 @@
         }
 
         function updateProgressBar() {
-            const currentLevel = getCurrentSecurityLevel();
-            const nextLevelIndex = SECURITY_LEVELS.findIndex(level => level.name === currentLevel.name) + 1;
             const progressBar = document.getElementById('progressBar');
-
-            if (nextLevelIndex < SECURITY_LEVELS.length) {
-                const nextLevel = SECURITY_LEVELS[nextLevelIndex];
-                const progress = ((userScore - currentLevel.threshold) / (nextLevel.threshold - currentLevel.threshold)) * 100;
-                progressBar.style.width = Math.min(progress, 100) + '%';
-            } else {
-                progressBar.style.width = '100%';
+            if (progressBar) {
+                const percent = Math.min(100, Math.max(0, userScore));
+                progressBar.style.width = percent + '%';
             }
         }
 
@@ -1707,7 +1700,7 @@
                 const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
                 const currentLevel = getCurrentSecurityLevel();
                 const videoMarks = window.videoWatched ? 50 : 0;
-                const quizMarks = correctAnswers > 0 ? (correctAnswers * 25) : Math.max(0, userScore - videoMarks);
+                const quizMarks = correctAnswers > 0 ? (correctAnswers * 20) : Math.max(0, userScore - videoMarks);
 
                 const payload = {
                     userName: name,
@@ -1770,10 +1763,10 @@
                     <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px auto; max-width: 600px; border: 2px solid rgba(0, 255, 255, 0.3);">
                         <h3 style="color: #4ecdc4; margin-bottom: 15px; font-size: 1.5rem;">Your Performance</h3>
                         <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions: ${totalQuestions || 5}/${quizQuestions.length}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers || 5}</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers || 0}</p>
                         <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
                         <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
-                        <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Score: ${userScore} points</p>
+                        <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Quiz Score: ${correctAnswers * 20} / 100 points</p>
                     </div>
 
                     <div style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
@@ -2253,7 +2246,7 @@
                                                 `;
                                             } else {
                                                 container.innerHTML = `
-                                                    <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="${v.poster || ''}" style="width:100%;aspect-ratio:16/9;display:block;">
+                                                    <video id="trainingVideo" src="${v.url}" controls controlsList="nodownload" preload="metadata" playsinline ${v.poster ? `poster="${v.poster}"` : ''} style="width:100%;aspect-ratio:16/9;display:block;">
                                                         <source src="${v.url}" type="video/mp4">
                                                         Your browser does not support the video tag.
                                                     </video>
