@@ -17,7 +17,8 @@
       "poster": "videos/phishing-awareness_poster.jpg",
       "pageUrl": "index.html",
       "pageName": "Home / Index Page",
-      "enabled": true
+      "enabled": false,
+      "updatedAt": "2026-10-22T15:22:59.692Z"
     },
     "activity_1": {
       "id": "activity_1",
