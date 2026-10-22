@@ -1802,6 +1802,16 @@
         <span class="nav-item-badge" id="sideBadge-activity_4">Video</span>
       </button>
 
+      <button class="nav-item" id="navMod-activity_banner" onclick="navToModule('activity_banner')"
+        title="Manage the shared video shown above Activities 1–4">
+        <span class="nav-icon">🎬</span>
+        <div class="nav-item-content">
+          <span class="nav-item-label">Shared Activity Video</span>
+          <span class="nav-item-sub">Banner above activities</span>
+        </div>
+        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_banner">No Video</span>
+      </button>
+
       <div class="nav-label" style="margin-top: 14px;">Portal Management</div>
       <button class="nav-item" id="btnNavUsers" onclick="showSection('users')">
         <span class="nav-icon">👥</span>
@@ -1917,6 +1927,15 @@
               </div>
               <div class="mod-title">Activity 4</div>
               <div class="mod-sub">Executive Phishing Defense</div>
+            </button>
+
+            <button class="mod-tab" data-mod="activity_banner" onclick="selectModule('activity_banner')">
+              <div class="mod-tab-top">
+                <span class="mod-icon">🎬</span>
+                <span class="mod-badge" id="badge-activity_banner">Shared Video</span>
+              </div>
+              <div class="mod-title">Shared Activity Video</div>
+              <div class="mod-sub">Banner above Activities 1–4</div>
             </button>
           </div>
         </div>
@@ -2356,6 +2375,15 @@
         icon: '🎣',
         pageUrl: 'phishing-week.html',
         pageName: 'Activity 4: The Executive Target'
+      },
+      activity_banner: {
+        id: 'activity_banner',
+        name: 'Shared Activity Video',
+        title: 'Shared Activity Video Briefing',
+        desc: 'One video section displayed above the hero on Activities 1–4.',
+        icon: '🎬',
+        pageUrl: 'mfa-week.html',
+        pageName: 'Activities 1–4: Shared video banner'
       }
     };
 
@@ -2486,6 +2514,10 @@
 
       const subLabel = document.getElementById('currentModuleVideoSub');
       if (subLabel) subLabel.textContent = `Manage video for ${meta.name} module`;
+      const mcqPanel = document.querySelectorAll('.content-grid > .panel-card')[1];
+      const contentGrid = document.querySelector('.content-grid');
+      if (mcqPanel) mcqPanel.style.display = modId === 'activity_banner' ? 'none' : '';
+      if (contentGrid) contentGrid.style.gridTemplateColumns = modId === 'activity_banner' ? '1fr' : '';
 
       // Render Video Editor for this module
       renderVideoEditor(modId);
@@ -2499,6 +2531,7 @@
 
     function updateAllTabBadges() {
       Object.keys(MODULES_META).forEach(id => {
+        if (id === 'activity_banner') return;
         const badge = document.getElementById(`badge-${id}`);
         if (badge) {
           const count = (moduleMcqsData[id] || []).length;
@@ -2631,14 +2664,22 @@
         if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether the video section appears on the home page, above Cybersecurity Statistics.';
         if (lblTitle) lblTitle.textContent = 'Landing Page Section Heading (Shown above video on home page)';
         if (lblDesc) lblDesc.textContent = 'Landing Page Section Subheading / Description';
+      } else if (modId === 'activity_banner') {
+        if (visibilityTitle) visibilityTitle.textContent = 'Shared Activity Video Visibility';
+        if (visibilityDesc) visibilityDesc.textContent = 'Show or hide this same video banner above the hero sections on Activities 1–4.';
+        if (lblTitle) lblTitle.textContent = 'Shared Video Heading (Shown above Activities 1–4)';
+        if (lblDesc) lblDesc.textContent = 'Shared Video Paragraph / Description';
       } else {
         if (visibilityTitle) visibilityTitle.textContent = 'Activity Video Section Visibility';
         if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether this video section appears above the activity hero section.';
-        if (lblTitle) lblTitle.textContent = 'Video Section Heading (Shown above the activity hero section)';
-        if (lblDesc) lblDesc.textContent = 'Video Section Paragraph / Description';
+        if (lblTitle) lblTitle.textContent = 'Video Title';
+        if (lblDesc) lblDesc.textContent = 'Video Description';
       }
-      if (hintTitle) hintTitle.style.display = 'block';
-      if (hintDesc) hintDesc.style.display = 'block';
+      const canToggleVisibility = modId === 'index' || modId === 'activity_banner';
+      const visibilityCard = document.getElementById('videoVisibilityCard');
+      if (visibilityCard) visibilityCard.style.display = canToggleVisibility ? 'flex' : 'none';
+      if (hintTitle) hintTitle.style.display = modId === 'index' || modId === 'activity_banner' ? 'block' : 'none';
+      if (hintDesc) hintDesc.style.display = modId === 'index' || modId === 'activity_banner' ? 'block' : 'none';
       isCurrentVideoVisible = !(vid.enabled === false || vid.enabled === 'false' || vid.enabled === 0 || vid.enabled === '0');
       updateVideoVisibilityUI(isCurrentVideoVisible);
 
