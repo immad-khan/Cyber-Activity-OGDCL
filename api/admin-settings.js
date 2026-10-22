@@ -48,8 +48,8 @@ const DEFAULT_MODULE_VIDEOS = {
     name: 'Activity 2',
     title: 'Social Engineering Defense Training',
     desc: 'Recognize manipulation, verify identity, and defend against pretexting and human attacks.',
-    sourceType: 'youtube',
-    url: 'https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0',
+    sourceType: 'mp4',
+    url: '',
     poster: '',
     pageUrl: 'social-engineering-week.html',
     pageName: 'Activity 2: Social Engineering'
@@ -59,8 +59,8 @@ const DEFAULT_MODULE_VIDEOS = {
     name: 'Activity 3',
     title: 'Data Privacy & Corporate Asset Protection',
     desc: 'Safeguard sensitive corporate information, master PII standards, and defend company data.',
-    sourceType: 'youtube',
-    url: 'https://www.youtube.com/embed/aAfB0CQOdWQ?enablejsapi=1&rel=0',
+    sourceType: 'mp4',
+    url: '',
     poster: '',
     pageUrl: 'privacy-week.html',
     pageName: 'Activity 3: Data Privacy'
@@ -75,6 +75,18 @@ const DEFAULT_MODULE_VIDEOS = {
     poster: 'videos/phishing-awareness_poster.jpg',
     pageUrl: 'phishing-week.html',
     pageName: 'Activity 4: The Executive Target'
+  },
+  activity_banner: {
+    id: 'activity_banner',
+    name: 'Shared Activity Video',
+    title: 'Activity Video Briefing',
+    desc: 'Watch this shared cybersecurity briefing before starting the activities.',
+    sourceType: 'mp4',
+    url: '',
+    poster: '',
+    pageUrl: 'mfa-week.html',
+    pageName: 'Activities 1–4: Shared video above hero sections',
+    enabled: true
   }
 };
 
@@ -657,13 +669,6 @@ export default async function handler(req, res) {
         await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
       }
 
-      // 6. Reset Module Video to Default if requested: { resetModuleVideo: 'activity_1' }
-      if (body.resetModuleVideo && DEFAULT_MODULE_VIDEOS[body.resetModuleVideo]) {
-        const modKey = body.resetModuleVideo;
-        curModuleVideos[modKey] = { ...DEFAULT_MODULE_VIDEOS[modKey] };
-        await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
-      }
-
       // 6b. Delete / Clear Module Video if requested: { deleteModuleVideo: 'activity_1' }
       if (body.deleteModuleVideo && (curModuleVideos[body.deleteModuleVideo] || DEFAULT_MODULE_VIDEOS[body.deleteModuleVideo])) {
         const modKey = body.deleteModuleVideo;
@@ -692,13 +697,6 @@ export default async function handler(req, res) {
       // 8. Bulk Module MCQs if provided: { moduleMcqs: { index: [...], ... } }
       if (body.moduleMcqs && typeof body.moduleMcqs === 'object') {
         curModuleMcqs = { ...curModuleMcqs, ...body.moduleMcqs };
-        await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
-      }
-
-      // 9. Reset Module MCQs to Default: { resetModuleMcqs: 'activity_1' }
-      if (body.resetModuleMcqs && DEFAULT_MODULE_MCQS[body.resetModuleMcqs]) {
-        const modKey = body.resetModuleMcqs;
-        curModuleMcqs[modKey] = JSON.parse(JSON.stringify(DEFAULT_MODULE_MCQS[modKey]));
         await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
       }
 
