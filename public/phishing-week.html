@@ -16,10 +16,10 @@
     </script>
 
     <!-- jsPDF Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="cert-assets.js?v=3"></script>
-    <script src="certificate.js?v=4"></script>
-    <script src="activity-lock.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="cert-assets.js?v=3" defer></script>
+    <script src="certificate.js?v=4" defer></script>
+    <script src="activity-lock.js?v=activity-banner-2" defer></script>
 
     <style>
         * {
@@ -640,7 +640,7 @@
 
     <section id="sharedActivityVideoSection" style="display:none; padding:42px 20px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.96));">
         <div style="max-width:900px; margin:0 auto;">
-            <h2 id="sharedActivityVideoTitle" style="color:#00ffff; font-size:clamp(1.5rem,3vw,2.2rem); margin:0 0 10px;">Activity Video Briefing</h2>
+            <div id="sharedActivityVideoTitle" role="heading" aria-level="2" style="display:block!important; visibility:visible!important; opacity:1!important; position:relative; z-index:1; color:#00ffff!important; font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; line-height:1.25; margin:0 0 10px;">Activity Video Briefing</div>
             <p id="sharedActivityVideoSubtitle" style="max-width:720px; margin:0 auto 24px; color:rgba(255,255,255,.85); font-size:1.05rem; line-height:1.55;">Watch this shared cybersecurity briefing before starting the activities.</p>
             <div id="sharedActivityVideoContainer" style="max-width:880px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 15px 50px rgba(0,0,0,.5); border:2px solid rgba(0,255,255,.3); background:#000;"></div>
         </div>
@@ -656,7 +656,7 @@
             <h2 class="section-title">Executive Threat Landscape</h2>
 
             <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
-                <video id="trainingVideo" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg">
+                <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/phishing-awareness_poster.jpg">
                     <source src="./videos/phishing-awareness.mp4" type="video/mp4">
                     <source src="videos/phishing-awareness.mp4" type="video/mp4">
                     Your browser does not support the video tag.
