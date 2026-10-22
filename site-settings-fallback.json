@@ -13,12 +13,12 @@
       "title": "MD Message",
       "desc": "Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.",
       "sourceType": "mp4",
-      "url": "",
+      "url": "videos/Password_policy.mp4",
       "poster": "",
       "pageUrl": "index.html",
       "pageName": "Home / Index Page",
       "enabled": true,
-      "updatedAt": "2026-10-22T18:44:51.372Z"
+      "updatedAt": "2026-10-22T20:23:59.093Z"
     },
     "activity_1": {
       "id": "activity_1",
@@ -65,6 +65,58 @@
       "poster": "",
       "pageUrl": "privacy-week.html",
       "pageName": "Activity 4: Data Privacy"
+    },
+    "activity_1_banner": {
+      "id": "activity_1_banner",
+      "name": "Activity 1 Banner Video",
+      "title": "Activity 1 Video Briefing",
+      "desc": "Watch this video briefing before starting Activity 1.",
+      "sourceType": "mp4",
+      "url": "videos/phishing-awareness.mp4",
+      "poster": "",
+      "pageUrl": "mfa-week.html",
+      "pageName": "Activity 1: Shared hero video",
+      "enabled": true,
+      "updatedAt": "2026-10-22T20:04:28.427Z"
+    },
+    "activity_2_banner": {
+      "id": "activity_2_banner",
+      "name": "Activity 2 Banner Video",
+      "title": "Activity 2 Video Briefing",
+      "desc": "Watch this video briefing before starting Activity 2.",
+      "sourceType": "mp4",
+      "url": "videos/Password_policy.mp4",
+      "poster": "",
+      "pageUrl": "social-engineering-week.html",
+      "pageName": "Activity 2: Shared hero video",
+      "enabled": true,
+      "updatedAt": "2026-10-22T20:05:00.630Z"
+    },
+    "activity_3_banner": {
+      "id": "activity_3_banner",
+      "name": "Activity 3 Banner Video",
+      "title": "Activity 3 Video Briefing",
+      "desc": "Watch this video briefing before starting Activity 3.",
+      "sourceType": "mp4",
+      "url": "",
+      "poster": "",
+      "pageUrl": "privacy-week.html",
+      "pageName": "Activity 3: Shared hero video",
+      "enabled": false,
+      "updatedAt": "2026-10-22T20:02:44.668Z"
+    },
+    "activity_4_banner": {
+      "id": "activity_4_banner",
+      "name": "Activity 4 Banner Video",
+      "title": "Activity 4 Video Briefing",
+      "desc": "Watch this video briefing before starting Activity 4.",
+      "sourceType": "mp4",
+      "url": "",
+      "poster": "",
+      "pageUrl": "phishing-week.html",
+      "pageName": "Activity 4: Shared hero video",
+      "enabled": false,
+      "updatedAt": "2026-10-22T20:02:48.967Z"
     }
   },
   "moduleMcqs": {
