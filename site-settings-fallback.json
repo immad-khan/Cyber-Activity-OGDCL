@@ -13,12 +13,12 @@
       "title": "MD Message",
       "desc": "Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.",
       "sourceType": "mp4",
-      "url": "videos/Recording_2026-09-22_154955.mp4",
+      "url": "",
       "poster": "",
       "pageUrl": "index.html",
       "pageName": "Home / Index Page",
       "enabled": true,
-      "updatedAt": "2026-10-22T15:57:49.386Z"
+      "updatedAt": "2026-10-22T18:17:44.285Z"
     },
     "activity_1": {
       "id": "activity_1",
@@ -29,7 +29,9 @@
       "url": "videos/phishing-awareness.mp4",
       "poster": "videos/phishing-awareness_poster.jpg",
       "pageUrl": "phishing-week.html",
-      "pageName": "Activity 1: The Executive Target"
+      "pageName": "Activity 1: The Executive Target",
+      "enabled": true,
+      "updatedAt": "2026-10-22T18:36:56.985Z"
     },
     "activity_2": {
       "id": "activity_2",
