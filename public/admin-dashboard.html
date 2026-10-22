@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard – OGDCL Cybersecurity Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg: #07080f;
-      --surface: rgba(255,255,255,0.035);
-      --surface-hover: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.08);
-      --border-bright: rgba(255,255,255,0.14);
+      --surface: rgba(255, 255, 255, 0.035);
+      --surface-hover: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.14);
       --text: #f0f0ff;
-      --text-muted: rgba(240,240,255,0.55);
-      --text-dim: rgba(240,240,255,0.3);
+      --text-muted: rgba(240, 240, 255, 0.55);
+      --text-dim: rgba(240, 240, 255, 0.3);
       --accent: #6c63ff;
       --accent-hover: #7c74ff;
       --accent-2: #00d2ff;
@@ -37,10 +45,11 @@
     /* ─── Sidebar ─── */
     .sidebar {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       height: 100vh;
       width: 265px;
-      background: rgba(12,12,24,0.96);
+      background: rgba(12, 12, 24, 0.96);
       border-right: 1px solid var(--border);
       backdrop-filter: blur(20px);
       display: flex;
@@ -58,10 +67,13 @@
     }
 
     .sidebar-logo .icon {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 20px;
       flex-shrink: 0;
     }
@@ -115,24 +127,27 @@
       position: relative;
     }
 
-    .nav-item:hover { 
-      background: var(--surface-hover); 
+    .nav-item:hover {
+      background: var(--surface-hover);
       color: var(--text);
       transform: translateX(2px);
     }
-    .nav-item.active { 
-      background: rgba(108,99,255,0.18); 
-      border-color: rgba(108,99,255,0.35);
-      color: #fff; 
-      font-weight: 600; 
-      box-shadow: 0 4px 16px rgba(108,99,255,0.15);
+
+    .nav-item.active {
+      background: rgba(108, 99, 255, 0.18);
+      border-color: rgba(108, 99, 255, 0.35);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.15);
     }
-    .nav-item .nav-icon { 
-      font-size: 18px; 
-      width: 24px; 
-      text-align: center; 
-      flex-shrink: 0; 
+
+    .nav-item .nav-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
     }
+
     .nav-item-content {
       display: flex;
       flex-direction: column;
@@ -140,6 +155,7 @@
       min-width: 0;
       line-height: 1.25;
     }
+
     .nav-item-label {
       font-size: 0.86rem;
       font-weight: 600;
@@ -148,6 +164,7 @@
       text-overflow: ellipsis;
       color: inherit;
     }
+
     .nav-item-sub {
       font-size: 0.69rem;
       color: var(--text-dim);
@@ -156,9 +173,11 @@
       text-overflow: ellipsis;
       margin-top: 2px;
     }
+
     .nav-item.active .nav-item-sub {
-      color: rgba(196,181,253,0.75);
+      color: rgba(196, 181, 253, 0.75);
     }
+
     .nav-item-badge {
       font-size: 0.62rem;
       font-weight: 700;
@@ -166,23 +185,26 @@
       border-radius: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text-muted);
       flex-shrink: 0;
     }
+
     .nav-item.active .nav-item-badge {
-      background: rgba(108,99,255,0.35);
+      background: rgba(108, 99, 255, 0.35);
       color: #c4b5fd;
     }
+
     .nav-item-badge.badge-has-vid {
-      background: rgba(34,197,94,0.15);
+      background: rgba(34, 197, 94, 0.15);
       color: #86efac;
-      border: 1px solid rgba(34,197,94,0.3);
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
+
     .nav-item-badge.badge-no-vid {
-      background: rgba(239,68,68,0.12);
+      background: rgba(239, 68, 68, 0.12);
       color: #fca5a5;
-      border: 1px solid rgba(239,68,68,0.25);
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
 
     .sidebar-footer {
@@ -201,21 +223,35 @@
     /* ─── Topbar ─── */
     .topbar {
       height: 68px;
-      background: rgba(7,8,15,0.85);
+      background: rgba(7, 8, 15, 0.85);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(20px);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 28px;
-      position: sticky; top: 0;
+      position: sticky;
+      top: 0;
       z-index: 50;
     }
 
-    .topbar-left h2 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.3px; }
-    .topbar-left p { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+    .topbar-left h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
 
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-left p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
     .admin-pill {
       display: flex;
@@ -230,10 +266,13 @@
     }
 
     .admin-avatar {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 12px;
       font-weight: 700;
       color: #fff;
@@ -243,8 +282,8 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(239,68,68,0.1);
-      border: 1px solid rgba(239,68,68,0.25);
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
       color: #fca5a5;
       border-radius: 100px;
       padding: 6px 14px;
@@ -254,10 +293,17 @@
       transition: background 0.2s, border-color 0.2s;
       font-family: inherit;
     }
-    .logout-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
 
     /* ─── Content ─── */
-    .content { padding: 28px; flex: 1; }
+    .content {
+      padding: 28px;
+      flex: 1;
+    }
 
     /* ─── Buttons ─── */
     .btn-primary {
@@ -274,11 +320,19 @@
       cursor: pointer;
       border: none;
       transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-      box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.25);
       text-decoration: none;
     }
-    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
     .btn-secondary {
       display: inline-flex;
@@ -295,14 +349,19 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-bright); }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: var(--border-bright);
+    }
 
     .btn-danger {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.3);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
       color: #fca5a5;
       padding: 8px 14px;
       border-radius: 8px;
@@ -312,14 +371,18 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-danger:hover { background: #ef4444; color: #fff; }
+
+    .btn-danger:hover {
+      background: #ef4444;
+      color: #fff;
+    }
 
     .btn-reset {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(245,158,11,0.12);
-      border: 1px solid rgba(245,158,11,0.3);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       color: #fcd34d;
       padding: 8px 14px;
       border-radius: 8px;
@@ -329,7 +392,11 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-reset:hover { background: #f59e0b; color: #000; }
+
+    .btn-reset:hover {
+      background: #f59e0b;
+      color: #000;
+    }
 
     /* ─── MODULE NAVIGATION BAR ─── */
     .module-nav-container {
@@ -349,8 +416,14 @@
       padding: 4px;
     }
 
-    .module-nav-bar::-webkit-scrollbar { height: 4px; }
-    .module-nav-bar::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+    .module-nav-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .module-nav-bar::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 4px;
+    }
 
     .mod-tab {
       flex: 1;
@@ -373,14 +446,14 @@
     .mod-tab:hover {
       background: var(--surface-hover);
       color: var(--text);
-      border-color: rgba(255,255,255,0.06);
+      border-color: rgba(255, 255, 255, 0.06);
     }
 
     .mod-tab.active {
-      background: linear-gradient(135deg, rgba(108,99,255,0.18), rgba(0,210,255,0.12));
-      border-color: rgba(108,99,255,0.45);
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.18), rgba(0, 210, 255, 0.12));
+      border-color: rgba(108, 99, 255, 0.45);
       color: #fff;
-      box-shadow: 0 4px 20px rgba(108,99,255,0.15);
+      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.15);
     }
 
     .mod-tab-top {
@@ -390,17 +463,21 @@
       width: 100%;
     }
 
-    .mod-icon { font-size: 18px; }
+    .mod-icon {
+      font-size: 18px;
+    }
+
     .mod-badge {
       font-size: 0.68rem;
       font-weight: 700;
       padding: 2px 7px;
       border-radius: 100px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text-muted);
     }
+
     .mod-tab.active .mod-badge {
-      background: rgba(108,99,255,0.35);
+      background: rgba(108, 99, 255, 0.35);
       color: #e0e7ff;
     }
 
@@ -418,14 +495,17 @@
       text-overflow: ellipsis;
       max-width: 180px;
     }
-    .mod-tab.active .mod-sub { color: rgba(240,240,255,0.7); }
+
+    .mod-tab.active .mod-sub {
+      color: rgba(240, 240, 255, 0.7);
+    }
 
     /* ─── Active Module Header Banner ─── */
     .module-banner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 18px 24px;
@@ -434,26 +514,48 @@
       flex-wrap: wrap;
     }
 
-    .module-banner-left { display: flex; align-items: center; gap: 14px; }
+    .module-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     .module-banner-icon {
-      width: 48px; height: 48px;
+      width: 48px;
+      height: 48px;
       border-radius: 14px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 24px;
       flex-shrink: 0;
     }
-    .module-banner-title { font-size: 1.15rem; font-weight: 700; }
-    .module-banner-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
 
-    .module-banner-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .module-banner-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .module-banner-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .module-banner-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
     .live-link-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(0,210,255,0.1);
-      border: 1px solid rgba(0,210,255,0.3);
+      background: rgba(0, 210, 255, 0.1);
+      border: 1px solid rgba(0, 210, 255, 0.3);
       color: #38bdf8;
       border-radius: 100px;
       padding: 6px 14px;
@@ -462,7 +564,10 @@
       text-decoration: none;
       transition: all 0.2s;
     }
-    .live-link-btn:hover { background: rgba(0,210,255,0.2); }
+
+    .live-link-btn:hover {
+      background: rgba(0, 210, 255, 0.2);
+    }
 
     /* ─── Two-Column Content Workspace ─── */
     .content-grid {
@@ -473,7 +578,9 @@
     }
 
     @media (max-width: 1100px) {
-      .content-grid { grid-template-columns: 1fr; }
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ─── Card Panels ─── */
@@ -494,6 +601,7 @@
       border-bottom: 1px solid var(--border);
       padding-bottom: 14px;
     }
+
     .panel-title {
       font-size: 1rem;
       font-weight: 700;
@@ -501,7 +609,11 @@
       align-items: center;
       gap: 8px;
     }
-    .panel-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+    .panel-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
 
     /* ─── Forms ─── */
     .form-group {
@@ -509,6 +621,7 @@
       flex-direction: column;
       gap: 6px;
     }
+
     .form-label {
       font-size: 0.78rem;
       font-weight: 600;
@@ -516,9 +629,12 @@
       text-transform: uppercase;
       letter-spacing: 0.6px;
     }
-    .form-input, .form-textarea, .form-select {
+
+    .form-input,
+    .form-textarea,
+    .form-select {
       width: 100%;
-      background: rgba(0,0,0,0.35);
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 10px 14px;
@@ -528,22 +644,35 @@
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .form-input:focus, .form-textarea:focus, .form-select:focus {
-      border-color: rgba(108,99,255,0.6);
-      box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      border-color: rgba(108, 99, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
     }
-    .form-textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
-    .form-hint { font-size: 0.72rem; color: var(--text-dim); }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.4;
+    }
+
+    .form-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
 
     /* ─── Source Type Segmented Radio ─── */
     .segmented-control {
       display: flex;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 3px;
       gap: 4px;
     }
+
     .seg-btn {
       flex: 1;
       padding: 8px 12px;
@@ -558,10 +687,11 @@
       transition: all 0.2s;
       text-align: center;
     }
+
     .seg-btn.active {
       background: var(--accent);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(108,99,255,0.3);
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
     }
 
     /* ─── Video Live Preview Box ─── */
@@ -576,12 +706,15 @@
       align-items: center;
       justify-content: center;
     }
-    .video-preview-wrap video, .video-preview-wrap iframe {
+
+    .video-preview-wrap video,
+    .video-preview-wrap iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
     }
+
     .preview-placeholder {
       color: var(--text-dim);
       font-size: 0.82rem;
@@ -597,20 +730,23 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      background: rgba(255,255,255,0.015);
+      background: rgba(255, 255, 255, 0.015);
     }
+
     .upload-box:hover {
       border-color: var(--accent);
-      background: rgba(108,99,255,0.05);
+      background: rgba(108, 99, 255, 0.05);
     }
+
     .upload-progress {
       height: 6px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 3px;
       margin-top: 10px;
       overflow: hidden;
       display: none;
     }
+
     .upload-progress-bar {
       height: 100%;
       width: 0%;
@@ -620,8 +756,8 @@
 
     /* ─── Visibility Toggle Card ─── */
     .visibility-toggle-card {
-      background: rgba(108,99,255,0.08);
-      border: 1px solid rgba(108,99,255,0.25);
+      background: rgba(108, 99, 255, 0.08);
+      border: 1px solid rgba(108, 99, 255, 0.25);
       border-radius: 14px;
       padding: 16px 18px;
       margin-bottom: 18px;
@@ -631,21 +767,24 @@
       gap: 16px;
       transition: all 0.25s ease;
     }
+
     .visibility-toggle-card.is-hidden {
-      background: rgba(239,68,68,0.06);
-      border-color: rgba(239,68,68,0.25);
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.25);
     }
+
     .visibility-toggle-left {
       display: flex;
       align-items: center;
       gap: 12px;
       min-width: 0;
     }
+
     .visibility-icon {
       width: 42px;
       height: 42px;
       border-radius: 11px;
-      background: rgba(108,99,255,0.18);
+      background: rgba(108, 99, 255, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -653,21 +792,25 @@
       flex-shrink: 0;
       color: #c4b5fd;
     }
+
     .is-hidden .visibility-icon {
-      background: rgba(239,68,68,0.15);
+      background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
     }
+
     .visibility-title {
       font-size: 0.92rem;
       font-weight: 700;
       color: #fff;
     }
+
     .visibility-desc {
       font-size: 0.74rem;
       color: var(--text-muted);
       margin-top: 2px;
       line-height: 1.35;
     }
+
     .toggle-switch-btn {
       display: inline-flex;
       align-items: center;
@@ -683,24 +826,27 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
+
     .toggle-switch-btn.active {
-      background: rgba(34,197,94,0.18);
-      border-color: rgba(34,197,94,0.4);
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.4);
       color: #86efac;
-      box-shadow: 0 0 16px rgba(34,197,94,0.2);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.2);
     }
+
     .toggle-switch-btn.inactive {
-      background: rgba(239,68,68,0.15);
-      border-color: rgba(239,68,68,0.35);
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.35);
       color: #fca5a5;
     }
+
     .toggle-switch-btn:hover {
       transform: scale(1.03);
     }
 
     /* ─── Current Video Status & Delete Banner ─── */
     .current-video-banner {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px 16px;
@@ -711,41 +857,48 @@
       gap: 12px;
       transition: all 0.25s ease;
     }
+
     .current-video-banner.has-video {
-      background: rgba(34,197,94,0.05);
-      border-color: rgba(34,197,94,0.25);
+      background: rgba(34, 197, 94, 0.05);
+      border-color: rgba(34, 197, 94, 0.25);
     }
+
     .current-video-banner.no-video {
-      background: rgba(239,68,68,0.05);
-      border-color: rgba(239,68,68,0.25);
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.25);
     }
+
     .current-video-info {
       display: flex;
       align-items: center;
       gap: 12px;
       min-width: 0;
     }
+
     .current-video-icon {
       width: 40px;
       height: 40px;
       border-radius: 11px;
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 19px;
       flex-shrink: 0;
     }
+
     .has-video .current-video-icon {
-      background: rgba(34,197,94,0.15);
+      background: rgba(34, 197, 94, 0.15);
       color: #86efac;
-      border: 1px solid rgba(34,197,94,0.3);
+      border: 1px solid rgba(34, 197, 94, 0.3);
     }
+
     .no-video .current-video-icon {
-      background: rgba(239,68,68,0.15);
+      background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
-      border: 1px solid rgba(239,68,68,0.25);
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
+
     .current-video-title {
       font-size: 0.88rem;
       font-weight: 600;
@@ -754,6 +907,7 @@
       align-items: center;
       gap: 8px;
     }
+
     .current-video-sub {
       font-size: 0.74rem;
       color: var(--text-muted);
@@ -763,9 +917,10 @@
       max-width: 280px;
       margin-top: 2px;
     }
+
     .btn-delete-video {
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.35);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
       color: #fca5a5;
       padding: 7px 14px;
       border-radius: 8px;
@@ -779,13 +934,15 @@
       transition: all 0.2s;
       white-space: nowrap;
     }
+
     .btn-delete-video:hover {
       background: #ef4444;
       color: #fff;
       border-color: #ef4444;
-      box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
       transform: translateY(-1px);
     }
+
     .btn-delete-video:disabled {
       opacity: 0.4;
       cursor: not-allowed;
@@ -800,14 +957,16 @@
       gap: 10px;
       padding: 8px 12px;
       border-radius: 8px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       margin-bottom: 6px;
       transition: background 0.2s;
     }
+
     .server-video-row:hover {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
+
     .server-video-name {
       font-size: 0.80rem;
       font-weight: 500;
@@ -816,6 +975,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .server-video-meta {
       font-size: 0.68rem;
       color: var(--text-dim);
@@ -824,8 +984,11 @@
     /* ─── Confirmation Modal ─── */
     .modal-backdrop {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.78);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.78);
       backdrop-filter: blur(8px);
       z-index: 2000;
       display: flex;
@@ -834,24 +997,38 @@
       padding: 20px;
       animation: modalFadeIn 0.2s ease-out;
     }
+
     @keyframes modalFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
+
     .modal-card {
       background: #111322;
       border: 1px solid var(--border-bright);
       border-radius: 18px;
       width: 100%;
       max-width: 480px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
       overflow: hidden;
       animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     @keyframes modalSlideUp {
-      from { transform: translateY(20px) scale(0.97); }
-      to { transform: translateY(0) scale(1); }
+      from {
+        transform: translateY(20px) scale(0.97);
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+      }
     }
+
     .modal-header {
       padding: 20px 24px;
       border-bottom: 1px solid var(--border);
@@ -859,12 +1036,13 @@
       align-items: center;
       gap: 14px;
     }
+
     .modal-icon-danger {
       width: 42px;
       height: 42px;
       border-radius: 12px;
-      background: rgba(239,68,68,0.15);
-      border: 1px solid rgba(239,68,68,0.3);
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
       color: #ef4444;
       display: flex;
       align-items: center;
@@ -872,29 +1050,34 @@
       font-size: 20px;
       flex-shrink: 0;
     }
+
     .modal-title {
       font-size: 1.05rem;
       font-weight: 700;
       color: #fff;
     }
+
     .modal-sub {
       font-size: 0.78rem;
       color: var(--text-muted);
       margin-top: 2px;
     }
+
     .modal-body {
       padding: 22px 24px;
       font-size: 0.88rem;
       color: var(--text);
       line-height: 1.5;
     }
+
     .modal-checkbox-row {
       margin-top: 16px;
       padding: 12px 14px;
       border-radius: 10px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
     }
+
     .modal-checkbox-row label {
       display: flex;
       align-items: center;
@@ -903,20 +1086,23 @@
       cursor: pointer;
       color: var(--text-muted);
     }
+
     .modal-checkbox-row input[type="checkbox"] {
       width: 16px;
       height: 16px;
       accent-color: var(--danger);
       cursor: pointer;
     }
+
     .modal-actions {
       padding: 16px 24px 20px;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0, 0, 0, 0.2);
     }
+
     .btn-danger-action {
       background: linear-gradient(135deg, #ef4444, #dc2626);
       color: #fff;
@@ -929,8 +1115,9 @@
       font-family: inherit;
       transition: all 0.2s;
     }
+
     .btn-danger-action:hover {
-      box-shadow: 0 4px 16px rgba(239,68,68,0.4);
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
       transform: translateY(-1px);
     }
 
@@ -944,11 +1131,18 @@
       padding-right: 6px;
       scrollbar-width: thin;
     }
-    .mcq-list::-webkit-scrollbar { width: 5px; }
-    .mcq-list::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 5px; }
+
+    .mcq-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .mcq-list::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 5px;
+    }
 
     .mcq-card {
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
@@ -957,20 +1151,24 @@
       gap: 14px;
       transition: border-color 0.2s;
     }
-    .mcq-card:hover { border-color: rgba(255,255,255,0.12); }
+
+    .mcq-card:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
 
     .mcq-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
+
     .mcq-number-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(108,99,255,0.18);
+      background: rgba(108, 99, 255, 0.18);
       color: #c4b5fd;
-      border: 1px solid rgba(108,99,255,0.35);
+      border: 1px solid rgba(108, 99, 255, 0.35);
       border-radius: 8px;
       padding: 3px 10px;
       font-size: 0.78rem;
@@ -987,15 +1185,16 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 6px 12px;
       transition: all 0.2s;
     }
+
     .option-row.is-correct {
-      background: rgba(34,197,94,0.08);
-      border-color: rgba(34,197,94,0.4);
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.4);
     }
 
     .option-prefix {
@@ -1004,7 +1203,10 @@
       color: var(--text-dim);
       width: 18px;
     }
-    .option-row.is-correct .option-prefix { color: #86efac; }
+
+    .option-row.is-correct .option-prefix {
+      color: #86efac;
+    }
 
     .option-input {
       flex: 1;
@@ -1030,7 +1232,12 @@
       white-space: nowrap;
       font-family: inherit;
     }
-    .correct-btn:hover { border-color: rgba(34,197,94,0.4); color: #86efac; }
+
+    .correct-btn:hover {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+
     .option-row.is-correct .correct-btn {
       background: #22c55e;
       color: #000;
@@ -1049,20 +1256,52 @@
       border: 1px solid;
       transition: all 0.3s;
     }
-    .lock-banner.unlocked { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
-    .lock-banner.locked { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
-    .lock-banner-info { display: flex; align-items: center; gap: 14px; }
+
+    .lock-banner.unlocked {
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .lock-banner.locked {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .lock-banner-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     .lock-status-icon {
-      width: 48px; height: 48px;
+      width: 48px;
+      height: 48px;
       border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 22px;
       flex-shrink: 0;
     }
-    .unlocked .lock-status-icon { background: rgba(34,197,94,0.12); }
-    .locked .lock-status-icon { background: rgba(239,68,68,0.12); }
-    .lock-banner-title { font-size: 1rem; font-weight: 600; }
-    .lock-banner-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    .unlocked .lock-status-icon {
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .locked .lock-status-icon {
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .lock-banner-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .lock-banner-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
     .lock-toggle-btn {
       display: flex;
@@ -1077,8 +1316,18 @@
       border: none;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .lock-toggle-btn.lock-action { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; box-shadow: 0 4px 16px rgba(239,68,68,0.3); }
-    .lock-toggle-btn.unlock-action { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.3); }
+
+    .lock-toggle-btn.lock-action {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .lock-toggle-btn.unlock-action {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+    }
 
     .activity-grid {
       display: grid;
@@ -1086,6 +1335,7 @@
       gap: 16px;
       margin-bottom: 24px;
     }
+
     .activity-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -1097,22 +1347,102 @@
       gap: 14px;
       transition: all 0.25s ease;
     }
-    .activity-card.locked { background: rgba(239, 68, 68, 0.06); border-color: rgba(239, 68, 68, 0.25); }
-    .activity-card.unlocked { background: rgba(34, 197, 94, 0.04); border-color: rgba(34, 197, 94, 0.18); }
-    .act-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .act-icon { font-size: 22px; width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; }
-    .act-badge { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 100px; }
-    .act-badge.badge-unlocked { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
-    .act-badge.badge-locked { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
-    .act-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
-    .act-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
-    .act-action-btn {
-      width: 100%; padding: 9px 12px; border-radius: 9px; font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+
+    .activity-card.locked {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.25);
     }
-    .act-action-btn.btn-lock { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-    .act-action-btn.btn-lock:hover { background: #ef4444; color: #fff; }
-    .act-action-btn.btn-unlock { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #86efac; }
-    .act-action-btn.btn-unlock:hover { background: #22c55e; color: #fff; }
+
+    .activity-card.unlocked {
+      background: rgba(34, 197, 94, 0.04);
+      border-color: rgba(34, 197, 94, 0.18);
+    }
+
+    .act-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .act-icon {
+      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .act-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 100px;
+    }
+
+    .act-badge.badge-unlocked {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .act-badge.badge-locked {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .act-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .act-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .act-action-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .act-action-btn.btn-lock {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .act-action-btn.btn-lock:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .act-action-btn.btn-unlock {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #86efac;
+    }
+
+    .act-action-btn.btn-unlock:hover {
+      background: #22c55e;
+      color: #fff;
+    }
 
     /* ─── Stats Grid ─── */
     .stats-grid {
@@ -1121,86 +1451,308 @@
       gap: 16px;
       margin-bottom: 24px;
     }
+
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 20px;
     }
-    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
-    .stat-value {
-      font-size: 2rem; font-weight: 700; letter-spacing: -1px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 8px;
     }
-    .stat-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
 
     /* ─── Search & Table ─── */
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .section-title { font-size: 1rem; font-weight: 600; }
-    .section-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-
-    .search-bar { position: relative; margin-bottom: 16px; }
-    .search-bar input {
-      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-      padding: 10px 14px 10px 40px; color: var(--text); font-family: inherit; font-size: 0.88rem; outline: none;
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
     }
-    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 15px; }
 
-    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 900px; }
-    thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); }
-    th { padding: 12px 16px; text-align: left; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
-    td { padding: 13px 16px; font-size: 0.85rem; color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-    tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
 
-    .user-name-cell { display: flex; align-items: center; gap: 10px; }
-    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+    .section-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
-    .badge-level { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; }
-    .badge-expert { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
-    .badge-advanced { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
-    .badge-intermediate { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
-    .badge-beginner { background: rgba(107,114,128,0.15); color: #9ca3af; border: 1px solid rgba(107,114,128,0.25); }
+    .search-bar {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px 10px 40px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    thead tr {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+    }
+
+    td {
+      padding: 13px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .user-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-level {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .badge-expert {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+    }
+
+    .badge-advanced {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+
+    .badge-intermediate {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .badge-beginner {
+      background: rgba(107, 114, 128, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(107, 114, 128, 0.25);
+    }
 
     .badge-activity {
-      display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 6px; font-size: 0.72rem;
-      font-weight: 600; background: rgba(0, 245, 160, 0.08); color: var(--accent); border: 1px solid rgba(0, 245, 160, 0.2);
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: rgba(0, 245, 160, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0, 245, 160, 0.2);
     }
 
-    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
-    .score-bar { width: 60px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
-    .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 3px; }
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
-    .page-btns { display: flex; gap: 6px; }
+    .score-bar {
+      width: 60px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 3px;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .page-btns {
+      display: flex;
+      gap: 6px;
+    }
+
     .page-btn {
-      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);
-      color: var(--text-muted); font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .page-btn.active { background: rgba(108,99,255,0.2); color: #a78bfa; border-color: rgba(108,99,255,0.35); }
-    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .page-btn.active {
+      background: rgba(108, 99, 255, 0.2);
+      color: #a78bfa;
+      border-color: rgba(108, 99, 255, 0.35);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
     /* ─── Toast ─── */
     .toast {
-      position: fixed; bottom: 28px; right: 28px; background: rgba(20,20,40,0.96); border: 1px solid var(--border-bright);
-      backdrop-filter: blur(20px); border-radius: 12px; padding: 14px 20px; display: flex; align-items: center;
-      gap: 10px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 16px 40px rgba(0,0,0,0.5); z-index: 1000;
-      transform: translateY(80px); opacity: 0; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s; min-width: 280px;
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: rgba(20, 20, 40, 0.96);
+      border: 1px solid var(--border-bright);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s;
+      min-width: 280px;
     }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { border-color: rgba(34,197,94,0.4); }
-    .toast.error { border-color: rgba(239,68,68,0.4); }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, 0.4);
+    }
 
     /* ─── Responsive ─── */
     @media (max-width: 900px) {
-      .sidebar { width: 68px; }
-      .sidebar-logo .name, .sidebar-logo .version, .nav-item span:not(.nav-icon), .nav-label { display: none; }
-      .main { margin-left: 68px; }
-      .nav-item { justify-content: center; padding: 12px 0; }
+      .sidebar {
+        width: 68px;
+      }
+
+      .sidebar-logo .name,
+      .sidebar-logo .version,
+      .nav-item span:not(.nav-icon),
+      .nav-label {
+        display: none;
+      }
+
+      .main {
+        margin-left: 68px;
+      }
+
+      .nav-item {
+        justify-content: center;
+        padding: 12px 0;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- ─── SIDEBAR ─── -->
@@ -1215,9 +1767,10 @@
 
     <nav class="sidebar-nav">
       <div class="nav-label">Training Modules</div>
-      
+
       <!-- Index (Home) -->
-      <button class="nav-item active" id="navMod-index" onclick="navToModule('index')" title="Manage Index Overview & Video">
+      <button class="nav-item active" id="navMod-index" onclick="navToModule('index')"
+        title="Manage Index Overview & Video">
         <span class="nav-icon">🏠</span>
         <div class="nav-item-content">
           <span class="nav-item-label">Index</span>
@@ -1227,41 +1780,45 @@
       </button>
 
       <!-- Activity 1 -->
-      <button class="nav-item" id="navMod-activity_1" onclick="navToModule('activity_1')" title="Manage Activity 1: Phishing Defense">
-        <span class="nav-icon">🎣</span>
+      <button class="nav-item" id="navMod-activity_1" onclick="navToModule('activity_1')"
+        title="Manage Activity 1: Password Security & MFA">
+        <span class="nav-icon">🔐</span>
         <div class="nav-item-content">
           <span class="nav-item-label">Activity 1</span>
-          <span class="nav-item-sub">Phishing Defense</span>
+          <span class="nav-item-sub">Password & MFA</span>
         </div>
         <span class="nav-item-badge" id="sideBadge-activity_1">Video</span>
       </button>
 
       <!-- Activity 2 -->
-      <button class="nav-item" id="navMod-activity_2" onclick="navToModule('activity_2')" title="Manage Activity 2: Password Security & MFA">
-        <span class="nav-icon">🔐</span>
+      <button class="nav-item" id="navMod-activity_2" onclick="navToModule('activity_2')"
+        title="Manage Activity 2: Social Engineering">
+        <span class="nav-icon">🧠</span>
         <div class="nav-item-content">
           <span class="nav-item-label">Activity 2</span>
-          <span class="nav-item-sub">Password & MFA</span>
+          <span class="nav-item-sub">Social Engineering</span>
         </div>
         <span class="nav-item-badge" id="sideBadge-activity_2">Video</span>
       </button>
 
       <!-- Activity 3 -->
-      <button class="nav-item" id="navMod-activity_3" onclick="navToModule('activity_3')" title="Manage Activity 3: Social Engineering">
-        <span class="nav-icon">🧠</span>
+      <button class="nav-item" id="navMod-activity_3" onclick="navToModule('activity_3')"
+        title="Manage Activity 3: Data Privacy">
+        <span class="nav-icon">🛡️</span>
         <div class="nav-item-content">
           <span class="nav-item-label">Activity 3</span>
-          <span class="nav-item-sub">Social Engineering</span>
+          <span class="nav-item-sub">Data Privacy</span>
         </div>
         <span class="nav-item-badge" id="sideBadge-activity_3">Video</span>
       </button>
 
       <!-- Activity 4 -->
-      <button class="nav-item" id="navMod-activity_4" onclick="navToModule('activity_4')" title="Manage Activity 4: Data Privacy">
-        <span class="nav-icon">🛡️</span>
+      <button class="nav-item" id="navMod-activity_4" onclick="navToModule('activity_4')"
+        title="Manage Activity 4: Phishing Defense">
+        <span class="nav-icon">🎣</span>
         <div class="nav-item-content">
           <span class="nav-item-label">Activity 4</span>
-          <span class="nav-item-sub">Data Privacy</span>
+          <span class="nav-item-sub">Phishing Defense</span>
         </div>
         <span class="nav-item-badge" id="sideBadge-activity_4">Video</span>
       </button>
@@ -1334,7 +1891,7 @@
       <!-- SECTION 1: CONTENT & ASSESSMENT MANAGER (VIDEOS & MCQS)  -->
       <!-- ======================================================== -->
       <section id="sectionContent">
-        
+
         <!-- Module Navigation Bar with 5 requested tabs -->
         <div class="module-nav-container">
           <div class="module-nav-bar" id="moduleNavBar">
@@ -1349,38 +1906,38 @@
 
             <button class="mod-tab" data-mod="activity_1" onclick="selectModule('activity_1')">
               <div class="mod-tab-top">
-                <span class="mod-icon">🎣</span>
+                <span class="mod-icon">🔐</span>
                 <span class="mod-badge" id="badge-activity_1">5 MCQs</span>
               </div>
               <div class="mod-title">Activity 1</div>
-              <div class="mod-sub">Executive Phishing Defense</div>
+              <div class="mod-sub">Password & Multi-Factor Auth</div>
             </button>
 
             <button class="mod-tab" data-mod="activity_2" onclick="selectModule('activity_2')">
               <div class="mod-tab-top">
-                <span class="mod-icon">🔐</span>
+                <span class="mod-icon">🧠</span>
                 <span class="mod-badge" id="badge-activity_2">5 MCQs</span>
               </div>
               <div class="mod-title">Activity 2</div>
-              <div class="mod-sub">Password & Multi-Factor Auth</div>
+              <div class="mod-sub">Social Engineering Defense</div>
             </button>
 
             <button class="mod-tab" data-mod="activity_3" onclick="selectModule('activity_3')">
               <div class="mod-tab-top">
-                <span class="mod-icon">🧠</span>
+                <span class="mod-icon">🛡️</span>
                 <span class="mod-badge" id="badge-activity_3">5 MCQs</span>
               </div>
               <div class="mod-title">Activity 3</div>
-              <div class="mod-sub">Social Engineering Defense</div>
+              <div class="mod-sub">Data Privacy & Compliance</div>
             </button>
 
             <button class="mod-tab" data-mod="activity_4" onclick="selectModule('activity_4')">
               <div class="mod-tab-top">
-                <span class="mod-icon">🛡️</span>
+                <span class="mod-icon">🎣</span>
                 <span class="mod-badge" id="badge-activity_4">5 MCQs</span>
               </div>
               <div class="mod-title">Activity 4</div>
-              <div class="mod-sub">Data Privacy & Compliance</div>
+              <div class="mod-sub">Executive Phishing Defense</div>
             </button>
           </div>
         </div>
@@ -1391,7 +1948,8 @@
             <div class="module-banner-icon" id="bannerIcon">🏠</div>
             <div>
               <div class="module-banner-title" id="bannerTitle">Index: Cybersecurity Overview</div>
-              <div class="module-banner-sub" id="bannerDesc">Foundational awareness video and introductory assessment questions.</div>
+              <div class="module-banner-sub" id="bannerDesc">Foundational awareness video and introductory assessment
+                questions.</div>
             </div>
           </div>
           <div class="module-banner-actions">
@@ -1411,7 +1969,8 @@
                 <div class="panel-title"><span>🎥</span> Training Video Configuration</div>
                 <div class="panel-sub" id="currentModuleVideoSub">Manage video for Index module</div>
               </div>
-              <button class="btn-reset" onclick="resetCurrentVideo()" title="Restore factory default video for this module">
+              <button class="btn-reset" onclick="resetCurrentVideo()"
+                title="Restore factory default video for this module">
                 🔄 Factory Reset
               </button>
             </div>
@@ -1422,28 +1981,32 @@
                 <div class="visibility-icon" id="visibilityIcon">👁️</div>
                 <div>
                   <div class="visibility-title">Landing Page Video Section Visibility</div>
-                  <div class="visibility-desc">Toggle whether the video section is shown or totally removed on the home page (just above Cybersecurity Statistics).</div>
+                  <div class="visibility-desc">Toggle whether the video section is shown or totally removed on the home
+                    page (just above Cybersecurity Statistics).</div>
                 </div>
               </div>
-              <button type="button" class="toggle-switch-btn active" id="btnToggleLandingVisibility" onclick="toggleLandingVideoVisibility()" title="Toggle visibility of video section on landing page">
-                <span id="lblLandingVisibility">🟢 Section Visible</span>
+              <button type="button" class="toggle-switch-btn active" id="btnToggleLandingVisibility"
+                onclick="toggleLandingVideoVisibility()" title="Toggle visibility of video section on landing page">
+                <span id="lblLandingVisibility"> Section Visible</span>
               </button>
             </div>
 
             <!-- Current Active Video Status Banner with Delete Button -->
             <div class="current-video-banner has-video" id="currentVideoBanner">
               <div class="current-video-info">
-                <div class="current-video-icon" id="currentVideoStatusIcon">🎬</div>
+                <div class="current-video-icon" id="currentVideoStatusIcon"></div>
                 <div style="min-width:0;">
                   <div class="current-video-title">
                     <span id="currentVideoStatusTitle">Current Active Video</span>
-                    <span class="badge" id="currentVideoTypeBadge" style="font-size:0.68rem; padding:1px 7px; border-radius:4px; background:rgba(108,99,255,0.25); color:#c4b5fd;">MP4</span>
+                    <span class="badge" id="currentVideoTypeBadge"
+                      style="font-size:0.68rem; padding:1px 7px; border-radius:4px; background:rgba(108,99,255,0.25); color:#c4b5fd;">MP4</span>
                   </div>
                   <div class="current-video-sub" id="currentVideoStatusSub">videos/phishing-awareness.mp4</div>
                 </div>
               </div>
               <div class="current-video-actions">
-                <button class="btn-delete-video" id="btnDeleteCurrentVideo" type="button" onclick="confirmDeleteCurrentVideo()" title="Remove/Delete current video">
+                <button class="btn-delete-video" id="btnDeleteCurrentVideo" type="button"
+                  onclick="confirmDeleteCurrentVideo()" title="Remove/Delete current video">
                   🗑️ Delete Video
                 </button>
               </div>
@@ -1453,7 +2016,8 @@
             <div class="form-group">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <label class="form-label" style="margin:0;">Live Video Preview</label>
-                <button type="button" class="btn-secondary" style="padding:3px 9px; font-size:0.72rem;" onclick="refreshVideoPreview()">
+                <button type="button" class="btn-secondary" style="padding:3px 9px; font-size:0.72rem;"
+                  onclick="refreshVideoPreview()">
                   ▶️ Refresh Preview
                 </button>
               </div>
@@ -1490,13 +2054,17 @@
               <div id="mp4UploadSection">
                 <div class="upload-box" onclick="document.getElementById('videoFileInput').click()">
                   <div style="font-size:28px; margin-bottom:4px;">📤</div>
-                  <div style="font-size:0.86rem; font-weight:600; color:#fff;">Click to Choose or Drag New MP4 Video</div>
-                  <div style="font-size:0.74rem; color:var(--text-dim); margin-top:3px;">Supports .mp4, .webm (saves directly to public/videos/)</div>
-                  <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;" onchange="handleVideoFileUpload(event)" />
+                  <div style="font-size:0.86rem; font-weight:600; color:#fff;">Click to Choose or Drag New MP4 Video
+                  </div>
+                  <div style="font-size:0.74rem; color:var(--text-dim); margin-top:3px;">Supports .mp4, .webm (saves
+                    directly to public/videos/)</div>
+                  <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;"
+                    onchange="handleVideoFileUpload(event)" />
                   <div class="upload-progress" id="uploadProgress">
                     <div class="upload-progress-bar" id="uploadProgressBar"></div>
                   </div>
-                  <div id="uploadStatusText" style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
+                  <div id="uploadStatusText"
+                    style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
                 </div>
               </div>
 
@@ -1504,10 +2072,13 @@
               <div id="serverLibrarySection" style="display:none;" class="form-group">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                   <label class="form-label" style="margin:0;">Videos Already on Server</label>
-                  <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem;" onclick="loadServerVideosLibrary()">🔄 Refresh</button>
+                  <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem;"
+                    onclick="loadServerVideosLibrary()">🔄 Refresh</button>
                 </div>
-                <div id="serverVideosListContainer" style="max-height:160px; overflow-y:auto; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px; padding:6px;">
-                  <div style="color:var(--text-dim); font-size:0.78rem; text-align:center; padding:12px;">Loading server files…</div>
+                <div id="serverVideosListContainer"
+                  style="max-height:160px; overflow-y:auto; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px; padding:6px;">
+                  <div style="color:var(--text-dim); font-size:0.78rem; text-align:center; padding:12px;">Loading server
+                    files…</div>
                 </div>
               </div>
 
@@ -1515,34 +2086,44 @@
               <div class="form-group" style="margin-top:14px;">
                 <label class="form-label" id="lblVideoUrl">Video URL / File Path</label>
                 <div style="display:flex; gap:6px;">
-                  <input type="text" class="form-input" id="inputVideoUrl" placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..." oninput="onVideoUrlChange()" />
-                  <button type="button" class="btn-secondary" style="padding:0 12px; white-space:nowrap;" onclick="clearVideoUrlInput()" title="Clear URL input">✕</button>
+                  <input type="text" class="form-input" id="inputVideoUrl"
+                    placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..."
+                    oninput="onVideoUrlChange()" />
+                  <button type="button" class="btn-secondary" style="padding:0 12px; white-space:nowrap;"
+                    onclick="clearVideoUrlInput()" title="Clear URL input">✕</button>
                 </div>
-                <div class="form-hint" id="videoUrlHint">Local relative path (e.g. videos/filename.mp4) or direct streaming URL.</div>
+                <div class="form-hint" id="videoUrlHint">Local relative path (e.g. videos/filename.mp4) or direct
+                  streaming URL.</div>
               </div>
 
               <!-- Poster Image URL (for MP4) -->
               <div class="form-group" id="posterGroup">
                 <label class="form-label">Video Poster Image (Optional)</label>
-                <input type="text" class="form-input" id="inputVideoPoster" placeholder="videos/phishing-awareness_poster.jpg" oninput="onVideoUrlChange()" />
+                <input type="text" class="form-input" id="inputVideoPoster"
+                  placeholder="videos/phishing-awareness_poster.jpg" oninput="onVideoUrlChange()" />
               </div>
 
               <!-- Video Title & Description / Landing Page Heading & Subheading -->
               <div class="form-group">
                 <label class="form-label" id="lblVideoTitle">Video Title</label>
-                <input type="text" class="form-input" id="inputVideoTitle" placeholder="e.g. Cybersecurity Awareness Overview" />
-                <div class="form-hint" id="hintVideoTitle" style="display:none; color:var(--accent-2); margin-top:4px;">This heading will appear above the video on the landing page.</div>
+                <input type="text" class="form-input" id="inputVideoTitle"
+                  placeholder="e.g. Cybersecurity Awareness Overview" />
+                <div class="form-hint" id="hintVideoTitle" style="display:none; color:var(--accent-2); margin-top:4px;">
+                  This heading will appear above the video on the landing page.</div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" id="lblVideoDesc">Video Description</label>
-                <textarea class="form-textarea" id="inputVideoDesc" placeholder="Brief summary of what participants will learn..."></textarea>
-                <div class="form-hint" id="hintVideoDesc" style="display:none; color:var(--accent-2); margin-top:4px;">This subtitle text will appear below the heading on the landing page.</div>
+                <textarea class="form-textarea" id="inputVideoDesc"
+                  placeholder="Brief summary of what participants will learn..."></textarea>
+                <div class="form-hint" id="hintVideoDesc" style="display:none; color:var(--accent-2); margin-top:4px;">
+                  This subtitle text will appear below the heading on the landing page.</div>
               </div>
 
               <!-- Save Video Button -->
               <div style="margin-top:16px;">
-                <button class="btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.92rem;" id="btnSaveVideo" onclick="saveCurrentVideo()">
+                <button class="btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.92rem;"
+                  id="btnSaveVideo" onclick="saveCurrentVideo()">
                   💾 Save & Publish Video Settings
                 </button>
               </div>
@@ -1574,7 +2155,8 @@
             </div>
 
             <!-- Actions Bar -->
-            <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 16px;">
+            <div
+              style="display: flex; gap: 12px; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 16px;">
               <button class="btn-secondary" onclick="addNewMcqQuestion()">
                 ➕ Add Another Question
               </button>
@@ -1630,14 +2212,16 @@
         <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <div style="position: relative; flex: 1; min-width: 200px;">
             <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…" oninput="filterUsers()" />
+            <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…"
+              oninput="filterUsers()" />
           </div>
-          <select id="activityFilter" onchange="filterUsers()" style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
+          <select id="activityFilter" onchange="filterUsers()"
+            style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
             <option value="all">🌐 All Modules</option>
-            <option value="Activity 1">Activity 1 (Phishing)</option>
-            <option value="Activity 2">Activity 2 (Passwords/MFA)</option>
-            <option value="Activity 3">Activity 3 (Social Engineering)</option>
-            <option value="Activity 4">Activity 4 (Data Privacy)</option>
+            <option value="Activity 1">Activity 1 (Passwords/MFA)</option>
+            <option value="Activity 2">Activity 2 (Social Engineering)</option>
+            <option value="Activity 3">Activity 3 (Data Privacy)</option>
+            <option value="Activity 4">Activity 4 (Phishing)</option>
           </select>
         </div>
 
@@ -1660,7 +2244,9 @@
               </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr class="state-row"><td colspan="12" style="text-align:center;padding:40px;">Loading users…</td></tr>
+              <tr class="state-row">
+                <td colspan="12" style="text-align:center;padding:40px;">Loading users…</td>
+              </tr>
             </tbody>
           </table>
 
@@ -1681,7 +2267,8 @@
             <div class="lock-status-icon" id="lockIcon">🟢</div>
             <div>
               <div class="lock-banner-title" id="lockTitle">Site Activities Unlocked</div>
-              <div class="lock-banner-desc" id="lockDesc">Users can access all quizzes, videos, and interactive features.</div>
+              <div class="lock-banner-desc" id="lockDesc">Users can access all quizzes, videos, and interactive
+                features.</div>
             </div>
           </div>
           <button class="lock-toggle-btn lock-action" id="lockBtn" onclick="toggleLock()">
@@ -1711,7 +2298,8 @@
   </div>
 
   <!-- Delete Video Confirmation Modal -->
-  <div class="modal-backdrop" id="deleteVideoModal" style="display:none;" onclick="if(event.target===this)closeDeleteVideoModal()">
+  <div class="modal-backdrop" id="deleteVideoModal" style="display:none;"
+    onclick="if(event.target===this)closeDeleteVideoModal()">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-icon-danger">🗑️</div>
@@ -1721,11 +2309,13 @@
         </div>
       </div>
       <div class="modal-body">
-        <p id="deleteVideoModalDesc">Are you sure you want to remove the current video for this module? Users visiting this activity page will no longer see this video until a new one is added.</p>
+        <p id="deleteVideoModalDesc">Are you sure you want to remove the current video for this module? Users visiting
+          this activity page will no longer see this video until a new one is added.</p>
         <div id="deleteServerFileOption" class="modal-checkbox-row">
           <label>
             <input type="checkbox" id="chkDeleteServerFile" />
-            <span>Also permanently delete file from server storage (<span id="deleteFileNameSpan" style="color:#fff;font-weight:600;"></span>)</span>
+            <span>Also permanently delete file from server storage (<span id="deleteFileNameSpan"
+                style="color:#fff;font-weight:600;"></span>)</span>
           </label>
         </div>
       </div>
@@ -1739,12 +2329,12 @@
   </div>
 
   <script>
-    const ADMIN_TOKEN      = 'cybershield-admin-2024';
-    const API_USERS        = '/api/get-users';
-    const API_SETTINGS     = '/api/admin-settings';
-    const API_UPLOAD       = '/api/upload-video';
+    const ADMIN_TOKEN = 'cybershield-admin-2024';
+    const API_USERS = '/api/get-users';
+    const API_SETTINGS = '/api/admin-settings';
+    const API_UPLOAD = '/api/upload-video';
     const API_DELETE_VIDEO = '/api/delete-video';
-    const API_LIST_VIDEOS  = '/api/list-videos';
+    const API_LIST_VIDEOS = '/api/list-videos';
 
     // Auth guard
     if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
@@ -1765,60 +2355,60 @@
       activity_1: {
         id: 'activity_1',
         name: 'Activity 1',
-        title: 'Activity 1: The Executive Target & Phishing Defense',
-        desc: 'Spear-phishing, business email compromise, deepfakes, and verification protocols.',
-        icon: '🎣',
-        pageUrl: 'phishing-week.html',
-        pageName: 'Activity 1: The Executive Target'
+        title: 'Activity 1: Password Security & Multi-Factor Authentication',
+        desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
+        icon: '🔐',
+        pageUrl: 'mfa-week.html',
+        pageName: 'Activity 1: Password Protection'
       },
       activity_2: {
         id: 'activity_2',
         name: 'Activity 2',
-        title: 'Activity 2: Password Security & Multi-Factor Authentication',
-        desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
-        icon: '🔐',
-        pageUrl: 'mfa-week.html',
-        pageName: 'Activity 2: Password Protection'
+        title: 'Activity 2: Social Engineering Defense Training',
+        desc: 'Pretexting, human manipulation, psychological urgency, and human firewall defenses.',
+        icon: '🧠',
+        pageUrl: 'social-engineering-week.html',
+        pageName: 'Activity 2: Social Engineering'
       },
       activity_3: {
         id: 'activity_3',
         name: 'Activity 3',
-        title: 'Activity 3: Social Engineering Defense Training',
-        desc: 'Pretexting, human manipulation, psychological urgency, and human firewall defenses.',
-        icon: '🧠',
-        pageUrl: 'social-engineering-week.html',
-        pageName: 'Activity 3: Social Engineering'
+        title: 'Activity 3: Data Privacy & Corporate Asset Protection',
+        desc: 'Personally identifiable information (PII), clean desk policies, and confidentiality.',
+        icon: '🛡️',
+        pageUrl: 'privacy-week.html',
+        pageName: 'Activity 3: Data Privacy'
       },
       activity_4: {
         id: 'activity_4',
         name: 'Activity 4',
-        title: 'Activity 4: Data Privacy & Corporate Asset Protection',
-        desc: 'Personally identifiable information (PII), clean desk policies, and confidentiality.',
-        icon: '🛡️',
-        pageUrl: 'privacy-week.html',
-        pageName: 'Activity 4: Data Privacy'
+        title: 'Activity 4: The Executive Target & Phishing Defense',
+        desc: 'Spear-phishing, business email compromise, deepfakes, and verification protocols.',
+        icon: '🎣',
+        pageUrl: 'phishing-week.html',
+        pageName: 'Activity 4: The Executive Target'
       }
     };
 
     const ACTIVITIES = [
-      { id: 'activity_1', title: 'Activity 1: The Executive Target', desc: 'Executive spear-phishing & cyber threat landscape module.', icon: '🎣', url: 'phishing-week.html' },
-      { id: 'activity_2', title: 'Activity 2: Password Protection', desc: 'Password security, Bitwarden, and Multi-Factor Authentication.', icon: '🔐', url: 'mfa-week.html' },
-      { id: 'activity_3', title: 'Activity 3: Social Engineering', desc: 'Pretexting, human manipulation, and human firewall defenses.', icon: '🧠', url: 'social-engineering-week.html' },
-      { id: 'activity_4', title: 'Activity 4: Data Privacy', desc: 'Corporate data protection & confidential information protocols.', icon: '🛡️', url: 'privacy-week.html' }
+      { id: 'activity_1', title: 'Activity 1: Password Protection', desc: 'Password security, Bitwarden, and Multi-Factor Authentication.', icon: '🔐', url: 'mfa-week.html' },
+      { id: 'activity_2', title: 'Activity 2: Social Engineering', desc: 'Pretexting, human manipulation, and human firewall defenses.', icon: '🧠', url: 'social-engineering-week.html' },
+      { id: 'activity_3', title: 'Activity 3: Data Privacy', desc: 'Corporate data protection & confidential information protocols.', icon: '🛡️', url: 'privacy-week.html' },
+      { id: 'activity_4', title: 'Activity 4: The Executive Target', desc: 'Executive spear-phishing & cyber threat landscape module.', icon: '🎣', url: 'phishing-week.html' }
     ];
 
     // ── Global State ──
-    let currentModuleId  = 'index';
+    let currentModuleId = 'index';
     let moduleVideosData = {};
-    let moduleMcqsData   = {};
-    let allUsers         = [];
-    let filtered         = [];
-    let isLocked         = false;
-    let lockLoading      = false;
-    let actLoading       = {};
-    let activityLocks    = { activity_1: false, activity_2: false, activity_3: false, activity_4: false };
-    const PAGE_SIZE      = 15;
-    let currentPage      = 1;
+    let moduleMcqsData = {};
+    let allUsers = [];
+    let filtered = [];
+    let isLocked = false;
+    let lockLoading = false;
+    let actLoading = {};
+    let activityLocks = { activity_1: false, activity_2: false, activity_3: false, activity_4: false };
+    const PAGE_SIZE = 15;
+    let currentPage = 1;
 
     // ── Initialization ──
     async function init() {
@@ -1830,36 +2420,36 @@
     // ── Switch Main Sections ──
     function showSection(section) {
       const secContent = document.getElementById('sectionContent');
-      const secUsers   = document.getElementById('sectionUsers');
-      const secLocks   = document.getElementById('sectionLocks');
-      const titleEl    = document.getElementById('pageTitle');
-      const subEl      = document.getElementById('pageSubtitle');
+      const secUsers = document.getElementById('sectionUsers');
+      const secLocks = document.getElementById('sectionLocks');
+      const titleEl = document.getElementById('pageTitle');
+      const subEl = document.getElementById('pageSubtitle');
 
       document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => el.classList.remove('active'));
 
       if (section === 'content') {
         secContent.style.display = 'block';
-        secUsers.style.display   = 'none';
-        secLocks.style.display   = 'none';
+        secUsers.style.display = 'none';
+        secLocks.style.display = 'none';
         const modBtn = document.getElementById(`navMod-${currentModuleId}`);
         if (modBtn) modBtn.classList.add('active');
         const meta = MODULES_META[currentModuleId] || {};
         titleEl.textContent = `${meta.name || 'Module'}: Content & Assessment Manager`;
-        subEl.textContent   = meta.desc || 'Manage video and assessment questions';
+        subEl.textContent = meta.desc || 'Manage video and assessment questions';
       } else if (section === 'users') {
         secContent.style.display = 'none';
-        secUsers.style.display   = 'block';
-        secLocks.style.display   = 'none';
+        secUsers.style.display = 'block';
+        secLocks.style.display = 'none';
         document.getElementById('btnNavUsers').classList.add('active');
         titleEl.textContent = 'User Management & Metrics';
-        subEl.textContent   = 'View participant records, test performance, and export Excel data';
+        subEl.textContent = 'View participant records, test performance, and export Excel data';
       } else if (section === 'locks') {
         secContent.style.display = 'none';
-        secUsers.style.display   = 'none';
-        secLocks.style.display   = 'block';
+        secUsers.style.display = 'none';
+        secLocks.style.display = 'block';
         document.getElementById('btnNavLocks').classList.add('active');
         titleEl.textContent = 'Activity Locks & Security Controls';
-        subEl.textContent   = 'Control global site lock and individual module locks in real-time';
+        subEl.textContent = 'Control global site lock and individual module locks in real-time';
       }
     }
 
@@ -1920,7 +2510,7 @@
       }
       document.getElementById('bannerIcon').textContent = meta.icon;
       document.getElementById('bannerTitle').textContent = meta.title;
-      document.getElementById('bannerDesc').textContent  = meta.desc;
+      document.getElementById('bannerDesc').textContent = meta.desc;
       const liveLink = document.getElementById('bannerPageLink');
       liveLink.href = meta.pageUrl;
       liveLink.innerHTML = `🔗 Open Live Page (${meta.pageUrl}) ↗`;
@@ -2119,7 +2709,7 @@
 
     function setVideoSourceType(type, triggerPreview = true) {
       const btnMp4 = document.getElementById('btnSourceMp4');
-      const btnYt  = document.getElementById('btnSourceYoutube');
+      const btnYt = document.getElementById('btnSourceYoutube');
       const btnLib = document.getElementById('btnSourceLibrary');
       const uploadSec = document.getElementById('mp4UploadSection');
       const libSec = document.getElementById('serverLibrarySection');
@@ -2363,15 +2953,15 @@
 
       const progressBox = document.getElementById('uploadProgress');
       const progressBar = document.getElementById('uploadProgressBar');
-      const statusText  = document.getElementById('uploadStatusText');
+      const statusText = document.getElementById('uploadStatusText');
 
       progressBox.style.display = 'block';
       progressBar.style.width = '20%';
       statusText.style.display = 'block';
-      statusText.textContent = `Reading ${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)...`;
+      statusText.textContent = `Reading ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)...`;
 
       const reader = new FileReader();
-      reader.onload = async function() {
+      reader.onload = async function () {
         progressBar.style.width = '60%';
         statusText.textContent = `Uploading to server...`;
 
@@ -2405,7 +2995,7 @@
         }
       };
 
-      reader.onerror = function() {
+      reader.onerror = function () {
         statusText.textContent = '❌ Could not read local file';
         showToast('File read error', 'error');
       };
@@ -2520,7 +3110,7 @@
       const labels = ['A', 'B', 'C', 'D'];
 
       container.innerHTML = mcqs.map((q, qIdx) => {
-        const options = Array.isArray(q.options) ? q.options : ['','','',''];
+        const options = Array.isArray(q.options) ? q.options : ['', '', '', ''];
         const correct = Number(q.correct) || 0;
 
         return `
@@ -2541,8 +3131,8 @@
               <label class="form-label">Answer Options (Click button to select correct answer)</label>
               <div class="options-grid">
                 ${labels.map((lbl, oIdx) => {
-                  const isCorrect = oIdx === correct;
-                  return `
+          const isCorrect = oIdx === correct;
+          return `
                     <div class="option-row ${isCorrect ? 'is-correct' : ''}" data-oidx="${oIdx}">
                       <span class="option-prefix">${lbl})</span>
                       <input type="text" class="option-input" placeholder="Option ${lbl} text..." value="${escHtml(options[oIdx] || '')}" oninput="updateMcqDraft()" />
@@ -2551,7 +3141,7 @@
                       </button>
                     </div>
                   `;
-                }).join('')}
+        }).join('')}
               </div>
             </div>
 
@@ -2724,23 +3314,23 @@
     function applyLockState(locked) {
       isLocked = locked;
       const banner = document.getElementById('lockBanner');
-      const icon   = document.getElementById('lockIcon');
-      const title  = document.getElementById('lockTitle');
-      const desc   = document.getElementById('lockDesc');
-      const btn    = document.getElementById('lockBtn');
+      const icon = document.getElementById('lockIcon');
+      const title = document.getElementById('lockTitle');
+      const desc = document.getElementById('lockDesc');
+      const btn = document.getElementById('lockBtn');
 
       if (locked) {
         banner.className = 'lock-banner locked';
         icon.textContent = '🔴';
         title.textContent = 'ALL Site Activities LOCKED';
-        desc.textContent  = 'Global site lock is ON. All activities, quizzes and videos are inaccessible.';
+        desc.textContent = 'Global site lock is ON. All activities, quizzes and videos are inaccessible.';
         btn.className = 'lock-toggle-btn unlock-action';
         btn.innerHTML = '🔓 Unlock All Activities';
       } else {
         banner.className = 'lock-banner unlocked';
         icon.textContent = '🟢';
         title.textContent = 'Global Activities Unlocked';
-        desc.textContent  = 'Global access is open. Individual activities below can still be locked.';
+        desc.textContent = 'Global access is open. Individual activities below can still be locked.';
         btn.className = 'lock-toggle-btn lock-action';
         btn.innerHTML = '🔒 Lock All Activities';
       }
@@ -2874,7 +3464,7 @@
     // ========================================================
     async function fetchUsers() {
       try {
-        const res  = await fetch(API_USERS);
+        const res = await fetch(API_USERS);
         const data = await res.json();
         if (data.success) {
           allUsers = data.data || [];
@@ -2941,15 +3531,15 @@
       const maxScore = Math.max(...allUsers.map(u => u.score || 0), 1);
 
       tbody.innerHTML = slice.map((u, i) => {
-        const idx   = start + i + 1;
-        const name  = u.userName || 'Unknown';
-        const init  = name.charAt(0).toUpperCase();
+        const idx = start + i + 1;
+        const name = u.userName || 'Unknown';
+        const init = name.charAt(0).toUpperCase();
         const empId = u.employeeId || '—';
-        const dept  = u.department || '—';
+        const dept = u.department || '—';
         const desig = u.designation || '—';
         const level = u.level || 'Beginner';
         const score = u.score || 0;
-        const acc   = u.accuracy || 0;
+        const acc = u.accuracy || 0;
         const video = u.videoCompleted ? '✅' : '❌';
 
         let quiz = 0;
@@ -2961,9 +3551,9 @@
           quiz = Math.max(0, score - (u.videoCompleted ? 50 : 0));
         }
 
-        const act   = u.activity || 'Activity 1: The Executive Target';
-        const date  = u.completionDate || u.date || '—';
-        const pct   = Math.round((score / maxScore) * 100);
+        const act = u.activity || 'Activity 1: Password Protection';
+        const date = u.completionDate || u.date || '—';
+        const pct = Math.round((score / maxScore) * 100);
         const badgeCls = getLevelBadge(level);
 
         return `
@@ -2998,20 +3588,20 @@
 
     function renderPagination(total, pages) {
       document.getElementById('paginationInfo').textContent =
-        total > 0 ? `Showing ${Math.min((currentPage-1)*PAGE_SIZE+1,total)}–${Math.min(currentPage*PAGE_SIZE,total)} of ${total}` : '';
+        total > 0 ? `Showing ${Math.min((currentPage - 1) * PAGE_SIZE + 1, total)}–${Math.min(currentPage * PAGE_SIZE, total)} of ${total}` : '';
 
       const container = document.getElementById('pageBtns');
       if (pages <= 1) { container.innerHTML = ''; return; }
 
-      let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+      let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
       for (let p = 1; p <= pages; p++) {
         if (pages > 7 && Math.abs(p - currentPage) > 2 && p !== 1 && p !== pages) {
           if (p === 2 || p === pages - 1) html += `<button class="page-btn" disabled>…</button>`;
           continue;
         }
-        html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+        html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
       }
-      html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+      html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}>›</button>`;
       container.innerHTML = html;
     }
 
@@ -3036,21 +3626,21 @@
         }
 
         return {
-          'Name':             u.userName || '',
-          'Employee ID':      u.employeeId || '',
-          'Department':       u.department || '',
-          'Designation':      u.designation || '',
-          'Activity':         u.activity || '',
-          'Total Score':      u.score || 0,
-          'Level':            u.level || '',
-          'Video Marks':      u.videoMarks || (u.videoCompleted ? 50 : 0),
-          'Quiz Marks':       quizVal,
-          'Accuracy %':       u.accuracy || 0,
-          'Video Completed':  u.videoCompleted ? 'Yes' : 'No',
-          'Correct Answers':  u.correctAnswers || 0,
-          'Total Questions':  u.totalQuestions || 0,
-          'Date':             u.completionDate || u.date || '',
-          'Doc ID':           u.id || ''
+          'Name': u.userName || '',
+          'Employee ID': u.employeeId || '',
+          'Department': u.department || '',
+          'Designation': u.designation || '',
+          'Activity': u.activity || '',
+          'Total Score': u.score || 0,
+          'Level': u.level || '',
+          'Video Marks': u.videoMarks || (u.videoCompleted ? 50 : 0),
+          'Quiz Marks': quizVal,
+          'Accuracy %': u.accuracy || 0,
+          'Video Completed': u.videoCompleted ? 'Yes' : 'No',
+          'Correct Answers': u.correctAnswers || 0,
+          'Total Questions': u.totalQuestions || 0,
+          'Date': u.completionDate || u.date || '',
+          'Doc ID': u.id || ''
         };
       }));
       const wb = XLSX.utils.book_new();
@@ -3068,14 +3658,14 @@
 
     function getLevelBadge(level) {
       const l = (level || '').toLowerCase();
-      if (l.includes('expert'))       return 'badge-expert';
-      if (l.includes('advanced'))     return 'badge-advanced';
+      if (l.includes('expert')) return 'badge-expert';
+      if (l.includes('advanced')) return 'badge-advanced';
       if (l.includes('intermediate')) return 'badge-intermediate';
       return 'badge-beginner';
     }
 
     function escHtml(s) {
-      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     let toastTimer;
@@ -3095,4 +3685,5 @@
     init();
   </script>
 </body>
+
 </html>
