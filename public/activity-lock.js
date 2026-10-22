@@ -227,37 +227,6 @@
     let currentLoadedVideoType = null;
 
     function syncDynamicVideo(vidCfg) {
-        const isEnabled = vidCfg && !(vidCfg.enabled === false || vidCfg.enabled === 'false' || vidCfg.enabled === 0 || vidCfg.enabled === '0');
-        const activitySection = document.getElementById('activityVideoSection');
-        let activityContainer = null;
-
-        if (activitySection) {
-            activitySection.style.display = isEnabled ? 'block' : 'none';
-            if (!isEnabled) return;
-
-            const titleEl = document.getElementById('activityVideoTitle');
-            if (titleEl && vidCfg.title) titleEl.textContent = vidCfg.title;
-            const subEl = document.getElementById('activityVideoSubtitle');
-            if (subEl) {
-                subEl.textContent = vidCfg.desc || '';
-                subEl.style.display = vidCfg.desc ? 'block' : 'none';
-            }
-
-            activityContainer = document.getElementById('activityVideoContainer');
-            if (activityContainer && (!vidCfg.url || !vidCfg.url.trim())) {
-                currentLoadedVideoUrl = null;
-                currentLoadedVideoType = null;
-                activityContainer.innerHTML = `
-                    <div style="padding:52px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.95)); aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:center;">
-                        <div style="font-size:3rem; margin-bottom:10px;">🎬</div>
-                        <h3 style="font-size:1.3rem; color:#00ffff; margin:0 0 8px;">Activity Video</h3>
-                        <p style="color:rgba(255,255,255,.75); font-size:.95rem; max-width:480px; margin:0 auto; line-height:1.5;">This video briefing is being updated by the administrator. Check back soon.</p>
-                    </div>
-                `;
-                return;
-            }
-        }
-
         // Handle landing page (index) dynamic visibility & headings
         const landingSec = document.getElementById('landingVideoSection');
         if (landingSec) {
@@ -288,7 +257,7 @@
         }
 
         if (!vidCfg || !vidCfg.url) return;
-        const container = activityContainer || document.querySelector('.video-container');
+        const container = document.querySelector('.video-container');
         if (!container) return;
 
         const targetType = vidCfg.sourceType === 'youtube' ? 'youtube' : 'mp4';
@@ -343,6 +312,49 @@
                 });
             }
         }
+    }
+
+    function syncSharedActivityVideo(videoCfg) {
+        const section = document.getElementById('sharedActivityVideoSection');
+        const container = document.getElementById('sharedActivityVideoContainer');
+        if (!section || !container || !videoCfg) return;
+
+        const isVisible = !(videoCfg.enabled === false || videoCfg.enabled === 'false' || videoCfg.enabled === 0 || videoCfg.enabled === '0');
+        section.style.display = isVisible ? 'block' : 'none';
+        if (!isVisible) return;
+
+        const title = document.getElementById('sharedActivityVideoTitle');
+        const paragraph = document.getElementById('sharedActivityVideoSubtitle');
+        if (title && videoCfg.title) title.textContent = videoCfg.title;
+        if (paragraph) {
+            paragraph.textContent = videoCfg.desc || '';
+            paragraph.style.display = videoCfg.desc ? 'block' : 'none';
+        }
+
+        const url = (videoCfg.url || '').trim();
+        const posterUrl = (videoCfg.poster || '').trim();
+        if (!url) {
+            container.dataset.loadedSrc = '';
+            container.dataset.loadedPoster = '';
+            container.innerHTML = `
+                <div style="padding:52px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.95)); aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:3rem; margin-bottom:10px;">🎬</div>
+                    <h3 style="font-size:1.3rem; color:#00ffff; margin:0 0 8px;">Shared Activity Video</h3>
+                    <p style="color:rgba(255,255,255,.75); font-size:.95rem; max-width:480px; margin:0 auto; line-height:1.5;">This video briefing is being updated by the administrator. Check back soon.</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (container.dataset.loadedSrc === url && container.dataset.loadedPoster === posterUrl) return;
+        container.dataset.loadedSrc = url;
+        container.dataset.loadedPoster = posterUrl;
+        container.innerHTML = `
+            <video controls controlsList="nodownload" preload="metadata" playsinline poster="${posterUrl}" style="width:100%; display:block; border-radius:15px;">
+                <source src="${url}" type="video/mp4">
+                Your browser does not support HTML5 video streaming.
+            </video>
+        `;
     }
 
     // ── Dynamic MCQs Sync ──
@@ -412,6 +424,9 @@
             }
 
             // Sync dynamic module video & MCQs
+            if (data.moduleVideos && data.moduleVideos.activity_banner) {
+                syncSharedActivityVideo(data.moduleVideos.activity_banner);
+            }
             if (currentActivity && currentActivity.id) {
                 if (data.moduleVideos && data.moduleVideos[currentActivity.id]) {
                     syncDynamicVideo(data.moduleVideos[currentActivity.id]);
