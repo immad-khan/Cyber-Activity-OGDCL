@@ -2028,41 +2028,11 @@
                 <label class="form-label" style="font-size:0.86rem; font-weight:700; color:#fff; margin:0;">
                   ➕ Add / Replace Video
                 </label>
-                <span style="font-size:0.72rem; color:var(--text-dim);">Select file or streaming source</span>
-              </div>
-
-              <!-- Video Source Type Selector (MP4 Upload or Server Library) -->
-              <div class="form-group">
-                <div class="segmented-control">
-                  <button class="seg-btn active" id="btnSourceMp4" type="button" onclick="setVideoSourceType('mp4')">
-                    📤 Upload MP4
-                  </button>
-                  <button class="seg-btn" id="btnSourceLibrary" type="button" onclick="setVideoSourceType('library')">
-                    🗃️ Server Library
-                  </button>
-                </div>
-              </div>
-
-              <!-- MP4 File Upload Box -->
-              <div id="mp4UploadSection">
-                <div class="upload-box" onclick="document.getElementById('videoFileInput').click()">
-                  <div style="font-size:28px; margin-bottom:4px;">📤</div>
-                  <div style="font-size:0.86rem; font-weight:600; color:#fff;">Click to Choose or Drag New MP4 Video
-                  </div>
-                  <div style="font-size:0.74rem; color:var(--text-dim); margin-top:3px;">Supports .mp4, .webm (saves
-                    directly to public/videos/)</div>
-                  <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display:none;"
-                    onchange="handleVideoFileUpload(event)" />
-                  <div class="upload-progress" id="uploadProgress">
-                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
-                  </div>
-                  <div id="uploadStatusText"
-                    style="font-size:0.75rem; color:var(--accent-2); margin-top:6px; display:none;"></div>
-                </div>
+                <span style="font-size:0.72rem; color:var(--text-dim);">Choose a video already stored on the server</span>
               </div>
 
               <!-- Server Library Picker Box -->
-              <div id="serverLibrarySection" style="display:none;" class="form-group">
+              <div id="serverLibrarySection" class="form-group">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                   <label class="form-label" style="margin:0;">Videos Already on Server</label>
                   <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem;"
@@ -2323,7 +2293,6 @@
     const ADMIN_TOKEN = 'cybershield-admin-2024';
     const API_USERS = '/api/get-users';
     const API_SETTINGS = '/api/admin-settings';
-    const API_UPLOAD = '/api/upload-video';
     const API_DELETE_VIDEO = '/api/delete-video';
     const API_LIST_VIDEOS = '/api/list-videos';
 
@@ -2650,7 +2619,7 @@
     function renderVideoEditor(modId) {
       const vid = moduleVideosData[modId] || {};
       const hasUrl = !!(vid.url && vid.url.trim());
-      const sourceType = 'mp4';
+      const sourceType = 'library';
 
       // Video Section Visibility and heading controls
       const visibilityTitle = document.getElementById('videoVisibilityTitle');
@@ -2721,35 +2690,18 @@
     }
 
     function setVideoSourceType(type, triggerPreview = true) {
-      const btnMp4 = document.getElementById('btnSourceMp4');
-      const btnLib = document.getElementById('btnSourceLibrary');
-      const uploadSec = document.getElementById('mp4UploadSection');
       const libSec = document.getElementById('serverLibrarySection');
       const posterGrp = document.getElementById('posterGroup');
       const lblUrl = document.getElementById('lblVideoUrl');
       const hintUrl = document.getElementById('videoUrlHint');
 
-      btnMp4.classList.remove('active');
-      if (btnLib) btnLib.classList.remove('active');
-
-      if (type === 'library') {
-        if (btnLib) btnLib.classList.add('active');
-        uploadSec.style.display = 'none';
-        if (libSec) {
-          libSec.style.display = 'block';
-          loadServerVideosLibrary();
-        }
-        posterGrp.style.display = 'block';
-        lblUrl.textContent = 'Selected Server Video Path';
-        hintUrl.textContent = 'Click "Select" on any video in the list above or edit the path manually.';
-      } else {
-        btnMp4.classList.add('active');
-        uploadSec.style.display = 'block';
-        if (libSec) libSec.style.display = 'none';
-        posterGrp.style.display = 'block';
-        lblUrl.textContent = 'MP4 Video URL / Local File Path';
-        hintUrl.textContent = 'Local path (e.g. videos/filename.mp4) or direct streaming MP4 link.';
+      if (libSec) {
+        libSec.style.display = 'block';
+        loadServerVideosLibrary();
       }
+      posterGrp.style.display = 'block';
+      lblUrl.textContent = 'Selected Server Video Path';
+      hintUrl.textContent = 'Click "Select" on a video in the server library.';
 
       if (triggerPreview) refreshVideoPreview();
     }
@@ -2893,7 +2845,7 @@
         });
         const data = await res.json();
         if (!data.success || !Array.isArray(data.files) || data.files.length === 0) {
-          container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">No video files found in public/videos/. Upload one above!</div>';
+          container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">No video files found in public/videos/.</div>';
           return;
         }
 
@@ -2926,62 +2878,6 @@
     }
 
     // ── Add New Video Upload ──
-    async function handleVideoFileUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const progressBox = document.getElementById('uploadProgress');
-      const progressBar = document.getElementById('uploadProgressBar');
-      const statusText = document.getElementById('uploadStatusText');
-
-      progressBox.style.display = 'block';
-      progressBar.style.width = '20%';
-      statusText.style.display = 'block';
-      statusText.textContent = `Reading ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)...`;
-
-      const reader = new FileReader();
-      reader.onload = async function () {
-        progressBar.style.width = '60%';
-        statusText.textContent = `Uploading to server...`;
-
-        try {
-          const res = await fetch(API_UPLOAD, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-admin-token': ADMIN_TOKEN
-            },
-            body: JSON.stringify({
-              filename: file.name,
-              base64Data: reader.result
-            })
-          });
-
-          const data = await res.json();
-          if (data.success && data.url) {
-            progressBar.style.width = '100%';
-            statusText.textContent = `✅ Uploaded successfully as ${data.filename}!`;
-            document.getElementById('inputVideoUrl').value = data.url;
-            setVideoSourceType('mp4', true);
-            showToast(`Video uploaded: ${data.filename}! Click Save to apply.`, 'success');
-            loadServerVideosLibrary();
-          } else {
-            throw new Error(data.error || 'Upload failed');
-          }
-        } catch (err) {
-          statusText.textContent = `❌ Upload failed: ${err.message}`;
-          showToast(`Upload failed: ${err.message}`, 'error');
-        }
-      };
-
-      reader.onerror = function () {
-        statusText.textContent = '❌ Could not read local file';
-        showToast('File read error', 'error');
-      };
-
-      reader.readAsDataURL(file);
-    }
-
     async function saveCurrentVideo() {
       let rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
       const poster = (document.getElementById('inputVideoPoster').value || '').trim();
