@@ -377,27 +377,6 @@
       color: #fff;
     }
 
-    .btn-reset {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: #fcd34d;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-reset:hover {
-      background: #f59e0b;
-      color: #000;
-    }
-
     /* ─── MODULE NAVIGATION BAR ─── */
     .module-nav-container {
       background: var(--surface);
@@ -1969,10 +1948,6 @@
                 <div class="panel-title"><span>🎥</span> Training Video Configuration</div>
                 <div class="panel-sub" id="currentModuleVideoSub">Manage video for Index module</div>
               </div>
-              <button class="btn-reset" onclick="resetCurrentVideo()"
-                title="Restore factory default video for this module">
-                🔄 Factory Reset
-              </button>
             </div>
 
             <!-- Index Landing Page Video Section Toggle & Heading Controls -->
@@ -2035,14 +2010,11 @@
                 <span style="font-size:0.72rem; color:var(--text-dim);">Select file or streaming source</span>
               </div>
 
-              <!-- Video Source Type Selector (MP4 Upload vs YouTube vs Server Library) -->
+              <!-- Video Source Type Selector (MP4 Upload or Server Library) -->
               <div class="form-group">
                 <div class="segmented-control">
                   <button class="seg-btn active" id="btnSourceMp4" type="button" onclick="setVideoSourceType('mp4')">
                     📤 Upload MP4
-                  </button>
-                  <button class="seg-btn" id="btnSourceYoutube" type="button" onclick="setVideoSourceType('youtube')">
-                    🔴 YouTube Link
                   </button>
                   <button class="seg-btn" id="btnSourceLibrary" type="button" onclick="setVideoSourceType('library')">
                     🗃️ Server Library
@@ -2087,7 +2059,7 @@
                 <label class="form-label" id="lblVideoUrl">Video URL / File Path</label>
                 <div style="display:flex; gap:6px;">
                   <input type="text" class="form-input" id="inputVideoUrl"
-                    placeholder="videos/phishing-awareness.mp4 or https://youtube.com/..."
+                    placeholder="videos/phishing-awareness.mp4"
                     oninput="onVideoUrlChange()" />
                   <button type="button" class="btn-secondary" style="padding:0 12px; white-space:nowrap;"
                     onclick="clearVideoUrlInput()" title="Clear URL input">✕</button>
@@ -2140,9 +2112,6 @@
                 <div class="panel-sub" id="mcqMarksSummary">20 Marks per question | Total 100 Quiz Marks</div>
               </div>
               <div style="display:flex; gap:8px;">
-                <button class="btn-reset" onclick="resetCurrentMcqs()" title="Reset all MCQs to default questions">
-                  🔄 Reset MCQs
-                </button>
                 <button class="btn-secondary" onclick="addNewMcqQuestion()">
                   ➕ Add Question
                 </button>
@@ -2218,6 +2187,7 @@
           <select id="activityFilter" onchange="filterUsers()"
             style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
             <option value="all">🌐 All Modules</option>
+            <option value="Index">Index (Awareness Overview)</option>
             <option value="Activity 1">Activity 1 (Passwords/MFA)</option>
             <option value="Activity 2">Activity 2 (Social Engineering)</option>
             <option value="Activity 3">Activity 3 (Data Privacy)</option>
@@ -2646,7 +2616,7 @@
     function renderVideoEditor(modId) {
       const vid = moduleVideosData[modId] || {};
       const hasUrl = !!(vid.url && vid.url.trim());
-      const sourceType = vid.sourceType === 'youtube' ? 'youtube' : 'mp4';
+      const sourceType = 'mp4';
 
       // Index Landing Page Video Section Controls
       const indexVisCard = document.getElementById('indexVisibilityCard');
@@ -2684,7 +2654,7 @@
         titleEl.textContent = 'Current Active Video';
         subEl.textContent = vid.url;
         subEl.title = vid.url;
-        typeBadge.textContent = sourceType === 'youtube' ? 'YouTube Embed' : 'MP4 Direct';
+        typeBadge.textContent = 'MP4 Direct';
         typeBadge.style.display = 'inline-block';
         delBtn.disabled = false;
         delBtn.style.display = 'inline-flex';
@@ -2709,7 +2679,6 @@
 
     function setVideoSourceType(type, triggerPreview = true) {
       const btnMp4 = document.getElementById('btnSourceMp4');
-      const btnYt = document.getElementById('btnSourceYoutube');
       const btnLib = document.getElementById('btnSourceLibrary');
       const uploadSec = document.getElementById('mp4UploadSection');
       const libSec = document.getElementById('serverLibrarySection');
@@ -2718,17 +2687,9 @@
       const hintUrl = document.getElementById('videoUrlHint');
 
       btnMp4.classList.remove('active');
-      btnYt.classList.remove('active');
       if (btnLib) btnLib.classList.remove('active');
 
-      if (type === 'youtube') {
-        btnYt.classList.add('active');
-        uploadSec.style.display = 'none';
-        if (libSec) libSec.style.display = 'none';
-        posterGrp.style.display = 'none';
-        lblUrl.textContent = 'YouTube Video or Embed URL';
-        hintUrl.textContent = 'Paste any YouTube URL (e.g. watch?v=... or youtu.be/...). It is auto-converted to embed.';
-      } else if (type === 'library') {
+      if (type === 'library') {
         if (btnLib) btnLib.classList.add('active');
         uploadSec.style.display = 'none';
         if (libSec) {
@@ -2750,22 +2711,6 @@
       if (triggerPreview) refreshVideoPreview();
     }
 
-    function isCurrentSourceYoutube() {
-      return document.getElementById('btnSourceYoutube').classList.contains('active');
-    }
-
-    function formatYouTubeEmbedUrl(url) {
-      if (!url) return '';
-      url = url.trim();
-      if (url.includes('youtube.com/embed/')) return url;
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = url.match(regExp);
-      if (match && match[2].length === 11) {
-        return `https://www.youtube.com/embed/${match[2]}?enablejsapi=1&rel=0`;
-      }
-      return url;
-    }
-
     function onVideoUrlChange() {
       // Auto-preview on URL change with debounce
       clearTimeout(window._vidUrlTimer);
@@ -2773,8 +2718,7 @@
     }
 
     function refreshVideoPreview() {
-      const isYt = isCurrentSourceYoutube();
-      let rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
+      const rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
       const poster = (document.getElementById('inputVideoPoster').value || '').trim();
       const previewWrap = document.getElementById('videoPreviewWrap');
 
@@ -2783,25 +2727,17 @@
           <div class="preview-placeholder">
             <div style="font-size:32px; margin-bottom:8px; opacity:0.8;">📭</div>
             <div style="font-weight:600; font-size:0.9rem; color:#fff; margin-bottom:4px;">No Video Set for this Module</div>
-            <div style="font-size:0.75rem; color:var(--text-dim);">Upload an MP4 video or paste a YouTube URL below to add one.</div>
+            <div style="font-size:0.75rem; color:var(--text-dim);">Upload an MP4 video or choose one from the server library.</div>
           </div>`;
         return;
       }
 
-      if (isYt) {
-        const embedUrl = formatYouTubeEmbedUrl(rawUrl);
-        document.getElementById('inputVideoUrl').value = embedUrl;
-        previewWrap.innerHTML = `
-          <iframe src="${embedUrl}" title="Preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        `;
-      } else {
-        previewWrap.innerHTML = `
+      previewWrap.innerHTML = `
           <video controls preload="metadata" playsinline poster="${poster}">
             <source src="${rawUrl}" type="video/mp4">
             Your browser does not support HTML5 video preview.
           </video>
         `;
-      }
     }
 
     // ── Delete Previous Video Flow ──
@@ -3004,7 +2940,6 @@
     }
 
     async function saveCurrentVideo() {
-      const isYt = isCurrentSourceYoutube();
       let rawUrl = (document.getElementById('inputVideoUrl').value || '').trim();
       const poster = (document.getElementById('inputVideoPoster').value || '').trim();
       const title = (document.getElementById('inputVideoTitle').value || '').trim();
@@ -3015,15 +2950,10 @@
         return;
       }
 
-      if (isYt) {
-        rawUrl = formatYouTubeEmbedUrl(rawUrl);
-        document.getElementById('inputVideoUrl').value = rawUrl;
-      }
-
       const videoPayload = {
-        sourceType: isYt ? 'youtube' : 'mp4',
+        sourceType: 'mp4',
         url: rawUrl,
-        poster: isYt ? '' : poster,
+        poster,
         title: title || MODULES_META[currentModuleId].title,
         desc: desc || MODULES_META[currentModuleId].desc,
         enabled: currentModuleId === 'index' ? isIndexVideoVisible : (moduleVideosData[currentModuleId]?.enabled !== false)
@@ -3060,30 +2990,6 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '💾 Save & Publish Video Settings';
-      }
-    }
-
-    async function resetCurrentVideo() {
-      const modName = MODULES_META[currentModuleId].name;
-      if (!confirm(`Reset training video to factory default for ${modName}?`)) return;
-
-      try {
-        const res = await fetch(API_SETTINGS, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
-          },
-          body: JSON.stringify({ resetModuleVideo: currentModuleId })
-        });
-        const data = await res.json();
-        if (data.success && data.moduleVideos) {
-          moduleVideosData = data.moduleVideos;
-          renderVideoEditor(currentModuleId);
-          showToast(`Video reset to default for ${modName}`, 'success');
-        }
-      } catch (e) {
-        showToast('Failed to reset video', 'error');
       }
     }
 
@@ -3281,30 +3187,6 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '💾 Save All MCQs for this Module';
-      }
-    }
-
-    async function resetCurrentMcqs() {
-      const modName = MODULES_META[currentModuleId].name;
-      if (!confirm(`Reset all MCQs to default factory questions for ${modName}?`)) return;
-
-      try {
-        const res = await fetch(API_SETTINGS, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
-          },
-          body: JSON.stringify({ resetModuleMcqs: currentModuleId })
-        });
-        const data = await res.json();
-        if (data.success && data.moduleMcqs) {
-          moduleMcqsData = data.moduleMcqs;
-          renderMcqEditor(currentModuleId);
-          showToast(`Default MCQs restored for ${modName}`, 'success');
-        }
-      } catch (e) {
-        showToast('Failed to reset MCQs', 'error');
       }
     }
 
@@ -3551,7 +3433,7 @@
           quiz = Math.max(0, score - (u.videoCompleted ? 50 : 0));
         }
 
-        const act = u.activity || 'Activity 1: Password Protection';
+        const act = u.activity || 'Index: Overview';
         const date = u.completionDate || u.date || '—';
         const pct = Math.round((score / maxScore) * 100);
         const badgeCls = getLevelBadge(level);
