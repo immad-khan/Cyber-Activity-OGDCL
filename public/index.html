@@ -860,25 +860,25 @@
                 </div>
 
                 <div class="weeks-buttons" id="weekMenu">
-                    <a href="phishing-week.html" class="week-button">
+                    <a href="mfa-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 1</span>
                         </span>
                     </a>
 
-                    <a href="mfa-week.html" class="week-button ">
+                    <a href="social-engineering-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 2</span>
                         </span>
                     </a>
 
-                    <a href="social-engineering-week.html" class="week-button">
+                    <a href="privacy-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 3</span>
                         </span>
                     </a>
 
-                    <a href="privacy-week.html" class="week-button">
+                    <a href="phishing-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 4</span>
                         </span>
@@ -1062,10 +1062,8 @@
             floating_tip: 5,
             hero_button: 10,
             threat_alert_button: 10,
-            scroll_milestone: 5,
             time_bonus_per_minute: 2,
             completion_bonus: 50,
-            page_visit: 5,
             week1_button: 15
         };
 
@@ -1610,20 +1608,6 @@
 
             if (pctScrolled > scrollDepth) {
                 scrollDepth = pctScrolled;
-
-                if (scrollDepth >= 25 && !window.scroll25) {
-                    window.scroll25 = true;
-                    updateScore(SCORING.scroll_milestone, 'scroll_25');
-                }
-                if (scrollDepth >= 50 && !window.scroll50) {
-                    window.scroll50 = true;
-                    updateScore(SCORING.scroll_milestone, 'scroll_50');
-                }
-                if (scrollDepth >= 75 && !window.scroll75) {
-                    window.scroll75 = true;
-                    updateScore(SCORING.scroll_milestone, 'scroll_75');
-                    showNotification('Explorer Badge! (+' + SCORING.scroll_milestone + ' points)', 'success');
-                }
             }
         });
 
@@ -1639,7 +1623,6 @@
         }
 
         window.addEventListener('load', function () {
-            updateScore(SCORING.page_visit, 'page_visit');
             updateScoreVisual();
             updateProgressBar();
 
@@ -1806,10 +1789,10 @@
 
                     if (data.activityLocks) {
                         const actMap = {
-                            activity_1: { page: 'phishing-week.html', label: 'Activity 1' },
-                            activity_2: { page: 'mfa-week.html', label: 'Activity 2' },
-                            activity_3: { page: 'social-engineering-week.html', label: 'Activity 3' },
-                            activity_4: { page: 'privacy-week.html', label: 'Activity 4' }
+                            activity_1: { page: 'mfa-week.html', label: 'Activity 1' },
+                            activity_2: { page: 'social-engineering-week.html', label: 'Activity 2' },
+                            activity_3: { page: 'privacy-week.html', label: 'Activity 3' },
+                            activity_4: { page: 'phishing-week.html', label: 'Activity 4' }
                         };
 
                         Object.entries(data.activityLocks).forEach(([key, isActLocked]) => {
