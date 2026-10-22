@@ -7,7 +7,7 @@
   <title>Admin Dashboard – OGDCL Cybersecurity Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
   <style>
     *,
     *::before,
@@ -1802,14 +1802,21 @@
         <span class="nav-item-badge" id="sideBadge-activity_4">Video</span>
       </button>
 
-      <button class="nav-item" id="navMod-activity_banner" onclick="navToModule('activity_banner')"
-        title="Manage the shared video shown above Activities 1–4">
-        <span class="nav-icon">🎬</span>
-        <div class="nav-item-content">
-          <span class="nav-item-label">Shared Activity Video</span>
-          <span class="nav-item-sub">Banner above activities</span>
-        </div>
-        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_banner">No Video</span>
+      <button class="nav-item" id="navMod-activity_1_banner" onclick="navToModule('activity_1_banner')" title="Manage Activity 1 hero video">
+        <span class="nav-icon">🎬</span><div class="nav-item-content"><span class="nav-item-label">Activity 1 Banner Video</span><span class="nav-item-sub">Above Activity 1 hero</span></div>
+        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_1_banner">No Video</span>
+      </button>
+      <button class="nav-item" id="navMod-activity_2_banner" onclick="navToModule('activity_2_banner')" title="Manage Activity 2 hero video">
+        <span class="nav-icon">🎬</span><div class="nav-item-content"><span class="nav-item-label">Activity 2 Banner Video</span><span class="nav-item-sub">Above Activity 2 hero</span></div>
+        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_2_banner">No Video</span>
+      </button>
+      <button class="nav-item" id="navMod-activity_3_banner" onclick="navToModule('activity_3_banner')" title="Manage Activity 3 hero video">
+        <span class="nav-icon">🎬</span><div class="nav-item-content"><span class="nav-item-label">Activity 3 Banner Video</span><span class="nav-item-sub">Above Activity 3 hero</span></div>
+        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_3_banner">No Video</span>
+      </button>
+      <button class="nav-item" id="navMod-activity_4_banner" onclick="navToModule('activity_4_banner')" title="Manage Activity 4 hero video">
+        <span class="nav-icon">🎬</span><div class="nav-item-content"><span class="nav-item-label">Activity 4 Banner Video</span><span class="nav-item-sub">Above Activity 4 hero</span></div>
+        <span class="nav-item-badge badge-no-vid" id="sideBadge-activity_4_banner">No Video</span>
       </button>
 
       <div class="nav-label" style="margin-top: 14px;">Portal Management</div>
@@ -1929,14 +1936,10 @@
               <div class="mod-sub">Executive Phishing Defense</div>
             </button>
 
-            <button class="mod-tab" data-mod="activity_banner" onclick="selectModule('activity_banner')">
-              <div class="mod-tab-top">
-                <span class="mod-icon">🎬</span>
-                <span class="mod-badge" id="badge-activity_banner">Shared Video</span>
-              </div>
-              <div class="mod-title">Shared Activity Video</div>
-              <div class="mod-sub">Banner above Activities 1–4</div>
-            </button>
+            <button class="mod-tab" data-mod="activity_1_banner" onclick="selectModule('activity_1_banner')"><div class="mod-tab-top"><span class="mod-icon">🎬</span><span class="mod-badge" id="badge-activity_1_banner">Banner Video</span></div><div class="mod-title">Activity 1 Banner</div><div class="mod-sub">Above Activity 1 hero</div></button>
+            <button class="mod-tab" data-mod="activity_2_banner" onclick="selectModule('activity_2_banner')"><div class="mod-tab-top"><span class="mod-icon">🎬</span><span class="mod-badge" id="badge-activity_2_banner">Banner Video</span></div><div class="mod-title">Activity 2 Banner</div><div class="mod-sub">Above Activity 2 hero</div></button>
+            <button class="mod-tab" data-mod="activity_3_banner" onclick="selectModule('activity_3_banner')"><div class="mod-tab-top"><span class="mod-icon">🎬</span><span class="mod-badge" id="badge-activity_3_banner">Banner Video</span></div><div class="mod-title">Activity 3 Banner</div><div class="mod-sub">Above Activity 3 hero</div></button>
+            <button class="mod-tab" data-mod="activity_4_banner" onclick="selectModule('activity_4_banner')"><div class="mod-tab-top"><span class="mod-icon">🎬</span><span class="mod-badge" id="badge-activity_4_banner">Banner Video</span></div><div class="mod-title">Activity 4 Banner</div><div class="mod-sub">Above Activity 4 hero</div></button>
           </div>
         </div>
 
@@ -2376,15 +2379,10 @@
         pageUrl: 'phishing-week.html',
         pageName: 'Activity 4: The Executive Target'
       },
-      activity_banner: {
-        id: 'activity_banner',
-        name: 'Shared Activity Video',
-        title: 'Shared Activity Video Briefing',
-        desc: 'One video section displayed above the hero on Activities 1–4.',
-        icon: '🎬',
-        pageUrl: 'mfa-week.html',
-        pageName: 'Activities 1–4: Shared video banner'
-      }
+      activity_1_banner: { id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing', desc: 'Video displayed above the Activity 1 hero section.', icon: '🎬', pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner' },
+      activity_2_banner: { id: 'activity_2_banner', name: 'Activity 2 Banner Video', title: 'Activity 2 Video Briefing', desc: 'Video displayed above the Activity 2 hero section.', icon: '🎬', pageUrl: 'social-engineering-week.html', pageName: 'Activity 2: Hero video banner' },
+      activity_3_banner: { id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing', desc: 'Video displayed above the Activity 3 hero section.', icon: '🎬', pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner' },
+      activity_4_banner: { id: 'activity_4_banner', name: 'Activity 4 Banner Video', title: 'Activity 4 Video Briefing', desc: 'Video displayed above the Activity 4 hero section.', icon: '🎬', pageUrl: 'phishing-week.html', pageName: 'Activity 4: Hero video banner' }
     };
 
     const ACTIVITIES = [
@@ -2483,7 +2481,7 @@
       }
     }
 
-    // ── Module Selection (Index, Activities 1–4, Shared Activity Video) ──
+    // ── Module Selection (Index, Quiz Videos, Activity Banner Videos) ──
     function selectModule(modId) {
       currentModuleId = modId;
       const meta = MODULES_META[modId];
@@ -2516,8 +2514,9 @@
       if (subLabel) subLabel.textContent = `Manage video for ${meta.name} module`;
       const mcqPanel = document.querySelectorAll('.content-grid > .panel-card')[1];
       const contentGrid = document.querySelector('.content-grid');
-      if (mcqPanel) mcqPanel.style.display = modId === 'activity_banner' ? 'none' : '';
-      if (contentGrid) contentGrid.style.gridTemplateColumns = modId === 'activity_banner' ? '1fr' : '';
+      const isBannerVideo = modId.endsWith('_banner');
+      if (mcqPanel) mcqPanel.style.display = isBannerVideo ? 'none' : '';
+      if (contentGrid) contentGrid.style.gridTemplateColumns = isBannerVideo ? '1fr' : '';
 
       // Render Video Editor for this module
       renderVideoEditor(modId);
@@ -2531,7 +2530,7 @@
 
     function updateAllTabBadges() {
       Object.keys(MODULES_META).forEach(id => {
-        if (id === 'activity_banner') return;
+        if (id.endsWith('_banner')) return;
         const badge = document.getElementById(`badge-${id}`);
         if (badge) {
           const count = (moduleMcqsData[id] || []).length;
@@ -2612,7 +2611,9 @@
           moduleVideosData = data.moduleVideos;
           updateSidebarBadges();
         }
-        const sectionName = currentModuleId === 'index' ? 'Landing page video section' : `${MODULES_META[currentModuleId].name} video section`;
+        const sectionName = currentModuleId === 'index'
+          ? 'Landing page video section'
+          : `${MODULES_META[currentModuleId].name} section`;
         showToast(`${sectionName} is now ${isCurrentVideoVisible ? 'VISIBLE' : 'HIDDEN'} to visitors!`, 'success');
       } catch (err) {
         isCurrentVideoVisible = !isCurrentVideoVisible;
@@ -2664,22 +2665,23 @@
         if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether the video section appears on the home page, above Cybersecurity Statistics.';
         if (lblTitle) lblTitle.textContent = 'Landing Page Section Heading (Shown above video on home page)';
         if (lblDesc) lblDesc.textContent = 'Landing Page Section Subheading / Description';
-      } else if (modId === 'activity_banner') {
-        if (visibilityTitle) visibilityTitle.textContent = 'Shared Activity Video Visibility';
-        if (visibilityDesc) visibilityDesc.textContent = 'Show or hide this same video banner above the hero sections on Activities 1–4.';
-        if (lblTitle) lblTitle.textContent = 'Shared Video Heading (Shown above Activities 1–4)';
-        if (lblDesc) lblDesc.textContent = 'Shared Video Paragraph / Description';
+      } else if (modId.endsWith('_banner')) {
+        const activityName = MODULES_META[modId].name.replace(' Banner Video', '');
+        if (visibilityTitle) visibilityTitle.textContent = `${activityName} Banner Video Visibility`;
+        if (visibilityDesc) visibilityDesc.textContent = `Show or hide this video banner above the ${activityName} hero section.`;
+        if (lblTitle) lblTitle.textContent = `Video Heading (Shown above ${activityName})`;
+        if (lblDesc) lblDesc.textContent = 'Video Paragraph / Description';
       } else {
         if (visibilityTitle) visibilityTitle.textContent = 'Activity Video Section Visibility';
         if (visibilityDesc) visibilityDesc.textContent = 'Toggle whether this video section appears above the activity hero section.';
         if (lblTitle) lblTitle.textContent = 'Video Title';
         if (lblDesc) lblDesc.textContent = 'Video Description';
       }
-      const canToggleVisibility = modId === 'index' || modId === 'activity_banner';
+      const canToggleVisibility = modId === 'index' || modId.endsWith('_banner');
       const visibilityCard = document.getElementById('videoVisibilityCard');
       if (visibilityCard) visibilityCard.style.display = canToggleVisibility ? 'flex' : 'none';
-      if (hintTitle) hintTitle.style.display = modId === 'index' || modId === 'activity_banner' ? 'block' : 'none';
-      if (hintDesc) hintDesc.style.display = modId === 'index' || modId === 'activity_banner' ? 'block' : 'none';
+      if (hintTitle) hintTitle.style.display = canToggleVisibility ? 'block' : 'none';
+      if (hintDesc) hintDesc.style.display = canToggleVisibility ? 'block' : 'none';
       isCurrentVideoVisible = !(vid.enabled === false || vid.enabled === 'false' || vid.enabled === 0 || vid.enabled === '0');
       updateVideoVisibilityUI(isCurrentVideoVisible);
 
@@ -2774,7 +2776,7 @@
       }
 
       previewWrap.innerHTML = `
-          <video controls preload="metadata" playsinline poster="${poster}">
+          <video controls preload="none" playsinline poster="${poster}">
             <source src="${rawUrl}" type="video/mp4">
             Your browser does not support HTML5 video preview.
           </video>
