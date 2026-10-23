@@ -1237,6 +1237,15 @@
                 localStorage.setItem('ogdcl_desig', desig);
             } catch (e) {}
 
+            // If admin added more than 5 questions, select any 5 questions for this user
+            const poolSource = (Array.isArray(window.allModuleMcqsPool) && window.allModuleMcqsPool.length > 5)
+                ? window.allModuleMcqsPool
+                : (quizQuestions.length > 5 ? [...quizQuestions] : null);
+            if (poolSource) {
+                const sampled = [...poolSource].sort(() => 0.5 - Math.random()).slice(0, 5);
+                quizQuestions.splice(0, quizQuestions.length, ...sampled);
+            }
+
             currentQuizIndex = 0;
             totalQuestions = 0;
             correctAnswers = 0;
@@ -1315,10 +1324,15 @@
         ];
         let quizQuestions = window.quizQuestions;
 
-        window.applyDynamicQuizQuestions = function(newMcqs) {
+        window.applyDynamicQuizQuestions = function(newMcqs, fullPool) {
             if (Array.isArray(newMcqs) && newMcqs.length > 0) {
-                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
-                if (typeof renderCurrentIndexQuestion === 'function') {
+                if (Array.isArray(fullPool)) window.allModuleMcqsPool = fullPool;
+                // If more than 5 questions, pick any 5 questions
+                const pool = newMcqs.length > 5
+                    ? [...newMcqs].sort(() => 0.5 - Math.random()).slice(0, 5)
+                    : newMcqs;
+                quizQuestions.splice(0, quizQuestions.length, ...pool);
+                if (typeof renderCurrentIndexQuestion === 'function' && currentQuizIndex === 0) {
                     renderCurrentIndexQuestion();
                 }
             }
