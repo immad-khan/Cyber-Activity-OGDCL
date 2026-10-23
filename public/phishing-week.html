@@ -835,7 +835,8 @@
 
         window.applyDynamicQuizQuestions = function(newMcqs) {
             if (Array.isArray(newMcqs) && newMcqs.length > 0) {
-                quizQuestions.splice(0, quizQuestions.length, ...newMcqs);
+                const pool = newMcqs.length > 5 ? [...newMcqs].sort(() => 0.5 - Math.random()).slice(0, 5) : newMcqs;
+                quizQuestions.splice(0, quizQuestions.length, ...pool);
             }
         };
 
