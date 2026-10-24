@@ -1,6 +1,7 @@
 @echo off
 title CyberShield - Database Provisioning
 color 0B
+cd /d "%~dp0"
 echo ========================================================
 echo   CYBERSHIELD LOCAL DATABASE SETUP
 echo ========================================================
