@@ -1,6 +1,7 @@
 @echo off
 title CyberShield Awareness Platform Server
 color 0A
+cd /d "%~dp0"
 echo ========================================================
 echo   CYBERSHIELD LOCAL SERVER LAUNCHER
 echo ========================================================
