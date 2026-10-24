@@ -6,8 +6,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pkg from 'pg';
 import { pool } from './api/db.js';
 
+const { Client } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -15,8 +17,37 @@ console.log('============================================================');
 console.log('🛡️ CyberShield Local Database Setup Tool');
 console.log('============================================================\n');
 
+async function ensureDatabaseExists() {
+  try {
+    const connStr = process.env.DATABASE_URL || 'postgresql://postgres:azeema01@localhost:5432/cybershield';
+    const parsed = new URL(connStr);
+    const targetDb = (parsed.pathname || '').replace(/^\//, '') || 'cybershield';
+
+    // Connect to standard maintenance database 'postgres'
+    const maintUrl = new URL(connStr);
+    maintUrl.pathname = '/postgres';
+
+    const client = new Client({
+      connectionString: maintUrl.toString(),
+      ssl: maintUrl.hostname === 'localhost' || maintUrl.hostname === '127.0.0.1' ? false : { rejectUnauthorized: false }
+    });
+
+    await client.connect();
+    const checkRes = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [targetDb]);
+    if (checkRes.rowCount === 0) {
+      console.log(`⏳ Database "${targetDb}" does not exist. Auto-creating database "${targetDb}"...`);
+      await client.query(`CREATE DATABASE "${targetDb}"`);
+      console.log(`✅ Database "${targetDb}" created successfully!\n`);
+    }
+    await client.end();
+  } catch (err) {
+    // If permission or already exists, continue to main setup
+  }
+}
+
 async function runSetup() {
   try {
+    await ensureDatabaseExists();
     console.log('⏳ Connecting to database...');
     const connCheck = await pool.query('SELECT current_database(), current_user, version()');
     const { current_database, current_user, version } = connCheck.rows[0];
