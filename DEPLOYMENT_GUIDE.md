@@ -137,18 +137,20 @@ To let other computers on your corporate network access the website:
 
 ---
 
-## Part 7: Keep Server Running 24/7 (Windows Service)
+## Part 7: Keep Server Running 24/7 (NSSM Windows Service)
 
-To make sure the website stays running even if you log out of Windows or the server reboots:
+Because NSSM (Non-Sucking Service Manager) is installed on your server, you can run CyberShield as a true, enterprise-grade Windows Service (`services.msc`):
 
-1. Right-click on **`install-windows-service.bat`** and choose **"Run as Administrator"**.
-2. Or run manually via PM2:
-   ```cmd
-   npm install -g pm2 pm2-windows-startup
-   pm2-startup install
-   pm2 start server.js --name "cybershield"
-   pm2 save
-   ```
+1. **One-Click Installation**:
+   - Right-click on **[`install-windows-service.bat`](file:///d:/Desktop/website1-main/website1-main/install-windows-service.bat)** and choose **"Run as Administrator"**.
+   - The script automatically locates `nssm.exe` and `node.exe`, registers a Windows Service named **`CyberShield`**, enables automatic recovery/restart upon crashes, sets up log rotation (`service-out.log`), and starts the service immediately.
+
+2. **Managing the Service**:
+   - **View in Windows**: Open `services.msc` (look for **CyberShield Platform Service**).
+   - **Start Service**: `nssm start CyberShield`
+   - **Stop Service**: `nssm stop CyberShield` (or double-click `stop-server.bat`)
+   - **Restart Service**: `nssm restart CyberShield`
+   - **Uninstall Service**: Right-click **[`uninstall-windows-service.bat`](file:///d:/Desktop/website1-main/website1-main/uninstall-windows-service.bat)** ➔ Run as Administrator.
 
 ---
 
