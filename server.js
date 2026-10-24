@@ -16,6 +16,7 @@ import adminSettingsHandler from './api/admin-settings.js';
 import uploadVideoHandler from './api/upload-video.js';
 import listVideosHandler from './api/list-videos.js';
 import deleteVideoHandler from './api/delete-video.js';
+import deleteUserHandler from './api/delete-user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,6 +72,7 @@ app.all('/api/admin-settings', wrapHandler(adminSettingsHandler));
 app.all('/api/upload-video', wrapHandler(uploadVideoHandler));
 app.all('/api/list-videos', wrapHandler(listVideosHandler));
 app.all('/api/delete-video', wrapHandler(deleteVideoHandler));
+app.all('/api/delete-user', wrapHandler(deleteUserHandler));
 
 // Health check endpoint for load balancers / monitoring
 app.get('/health', (req, res) => {
