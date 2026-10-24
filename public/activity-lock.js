@@ -401,20 +401,37 @@
     // ── Dynamic MCQs Sync ──
     let lastLoadedMcqHash = null;
 
+    function sampleQuizQuestions(pool, maxCount = 5) {
+        if (!Array.isArray(pool) || pool.length <= maxCount) return pool ? pool.slice() : [];
+        const copy = [...pool];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy.slice(0, maxCount);
+    }
+
     function syncDynamicMcqs(mcqs) {
         if (!Array.isArray(mcqs) || mcqs.length === 0) return;
+        
+        // Expose full pool globally for quiz session resets / restarts
+        window.allModuleMcqsPool = mcqs;
+
         const hash = JSON.stringify(mcqs);
         if (hash === lastLoadedMcqHash) return;
         lastLoadedMcqHash = hash;
 
+        // If admin added more than 5 questions, select any 5 questions for users
+        const activeQuestions = sampleQuizQuestions(mcqs, 5);
+
         // 1. If page has dedicated updater
         if (typeof window.applyDynamicQuizQuestions === 'function') {
-            window.applyDynamicQuizQuestions(mcqs);
+            window.applyDynamicQuizQuestions(activeQuestions, mcqs);
         }
 
         // 2. If window.quizQuestions exists
         if (Array.isArray(window.quizQuestions)) {
-            window.quizQuestions.splice(0, window.quizQuestions.length, ...mcqs);
+            window.quizQuestions.splice(0, window.quizQuestions.length, ...activeQuestions);
         }
     }
 
