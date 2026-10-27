@@ -9,6 +9,8 @@
     <script src="cert-assets.js?v=3" defer></script>
     <script src="certificate.js?v=4" defer></script>
     <script src="activity-lock.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="google-auth.js" defer></script>
 
     <style>
         * {
@@ -1100,10 +1102,8 @@
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
-                            <input type="text" id="userNameStart" placeholder="Full Name *" required />
-                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
-                            <input type="text" id="userDepartmentStart" placeholder="Department *" required />
-                            <input type="text" id="userDesignationStart" placeholder="Designation *" required />
+                    <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                    <input type="email" id="userEmailStart" placeholder="Email Address *" autocomplete="email" required />
                         </div>
                         <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
@@ -1111,10 +1111,7 @@
                     <div id="quiz-content" style="display: none;">
                         <div class="user-name-display">
                             <p>
-                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Emp ID:</strong> <span id="displayUserEmpId" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Dept:</strong> <span id="displayUserDept" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Designation:</strong> <span id="displayUserDesig" style="color: #00ffff;"></span>
+                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span>
                             </p>
                         </div>
                         <p id="quiz-question"></p>
@@ -1150,6 +1147,7 @@
         let totalQuestions = 0;
         let securityLevelAchieved = 'Beginner';
         let currentUserName = '';
+        let currentUserEmail = '';
         let currentEmployeeId = '';
         let currentDepartment = '';
         let currentDesignation = '';
@@ -1170,21 +1168,25 @@
         function loadStoredUserData() {
             try {
                 const n = localStorage.getItem('ogdcl_user_name') || '';
+                const email = localStorage.getItem('ogdcl_user_email') || '';
                 const e = localStorage.getItem('ogdcl_emp_id') || '';
                 const d = localStorage.getItem('ogdcl_dept') || '';
                 const des = localStorage.getItem('ogdcl_desig') || '';
 
                 if (n) { currentUserName = n; }
+                if (email) { currentUserEmail = email; }
                 if (e) { currentEmployeeId = e; }
                 if (d) { currentDepartment = d; }
                 if (des) { currentDesignation = des; }
 
                 const elName = document.getElementById('userNameStart');
+                const elEmail = document.getElementById('userEmailStart');
                 const elEmp = document.getElementById('userEmpIdStart');
                 const elDept = document.getElementById('userDepartmentStart');
                 const elDes = document.getElementById('userDesignationStart');
 
                 if (elName && n) elName.value = n;
+                if (elEmail && email) elEmail.value = email;
                 if (elEmp && e) elEmp.value = e;
                 if (elDept && d) elDept.value = d;
                 if (elDes && des) elDes.value = des;
@@ -1194,47 +1196,35 @@
         }
 
         function startQuiz() {
-            const nameInput = document.getElementById('userNameStart');
-            const empIdInput = document.getElementById('userEmpIdStart');
-            const deptInput = document.getElementById('userDepartmentStart');
-            const desigInput = document.getElementById('userDesignationStart');
+            const googleUser = (typeof window.getVerifiedGoogleUser === 'function') ? window.getVerifiedGoogleUser() : null;
+            if (!googleUser || !googleUser.email) {
+                showNotification('⚠️ Please sign in with your Google account above to verify your identity before starting the quiz.', 'warning');
+                const authWrapper = document.getElementById('googleAuthWrapper');
+                if (authWrapper) authWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
 
-            const userName = nameInput ? nameInput.value.trim() : '';
-            const empId = empIdInput ? empIdInput.value.trim() : '';
-            const dept = deptInput ? deptInput.value.trim() : '';
-            const desig = desigInput ? desigInput.value.trim() : '';
+            const nameInput = document.getElementById('userNameStart');
+            const emailInput = document.getElementById('userEmailStart');
+            const userName = googleUser.name || (nameInput ? nameInput.value.trim() : '');
+            const userEmail = googleUser.email || (emailInput ? emailInput.value.trim().toLowerCase() : '');
 
             if (!userName || userName.length < 2) {
                 showNotification('Please enter your full name!', 'warning');
                 nameInput?.focus();
                 return;
             }
-            if (!empId) {
-                showNotification('Please enter your Employee ID!', 'warning');
-                empIdInput?.focus();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+                showNotification('Please enter a valid email address!', 'warning');
+                emailInput?.focus();
                 return;
             }
-            if (!dept) {
-                showNotification('Please enter your Department!', 'warning');
-                deptInput?.focus();
-                return;
-            }
-            if (!desig) {
-                showNotification('Please enter your Designation!', 'warning');
-                desigInput?.focus();
-                return;
-            }
-
             currentUserName = userName;
-            currentEmployeeId = empId;
-            currentDepartment = dept;
-            currentDesignation = desig;
+            currentUserEmail = userEmail;
 
             try {
                 localStorage.setItem('ogdcl_user_name', userName);
-                localStorage.setItem('ogdcl_emp_id', empId);
-                localStorage.setItem('ogdcl_dept', dept);
-                localStorage.setItem('ogdcl_desig', desig);
+                localStorage.setItem('ogdcl_user_email', userEmail);
             } catch (e) {}
 
             // If admin added more than 5 questions, select any 5 questions for this user
@@ -1256,17 +1246,10 @@
             if (quizContent) quizContent.style.display = 'block';
 
             const dName = document.getElementById('displayUserName');
-            const dEmp = document.getElementById('displayUserEmpId');
-            const dDept = document.getElementById('displayUserDept');
-            const dDes = document.getElementById('displayUserDesig');
-
             if (dName) dName.textContent = userName;
-            if (dEmp) dEmp.textContent = empId;
-            if (dDept) dDept.textContent = dept;
-            if (dDes) dDes.textContent = desig;
 
             renderCurrentIndexQuestion();
-            showNotification(`Welcome ${userName} (${empId})! Quiz started.`, 'success');
+            showNotification(`Welcome ${userName}! Quiz started.`, 'success');
         }
 
         const SCORING = {
@@ -1685,9 +1668,14 @@
             try {
                 const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
                 const name = (override.userName || (nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
+                const email = (override.email || currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
 
                 if (!name) {
                     console.log('Skipping save: no username provided yet');
+                    return null;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    console.log('Skipping save: no valid email provided yet');
                     return null;
                 }
 
@@ -1700,12 +1688,14 @@
                 const desig = (override.designation || (desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
 
                 currentUserName = name;
+                currentUserEmail = email;
                 currentEmployeeId = empId;
                 currentDepartment = dept;
                 currentDesignation = desig;
 
                 try {
                     localStorage.setItem('ogdcl_user_name', name);
+                    localStorage.setItem('ogdcl_user_email', email);
                     localStorage.setItem('ogdcl_emp_id', empId);
                     localStorage.setItem('ogdcl_dept', dept);
                     localStorage.setItem('ogdcl_desig', desig);
@@ -1718,6 +1708,7 @@
 
                 const payload = {
                     userName: name,
+                    email: email,
                     employeeId: empId,
                     department: dept,
                     designation: desig,
@@ -1741,6 +1732,7 @@
 
                 const data = await response.json();
                 if (response.ok && data.success) {
+                    if (data.data?.certificateId) localStorage.setItem('ogdcl_certificate_id', data.data.certificateId);
                     console.log('Quiz data saved to admin dashboard:', data);
                     showNotification('✅ Quiz results saved to Admin Portal!', 'success');
                     return data;
@@ -1788,12 +1780,6 @@
                                style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.15rem; text-align: center; margin-bottom: 15px; width: 100%; max-width: 360px;" />
                         <br>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                            <input type="text" id="userEmpId" placeholder="Employee ID (optional)" value="${escHtml(displayEmpId)}"
-                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
-                            <input type="text" id="userDepartment" placeholder="Department (optional)" value="${escHtml(displayDept)}"
-                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
-                            <input type="text" id="userDesignation" placeholder="Designation (optional)" value="${escHtml(displayDesig)}"
-                                   style="padding: 10px 16px; border: 1px solid rgba(0,255,255,0.4); border-radius: 15px; background: rgba(0,255,255,0.06); color: white; font-size: 0.95rem; text-align: center; max-width: 170px;" />
                         </div>
                         <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
                             <button id="genCertBtn" onclick="generateCertificate()" 
@@ -1813,10 +1799,15 @@
         async function generateCertificate() {
             const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
             const enteredName = ((nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
+            const enteredEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
 
             if (!enteredName || enteredName.length < 2) {
                 showNotification('Please enter your name for certificate!', 'warning');
                 nameInput?.focus();
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enteredEmail)) {
+                showNotification('Please enter a valid email address!', 'warning');
                 return;
             }
 
@@ -1830,12 +1821,14 @@
             const enteredDesig = ((desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
 
             currentUserName = enteredName;
+            currentUserEmail = enteredEmail;
             currentEmployeeId = enteredEmpId;
             currentDepartment = enteredDept;
             currentDesignation = enteredDesig;
 
             try {
                 localStorage.setItem('ogdcl_user_name', enteredName);
+                localStorage.setItem('ogdcl_user_email', enteredEmail);
                 localStorage.setItem('ogdcl_emp_id', enteredEmpId);
                 localStorage.setItem('ogdcl_dept', enteredDept);
                 localStorage.setItem('ogdcl_desig', enteredDesig);
@@ -1852,6 +1845,7 @@
             // 1. SAVE TO DATABASE (SENDS DATA TO ADMIN DASHBOARD)
             await saveToDatabase({
                 userName: enteredName,
+                email: enteredEmail,
                 employeeId: enteredEmpId,
                 department: enteredDept,
                 designation: enteredDesig
@@ -1866,6 +1860,7 @@
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: enteredName,
+                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
                         employeeId: enteredEmpId,
                         department: enteredDept,
                         designation: enteredDesig,
@@ -1908,9 +1903,7 @@
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
                             <input type="text" id="userNameStart" placeholder="Full Name *" required />
-                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
-                            <input type="text" id="userDepartmentStart" placeholder="Department *" required />
-                            <input type="text" id="userDesignationStart" placeholder="Designation *" required />
+                            <input type="email" id="userEmailStart" placeholder="Email Address *" autocomplete="email" required />
                         </div>
                         <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
@@ -1918,10 +1911,7 @@
                     <div id="quiz-content" style="display: none;">
                         <div class="user-name-display">
                             <p>
-                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Emp ID:</strong> <span id="displayUserEmpId" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Dept:</strong> <span id="displayUserDept" style="color: #00ffff;"></span> &nbsp;|&nbsp;
-                                <strong>Designation:</strong> <span id="displayUserDesig" style="color: #00ffff;"></span>
+                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span>
                             </p>
                         </div>
                         <p id="quiz-question"></p>
@@ -1931,6 +1921,9 @@
                 `;
 
                 loadStoredUserData();
+                if (typeof renderGoogleAuthUI === 'function') {
+                    renderGoogleAuthUI();
+                }
                 showNotification('Quiz reset! Ready for a fresh start.', 'info');
             }
         }
