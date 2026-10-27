@@ -47,15 +47,15 @@
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
     const userName = (opts.userName || 'Participant').trim();
-    const employeeId = (opts.employeeId || '').trim();
-    const department = (opts.department || '').trim();
-    const designation = (opts.designation || '').trim();
     const score = opts.score || 0;
     const accuracy = opts.accuracy || 100;
     const level = opts.level || 'Guardian';
     const title = opts.title || 'Cybersecurity Awareness & Digital Safety Assessment';
     const currentDate = opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const refNumber = opts.refNumber || `No. CyberSecurity-2026/${Math.floor(100 + Math.random() * 900)}`;
+    const fallbackId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+      ? window.crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()
+      : `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    const refNumber = opts.refNumber || `OGDCL-${new Date().getFullYear()}-${fallbackId}`;
 
     const W = 297, H = 210, CX = W / 2;
     const assets = window.CERT_ASSETS || {};
@@ -115,39 +115,17 @@
     font('times', 'italic', 12, C.slate);
     text('Awards this certificate of completion to', CX, baseline(50, 12), 'center');
 
-    // Name + Employee ID (bold), shrinks to fit
-    const idText = employeeId ? `ID: ${employeeId}` : '';
-    const gap = 10.5; // 5mm + 0.5mm bar + 5mm
+    // Name (bold), shrinks to fit
     const measureName = (pt) => {
       doc.setFont('times', 'bold'); doc.setFontSize(pt);
-      return doc.getTextWidth(userName) + (idText ? gap + doc.getTextWidth(idText) : 0);
+      return doc.getTextWidth(userName);
     };
     let namePt = 24;
     while (namePt > 9 && measureName(namePt) > 235) namePt -= 0.5;
 
     const nameBase = baseline(59, namePt);
     font('times', 'bold', namePt, C.ink);
-    if (idText) {
-      const wName = doc.getTextWidth(userName);
-      const x0 = CX - measureName(namePt) / 2;
-      doc.text(userName, x0, nameBase);
-      const em = namePt * PT;
-      doc.setFillColor(...C.teal);
-      doc.rect(x0 + wName + 5, nameBase - 0.75 * em, 0.5, 0.8 * em, 'F');
-      doc.text(idText, x0 + wName + gap, nameBase);
-    } else {
-      doc.text(userName, CX, nameBase, { align: 'center' });
-    }
-
-    // Designation • Department (smaller, lighter), shrinks to fit
-    const subText = [designation, department].filter(Boolean).join('   \u2022   ');
-    if (subText) {
-      let subPt = 10.5;
-      const measureSub = (pt) => { doc.setFont('helvetica', 'normal'); doc.setFontSize(pt); return width(subText, 0.02 * pt * PT); };
-      while (subPt > 7 && measureSub(subPt) > 235) subPt -= 0.5;
-      font('helvetica', 'normal', subPt, C.muted);
-      text(subText, CX, baseline(72, subPt), 'center', 0.02 * subPt * PT);
-    }
+    doc.text(userName, CX, nameBase, { align: 'center' });
 
     font('times', 'italic', 12, C.slate);
     text('for successfully completing the', CX, baseline(85, 12), 'center');
@@ -199,7 +177,7 @@
     // ── 5. Reference (left) and Signature (right) ──
     line(33, 163.15, 77, 163.15, C.faint, 0.3);
     font('helvetica', 'bold', 9.5, C.ink);
-    text('Reference No.', 55, 168, 'center');
+    text('Certificate ID', 55, 168, 'center');
     font('helvetica', 'normal', 8.5, C.muted);
     text(refNumber, 55, 172.3, 'center');
 
