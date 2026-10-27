@@ -17,8 +17,10 @@
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=3" defer></script>
-    <script src="certificate.js?v=4" defer></script>
+    <script src="certificate.js?v=5" defer></script>
     <script src="activity-lock.js?v=activity-banner-2" defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="google-auth.js" defer></script>
     
     <style>
         * {
@@ -706,9 +708,7 @@
                 <p>Enter your details to begin the assessment.</p>
                 <div class="name-input-grid">
                     <input type="text" id="userNameStart" placeholder="Full Name *" required />
-                    <input type="text" id="userEmpIdStart" placeholder="Employee ID *" required />
-                    <input type="text" id="userDepartmentStart" placeholder="Department *" required />
-                    <input type="text" id="userDesignationStart" placeholder="Designation *" required />
+                    <input type="email" id="userEmailStart" placeholder="Email Address *" autocomplete="email" required />
                 </div>
                 <button onclick="startQuiz()" class="start-button">Start Quiz</button>
             </div>
@@ -716,10 +716,7 @@
             <div id="quiz-content" style="display: none;">
                 <div class="user-name-display">
                     <p>
-                        <strong>Name:</strong> <span id="displayUserName"></span> &nbsp;|&nbsp;
-                        <strong>Emp ID:</strong> <span id="displayUserEmpId"></span> &nbsp;|&nbsp;
-                        <strong>Dept:</strong> <span id="displayUserDept"></span> &nbsp;|&nbsp;
-                        <strong>Designation:</strong> <span id="displayUserDesig"></span>
+                        <strong>Name:</strong> <span id="displayUserName"></span>
                     </p>
                 </div>
                 <p id="quiz-question"></p>
@@ -840,6 +837,7 @@
         let currentQuizIndex = 0;
         let securityLevelAchieved = 'Beginner';
         let currentUserName = '';
+        let currentUserEmail = '';
         let currentEmployeeId = '';
         let currentDepartment = '';
         let currentDesignation = '';
@@ -865,47 +863,35 @@
 
         // Start Quiz Function
         function startQuiz() {
-            const nameInput = document.getElementById('userNameStart');
-            const empIdInput = document.getElementById('userEmpIdStart');
-            const deptInput = document.getElementById('userDepartmentStart');
-            const desigInput = document.getElementById('userDesignationStart');
+            const googleUser = (typeof window.getVerifiedGoogleUser === 'function') ? window.getVerifiedGoogleUser() : null;
+            if (!googleUser || !googleUser.email) {
+                showNotification('⚠️ Please sign in with your Google account above to verify your identity before starting the quiz.', 'warning');
+                const authWrapper = document.getElementById('googleAuthWrapper');
+                if (authWrapper) authWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
 
-            const userName = nameInput ? nameInput.value.trim() : '';
-            const empId = empIdInput ? empIdInput.value.trim() : '';
-            const dept = deptInput ? deptInput.value.trim() : '';
-            const desig = desigInput ? desigInput.value.trim() : '';
+            const nameInput = document.getElementById('userNameStart');
+            const emailInput = document.getElementById('userEmailStart');
+            const userName = googleUser.name || (nameInput ? nameInput.value.trim() : '');
+            const userEmail = googleUser.email || (emailInput ? emailInput.value.trim().toLowerCase() : '');
             
             if (!userName || userName.length < 2) {
                 showNotification('Please enter a valid full name!', 'warning');
                 nameInput?.focus();
                 return;
             }
-            if (!empId) {
-                showNotification('Please enter your Employee ID!', 'warning');
-                empIdInput?.focus();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+                showNotification('Please enter a valid email address!', 'warning');
+                emailInput?.focus();
                 return;
             }
-            if (!dept) {
-                showNotification('Please enter your Department!', 'warning');
-                deptInput?.focus();
-                return;
-            }
-            if (!desig) {
-                showNotification('Please enter your Designation!', 'warning');
-                desigInput?.focus();
-                return;
-            }
-            
             currentUserName = userName;
-            currentEmployeeId = empId;
-            currentDepartment = dept;
-            currentDesignation = desig;
+            currentUserEmail = userEmail;
 
             try {
                 localStorage.setItem('ogdcl_user_name', userName);
-                localStorage.setItem('ogdcl_emp_id', empId);
-                localStorage.setItem('ogdcl_dept', dept);
-                localStorage.setItem('ogdcl_desig', desig);
+                localStorage.setItem('ogdcl_user_email', userEmail);
             } catch (e) {}
 
             currentQuizIndex = 0;
@@ -915,12 +901,9 @@
             document.getElementById('name-input-section').style.display = 'none';
             document.getElementById('quiz-content').style.display = 'block';
             document.getElementById('displayUserName').textContent = userName;
-            if (document.getElementById('displayUserEmpId')) document.getElementById('displayUserEmpId').textContent = empId;
-            if (document.getElementById('displayUserDept')) document.getElementById('displayUserDept').textContent = dept;
-            if (document.getElementById('displayUserDesig')) document.getElementById('displayUserDesig').textContent = desig;
             
             showNewQuizQuestion();
-            showNotification(`Welcome ${userName} (${empId})! Each question is worth 20 marks!`, 'success');
+            showNotification(`Welcome ${userName}! Each question is worth 20 marks!`, 'success');
             
             // Track quiz start in Google Analytics
             if (typeof gtag !== 'undefined') {
@@ -939,9 +922,7 @@
                 
                 const payload = {
                     userName: currentUserName,
-                    employeeId: currentEmployeeId,
-                    department: currentDepartment,
-                    designation: currentDesignation,
+                    email: currentUserEmail,
                     score: userScore,
                     level: securityLevelAchieved,
                     accuracy,
@@ -963,6 +944,7 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
+                    if (data.data?.certificateId) localStorage.setItem('ogdcl_certificate_id', data.data.certificateId);
                     console.log('Data saved:', data);
                     showNotification('Your progress has been saved to database!', 'success');
                     
@@ -1019,11 +1001,13 @@
             updateProgressBar();
 
             const savedName = localStorage.getItem('ogdcl_user_name');
+            const savedEmail = localStorage.getItem('ogdcl_user_email');
             const savedEmpId = localStorage.getItem('ogdcl_emp_id');
             const savedDept = localStorage.getItem('ogdcl_dept');
             const savedDesig = localStorage.getItem('ogdcl_desig');
 
             if (savedName && document.getElementById('userNameStart')) document.getElementById('userNameStart').value = savedName;
+            if (savedEmail && document.getElementById('userEmailStart')) document.getElementById('userEmailStart').value = savedEmail;
             if (savedEmpId && document.getElementById('userEmpIdStart')) document.getElementById('userEmpIdStart').value = savedEmpId;
             if (savedDept && document.getElementById('userDepartmentStart')) document.getElementById('userDepartmentStart').value = savedDept;
             if (savedDesig && document.getElementById('userDesignationStart')) document.getElementById('userDesignationStart').value = savedDesig;
@@ -1424,13 +1408,21 @@
         // Generate Certificate
         async function generateCertificate() {
             const userName = currentUserName || localStorage.getItem('ogdcl_user_name');
-            const empId = currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || '';
-            const dept = currentDepartment || localStorage.getItem('ogdcl_dept') || '';
-            const desig = currentDesignation || localStorage.getItem('ogdcl_desig') || '';
+            const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
+            const activityName = 'Activity 1: Password Protection';
 
             if (!userName) {
                 showNotification('Error: No user name found. Please enter your name.', 'error');
                 return;
+            }
+
+            if (typeof window.checkCertificateClaimed === 'function') {
+                const claimed = await window.checkCertificateClaimed(userEmail, activityName);
+                if (claimed) {
+                    showNotification('⚠️ Certificate already generated! You cannot generate it again.', 'warning');
+                    alert('⚠️ Certificate Already Generated!\n\nYou have already generated your official certificate for this activity.\nEven after retaking the quiz, a certificate can only be generated once.');
+                    return;
+                }
             }
 
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
@@ -1440,17 +1432,21 @@
             showNotification('Generating PDF certificate...', 'info');
 
             try {
-                window.downloadOGDCLCertificate({
-                    userName: userName,
-                    employeeId: empId,
-                    department: dept,
-                    designation: desig,
-                    score: userScore,
-                    accuracy: accuracy,
-                    level: currentLevel.name,
-                    activity: 'Activity 1: Password Protection & Multi-Factor Authentication',
-                    date: currentDate
-                });
+                if (typeof window.downloadOGDCLCertificate === 'function') {
+                    window.downloadOGDCLCertificate({
+                        userName: userName,
+                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
+                        score: userScore,
+                        accuracy: accuracy,
+                        level: currentLevel.name,
+                        activity: activityName,
+                        date: currentDate
+                    });
+                }
+
+                if (typeof window.markCertificateClaimed === 'function') {
+                    window.markCertificateClaimed(userEmail, activityName);
+                }
 
                 showNotification(`Certificate generated for ${userName}!`, 'success');
 
@@ -1499,9 +1495,7 @@
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
                             <input type="text" id="userNameStart" placeholder="Full Name *" value="${currentUserName || ''}" required />
-                            <input type="text" id="userEmpIdStart" placeholder="Employee ID *" value="${currentEmployeeId || ''}" required />
-                            <input type="text" id="userDepartmentStart" placeholder="Department *" value="${currentDepartment || ''}" required />
-                            <input type="text" id="userDesignationStart" placeholder="Designation *" value="${currentDesignation || ''}" required />
+                            <input type="email" id="userEmailStart" placeholder="Email Address *" value="${currentUserEmail || ''}" autocomplete="email" required />
                         </div>
                         <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                     </div>
@@ -1509,10 +1503,7 @@
                     <div id="quiz-content" style="display: none;">
                         <div class="user-name-display">
                             <p>
-                                <strong>Name:</strong> <span id="displayUserName"></span> &nbsp;|&nbsp;
-                                <strong>Emp ID:</strong> <span id="displayUserEmpId"></span> &nbsp;|&nbsp;
-                                <strong>Dept:</strong> <span id="displayUserDept"></span> &nbsp;|&nbsp;
-                                <strong>Designation:</strong> <span id="displayUserDesig"></span>
+                                <strong>Name:</strong> <span id="displayUserName"></span>
                             </p>
                         </div>
                         <p id="quiz-question"></p>
