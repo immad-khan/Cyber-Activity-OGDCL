@@ -63,6 +63,8 @@ async function runSetup() {
       CREATE TABLE IF NOT EXISTS public.users (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         "userName" TEXT NOT NULL,
+        email TEXT,
+        "certificateId" TEXT,
         "employeeId" TEXT,
         department TEXT,
         designation TEXT,
@@ -81,16 +83,23 @@ async function runSetup() {
 
       -- Ensure new columns exist even if table was previously created
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "employeeId" TEXT;
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS email TEXT;
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "certificateId" TEXT;
+      UPDATE public.users
+      SET "certificateId" = 'OGDCL-LEGACY-' || id::TEXT
+      WHERE "certificateId" IS NULL;
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS department TEXT;
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS designation TEXT;
     `);
-    console.log('   ✅ Table "public.users" created/verified with Employee ID, Department & Designation.');
+    console.log('   ✅ Table "public.users" created/verified with Google Authentication (Name & Email).');
 
     // 2. Indexes
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_users_score ON public.users (score DESC);
       CREATE INDEX IF NOT EXISTS idx_users_createdat ON public.users ("createdAt" DESC);
       CREATE INDEX IF NOT EXISTS idx_users_empid ON public.users ("employeeId");
+      CREATE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_users_certificate_id ON public.users ("certificateId") WHERE "certificateId" IS NOT NULL;
     `);
     console.log('   ✅ Indexes "idx_users_score", "idx_users_createdat", and "idx_users_empid" ready.');
 
