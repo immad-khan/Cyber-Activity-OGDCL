@@ -7,7 +7,7 @@
     <title>Cybersecurity Shield - Awareness & Digital Safety</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=3" defer></script>
-    <script src="certificate.js?v=4" defer></script>
+    <script src="certificate.js?v=5" defer></script>
     <script src="activity-lock.js" defer></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="google-auth.js" defer></script>
@@ -1693,7 +1693,8 @@
                     quizMarks: quizMarks,
                     correctAnswers: correctAnswers || (totalQuestions || 5),
                     totalQuestions: totalQuestions || 5,
-                    activity: 'Index: Cybersecurity Awareness Overview'
+                    activity: 'Index: Cybersecurity Awareness Overview',
+                    generateCertificate: Boolean(override.generateCertificate)
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -1703,15 +1704,18 @@
                 });
 
                 const data = await response.json();
+                if (data && data.alreadyGenerated) {
+                    return data;
+                }
                 if (response.ok && data.success) {
                     if (data.data?.certificateId) localStorage.setItem('ogdcl_certificate_id', data.data.certificateId);
                     console.log('Quiz data saved to admin dashboard:', data);
-                    showNotification('✅ Quiz results saved to Admin Portal!', 'success');
+                    showNotification('✅ Quiz results recorded!', 'success');
                     return data;
                 } else {
                     console.error('Error saving quiz results:', data);
-                    showNotification('Could not save to database', 'warning');
-                    return null;
+                    showNotification(data?.message || 'Could not save to database', 'warning');
+                    return data || null;
                 }
             } catch (error) {
                 console.error('Network error saving to database:', error);
@@ -1720,15 +1724,22 @@
             }
         }
 
-        function showQuizCompletion() {
+        async function showQuizCompletion() {
             const quizContainer = document.querySelector('.security-quiz');
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
             const currentLevel = getCurrentSecurityLevel();
             const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || '';
+            const email = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
+            const activityName = 'Index: Cybersecurity Awareness Overview';
 
             if (displayName) {
-                saveToDatabase();
+                saveToDatabase({ generateCertificate: false });
             }
+
+            // Check if certificate has already been generated
+            const alreadyGenerated = (typeof window.checkCertificateClaimed === 'function')
+                ? await window.checkCertificateClaimed(email, activityName)
+                : false;
 
             quizContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px 20px;">
@@ -1745,13 +1756,23 @@
                     </div>
 
                     <div style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                        <input type="text" id="userName" placeholder="Enter your full name for certificate *" value="${escHtml(displayName)}" readonly
+                        <input type="text" id="userName" placeholder="Full name for certificate" value="${escHtml(displayName)}" readonly
                                style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.15rem; text-align: center; margin-bottom: 15px; width: 100%; max-width: 360px;" />
                         <br>
+
+                        ${alreadyGenerated ? `
+                            <div id="alreadyGeneratedNotice" style="background: rgba(255, 152, 0, 0.15); border: 1.5px solid #ff9800; border-radius: 12px; padding: 12px 18px; margin: 10px auto 20px; max-width: 480px; color: #ffb74d; font-weight: 600; font-size: 0.95rem;">
+                                ⚠️ Certificate already generated! You cannot generate it again even after retaking the quiz.
+                            </div>
+                        ` : ''}
+
                         <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                            <button id="genCertBtn" onclick="generateCertificate()" 
-                                    style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 32px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);">
-                                Generate PDF Certificate
+                            <button id="genCertBtn" onclick="generateCertificate()" ${alreadyGenerated ? 'disabled' : ''}
+                                    style="${alreadyGenerated 
+                                        ? 'background: #444; color: #aaa; border: 1px solid #666; cursor: not-allowed;' 
+                                        : 'background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);'} 
+                                    padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; transition: all 0.3s ease;">
+                                ${alreadyGenerated ? '⚠️ Certificate Already Generated' : 'Generate PDF Certificate'}
                             </button>
                             <button onclick="resetQuiz()" 
                                     style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
@@ -1764,27 +1785,32 @@
         }
 
         async function generateCertificate() {
-            const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
-            const enteredName = ((nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
+            const enteredName = (currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
             const enteredEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
+            const activityName = 'Index: Cybersecurity Awareness Overview';
 
             if (!enteredName || enteredName.length < 2) {
-                showNotification('Please enter your name for certificate!', 'warning');
-                nameInput?.focus();
-                return;
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enteredEmail)) {
-                showNotification('Please enter a valid email address!', 'warning');
+                showNotification('Please sign in with Google first!', 'warning');
                 return;
             }
 
-            currentUserName = enteredName;
-            currentUserEmail = enteredEmail;
-
-            try {
-                localStorage.setItem('ogdcl_user_name', enteredName);
-                localStorage.setItem('ogdcl_user_email', enteredEmail);
-            } catch (e) {}
+            // Client-side guard check
+            if (typeof window.checkCertificateClaimed === 'function') {
+                const claimed = await window.checkCertificateClaimed(enteredEmail, activityName);
+                if (claimed) {
+                    showNotification('⚠️ Certificate already generated! You cannot generate it again.', 'warning');
+                    alert('⚠️ Certificate Already Generated!\n\nYou have already generated your official certificate for this activity.\nEven after retaking the quiz, a certificate can only be generated once.');
+                    const btn = document.getElementById('genCertBtn');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.style.background = '#444';
+                        btn.style.color = '#aaa';
+                        btn.style.cursor = 'not-allowed';
+                        btn.textContent = '⚠️ Certificate Already Generated';
+                    }
+                    return;
+                }
+            }
 
             const btn = document.getElementById('genCertBtn');
             if (btn) {
@@ -1792,15 +1818,30 @@
                 btn.textContent = '⏳ Saving & Generating...';
             }
 
-            showNotification('Saving data to Admin Dashboard and preparing PDF certificate...', 'info');
-
-            // 1. SAVE TO DATABASE (SENDS DATA TO ADMIN DASHBOARD)
-            await saveToDatabase({
+            // 1. SAVE TO DATABASE WITH generateCertificate: true
+            const dbResult = await saveToDatabase({
                 userName: enteredName,
-                email: enteredEmail
+                email: enteredEmail,
+                generateCertificate: true
             });
 
-            // 2. GENERATE AND DOWNLOAD PDF CERTIFICATE
+            if (dbResult && dbResult.alreadyGenerated) {
+                showNotification('⚠️ Certificate already generated! You cannot generate it again.', 'warning');
+                alert('⚠️ Certificate Already Generated!\n\nYou have already generated your official certificate for this activity.\nEven after retaking the quiz, a certificate can only be generated once.');
+                if (typeof window.markCertificateClaimed === 'function') {
+                    window.markCertificateClaimed(enteredEmail, activityName, dbResult.certificateId);
+                }
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.background = '#444';
+                    btn.style.color = '#aaa';
+                    btn.style.cursor = 'not-allowed';
+                    btn.textContent = '⚠️ Certificate Already Generated';
+                }
+                return;
+            }
+
+            // 2. GENERATE AND DOWNLOAD PDF CERTIFICATE (First time only)
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
             const currentLevel = getCurrentSecurityLevel();
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -1809,31 +1850,32 @@
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: enteredName,
-                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
+                        refNumber: (dbResult && dbResult.data?.certificateId) || localStorage.getItem('ogdcl_certificate_id') || undefined,
                         score: userScore,
                         accuracy: accuracy,
                         level: currentLevel.name,
                         title: 'Cybersecurity Awareness Assessment',
                         date: currentDate
                     });
-                }                      score: userScore,
-                        accuracy: accuracy,
-                        level: currentLevel.name,
-                        activity: 'Cybersecurity Awareness Overview',
-                        date: currentDate
-                    });
-                    showNotification(`✅ Official certificate generated and saved for ${enteredName}!`, 'success');
-                } else {
-                    showNotification(`✅ Data saved to Admin Dashboard for ${enteredName}!`, 'success');
+                }
+                if (typeof window.markCertificateClaimed === 'function') {
+                    window.markCertificateClaimed(enteredEmail, activityName, dbResult?.data?.certificateId);
+                }
+                showNotification(`✅ Official certificate generated and saved for ${enteredName}!`, 'success');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.background = '#444';
+                    btn.style.color = '#aaa';
+                    btn.style.cursor = 'not-allowed';
+                    btn.textContent = '⚠️ Certificate Already Generated';
                 }
             } catch (err) {
                 console.error('Error generating PDF:', err);
-                showNotification('Data saved to Admin Portal! PDF export encountered an issue.', 'warning');
-            }
-
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = '✅ Certificate Downloaded & Saved';
+                showNotification('Data saved! PDF export encountered an issue.', 'warning');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Generate PDF Certificate';
+                }
             }
         }
 
