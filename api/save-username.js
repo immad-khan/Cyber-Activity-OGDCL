@@ -2,6 +2,7 @@
 // Saves user completion data to Supabase PostgreSQL (with optional Firebase fallback)
 
 import { pool } from './db.js';
+import { randomUUID } from 'node:crypto';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
     }
 
     const {
+      email = '',
       employeeId = '',
       department = '',
       designation = '',
@@ -46,6 +48,14 @@ export default async function handler(req, res) {
     const sanitizedEmpId = String(employeeId).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedDept = String(department).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedDesig = String(designation).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
+    const sanitizedEmail = String(email).trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+      return res.status(400).json({ error: 'A valid email address is required' });
+    }
+    if (!sanitizedEmail.endsWith('@ogdcl.com')) {
+      return res.status(403).json({ error: 'Only official @ogdcl.com email addresses are permitted.' });
+    }
+    const certificateId = `OGDCL-${new Date().getFullYear()}-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`;
     const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const finalCorrect = parseInt(correctAnswers, 10) || 0;
@@ -64,6 +74,8 @@ export default async function handler(req, res) {
     const insertQuery = `
       INSERT INTO public.users (
         "userName",
+        email,
+        "certificateId",
         "employeeId",
         department,
         designation,
@@ -78,12 +90,14 @@ export default async function handler(req, res) {
         activity,
         "completionDate"
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-      RETURNING id, "userName", "employeeId", department, designation, score, level, "createdAt";
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      RETURNING id, "userName", email, "certificateId", "employeeId", department, designation, score, level, "createdAt";
     `;
 
     const values = [
       sanitizedName,
+      sanitizedEmail,
+      certificateId,
       sanitizedEmpId,
       sanitizedDept,
       sanitizedDesig,
@@ -131,6 +145,7 @@ export default async function handler(req, res) {
         const db = getFirestore();
         const userData = {
           userName: req.body?.userName,
+          email: sanitizedEmail,
           score: req.body?.score || 0,
           level: req.body?.level || 'Beginner',
           accuracy: req.body?.accuracy || 0,
