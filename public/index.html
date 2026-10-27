@@ -1148,9 +1148,6 @@
         let securityLevelAchieved = 'Beginner';
         let currentUserName = '';
         let currentUserEmail = '';
-        let currentEmployeeId = '';
-        let currentDepartment = '';
-        let currentDesignation = '';
         let currentQuizIndex = 0;
         let scrollDepth = 0;
         window.videoWatched = false;
@@ -1169,27 +1166,15 @@
             try {
                 const n = localStorage.getItem('ogdcl_user_name') || '';
                 const email = localStorage.getItem('ogdcl_user_email') || '';
-                const e = localStorage.getItem('ogdcl_emp_id') || '';
-                const d = localStorage.getItem('ogdcl_dept') || '';
-                const des = localStorage.getItem('ogdcl_desig') || '';
 
                 if (n) { currentUserName = n; }
                 if (email) { currentUserEmail = email; }
-                if (e) { currentEmployeeId = e; }
-                if (d) { currentDepartment = d; }
-                if (des) { currentDesignation = des; }
 
                 const elName = document.getElementById('userNameStart');
                 const elEmail = document.getElementById('userEmailStart');
-                const elEmp = document.getElementById('userEmpIdStart');
-                const elDept = document.getElementById('userDepartmentStart');
-                const elDes = document.getElementById('userDesignationStart');
 
                 if (elName && n) elName.value = n;
                 if (elEmail && email) elEmail.value = email;
-                if (elEmp && e) elEmp.value = e;
-                if (elDept && d) elDept.value = d;
-                if (elDes && des) elDes.value = des;
             } catch (err) {
                 console.warn('Could not read from localStorage', err);
             }
@@ -1683,22 +1668,12 @@
                 const deptInput = document.getElementById('userDepartment') || document.getElementById('userDepartmentEnd') || document.getElementById('userDepartmentStart');
                 const desigInput = document.getElementById('userDesignation') || document.getElementById('userDesignationEnd') || document.getElementById('userDesignationStart');
 
-                const empId = (override.employeeId || (empInput ? empInput.value.trim() : '') || currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || 'OGDCL-EMP').trim();
-                const dept = (override.department || (deptInput ? deptInput.value.trim() : '') || currentDepartment || localStorage.getItem('ogdcl_dept') || 'General').trim();
-                const desig = (override.designation || (desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
-
                 currentUserName = name;
                 currentUserEmail = email;
-                currentEmployeeId = empId;
-                currentDepartment = dept;
-                currentDesignation = desig;
 
                 try {
                     localStorage.setItem('ogdcl_user_name', name);
                     localStorage.setItem('ogdcl_user_email', email);
-                    localStorage.setItem('ogdcl_emp_id', empId);
-                    localStorage.setItem('ogdcl_dept', dept);
-                    localStorage.setItem('ogdcl_desig', desig);
                 } catch (e) {}
 
                 const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
@@ -1709,9 +1684,6 @@
                 const payload = {
                     userName: name,
                     email: email,
-                    employeeId: empId,
-                    department: dept,
-                    designation: desig,
                     score: userScore || (quizMarks + videoMarks),
                     level: currentLevel.name,
                     accuracy: accuracy,
@@ -1753,9 +1725,6 @@
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
             const currentLevel = getCurrentSecurityLevel();
             const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || '';
-            const displayEmpId = currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || '';
-            const displayDept = currentDepartment || localStorage.getItem('ogdcl_dept') || '';
-            const displayDesig = currentDesignation || localStorage.getItem('ogdcl_desig') || '';
 
             if (displayName) {
                 saveToDatabase();
@@ -1776,11 +1745,9 @@
                     </div>
 
                     <div style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                        <input type="text" id="userName" placeholder="Enter your full name for certificate *" value="${escHtml(displayName)}"
+                        <input type="text" id="userName" placeholder="Enter your full name for certificate *" value="${escHtml(displayName)}" readonly
                                style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.15rem; text-align: center; margin-bottom: 15px; width: 100%; max-width: 360px;" />
                         <br>
-                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                        </div>
                         <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
                             <button id="genCertBtn" onclick="generateCertificate()" 
                                     style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; padding: 15px 32px; border: none; border-radius: 30px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);">
@@ -1811,27 +1778,12 @@
                 return;
             }
 
-            const empInput = document.getElementById('userEmpId') || document.getElementById('userEmpIdEnd') || document.getElementById('userEmpIdStart');
-            const enteredEmpId = ((empInput ? empInput.value.trim() : '') || currentEmployeeId || localStorage.getItem('ogdcl_emp_id') || 'OGDCL-EMP').trim();
-
-            const deptInput = document.getElementById('userDepartment') || document.getElementById('userDepartmentEnd') || document.getElementById('userDepartmentStart');
-            const enteredDept = ((deptInput ? deptInput.value.trim() : '') || currentDepartment || localStorage.getItem('ogdcl_dept') || 'General').trim();
-
-            const desigInput = document.getElementById('userDesignation') || document.getElementById('userDesignationEnd') || document.getElementById('userDesignationStart');
-            const enteredDesig = ((desigInput ? desigInput.value.trim() : '') || currentDesignation || localStorage.getItem('ogdcl_desig') || 'Participant').trim();
-
             currentUserName = enteredName;
             currentUserEmail = enteredEmail;
-            currentEmployeeId = enteredEmpId;
-            currentDepartment = enteredDept;
-            currentDesignation = enteredDesig;
 
             try {
                 localStorage.setItem('ogdcl_user_name', enteredName);
                 localStorage.setItem('ogdcl_user_email', enteredEmail);
-                localStorage.setItem('ogdcl_emp_id', enteredEmpId);
-                localStorage.setItem('ogdcl_dept', enteredDept);
-                localStorage.setItem('ogdcl_desig', enteredDesig);
             } catch (e) {}
 
             const btn = document.getElementById('genCertBtn');
@@ -1845,10 +1797,7 @@
             // 1. SAVE TO DATABASE (SENDS DATA TO ADMIN DASHBOARD)
             await saveToDatabase({
                 userName: enteredName,
-                email: enteredEmail,
-                employeeId: enteredEmpId,
-                department: enteredDept,
-                designation: enteredDesig
+                email: enteredEmail
             });
 
             // 2. GENERATE AND DOWNLOAD PDF CERTIFICATE
@@ -1861,10 +1810,13 @@
                     window.downloadOGDCLCertificate({
                         userName: enteredName,
                         refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
-                        employeeId: enteredEmpId,
-                        department: enteredDept,
-                        designation: enteredDesig,
                         score: userScore,
+                        accuracy: accuracy,
+                        level: currentLevel.name,
+                        title: 'Cybersecurity Awareness Assessment',
+                        date: currentDate
+                    });
+                }                      score: userScore,
                         accuracy: accuracy,
                         level: currentLevel.name,
                         activity: 'Cybersecurity Awareness Overview',
