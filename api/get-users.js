@@ -20,6 +20,8 @@ export default async function handler(req, res) {
       SELECT 
         id,
         "userName",
+        email,
+        "certificateId",
         "employeeId",
         department,
         designation,
