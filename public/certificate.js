@@ -175,13 +175,13 @@
     text('VERIFIED', sx, 157, 'center', 0.37);
 
     // ── 5. Reference (left) and Signature (right) ──
+    font('helvetica', 'bold', 9, C.ink);
+    text(refNumber, 55, 159.5, 'center');
     line(33, 163.15, 77, 163.15, C.faint, 0.3);
-    font('helvetica', 'bold', 9.5, C.ink);
+    font('helvetica', 'bold', 8.5, C.muted);
     text('Certificate ID', 55, 168, 'center');
-    font('helvetica', 'normal', 8.5, C.muted);
-    text(refNumber, 55, 172.3, 'center');
 
-    if (assets.signature) placeImage(assets.signature, 221, 138, 42, 24.8);
+    if (assets.signature) placeImage(assets.signature, 226.25, 143.5, 31.5, 18.6);
     line(220, 163.15, 264, 163.15, C.faint, 0.3);
     const sigX = 242;
     font('helvetica', 'bold', 9.5, C.ink);
@@ -202,5 +202,39 @@
     doc.save(`OGDCL_Certificate_${safeFileName}.pdf`);
   }
 
+  // Helper to check if a user already generated a certificate for this activity
+  async function checkCertificateClaimed(email, activity) {
+    if (!email) return false;
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanActivity = String(activity || '').trim();
+    const cacheKey = `ogdcl_cert_done_${cleanEmail}_${cleanActivity}`;
+    if (localStorage.getItem(cacheKey) === 'true') {
+      return true;
+    }
+    try {
+      const res = await fetch(`/api/save-username?email=${encodeURIComponent(cleanEmail)}&activity=${encodeURIComponent(cleanActivity)}`);
+      const data = await res.json();
+      if (data && data.alreadyGenerated) {
+        localStorage.setItem(cacheKey, 'true');
+        if (data.certificateId) localStorage.setItem('ogdcl_certificate_id', data.certificateId);
+        return true;
+      }
+    } catch (e) {
+      console.warn('Could not query cert claim status:', e);
+    }
+    return false;
+  }
+
+  function markCertificateClaimed(email, activity, certId) {
+    if (!email) return;
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanActivity = String(activity || '').trim();
+    const cacheKey = `ogdcl_cert_done_${cleanEmail}_${cleanActivity}`;
+    localStorage.setItem(cacheKey, 'true');
+    if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
+  }
+
   window.downloadOGDCLCertificate = downloadOGDCLCertificate;
+  window.checkCertificateClaimed = checkCertificateClaimed;
+  window.markCertificateClaimed = markCertificateClaimed;
 })(window);
