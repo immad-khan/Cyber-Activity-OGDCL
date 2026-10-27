@@ -1333,7 +1333,7 @@
         }
 
         // Show Quiz Completion & Certificate Showcase
-        function showQuizCompletion() {
+        async function showQuizCompletion() {
             const quizSection = document.querySelector('.quiz-section');
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
             const currentLevel = getCurrentSecurityLevel();
@@ -1341,8 +1341,14 @@
             const videoMarks = videoWatched ? SCORING.video_completion : 0;
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant';
+            const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
+            const activityName = 'Activity 4: The Executive Target';
 
             saveToDatabase();
+
+            const alreadyGenerated = (typeof window.checkCertificateClaimed === 'function')
+                ? await window.checkCertificateClaimed(userEmail, activityName)
+                : false;
 
             quizSection.innerHTML = `
                 <div style="text-align: center; padding: 25px 20px;">
@@ -1403,9 +1409,19 @@
                     
                     <!-- Action Buttons -->
                     <div style="margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
-                        <button onclick="generateCertificate()" 
-                                style="background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45); display: inline-flex; align-items: center; gap: 8px;">
-                            📄 Download PDF Certificate
+                        ${alreadyGenerated ? `
+                            <div style="width: 100%; text-align: center; margin-bottom: 8px;">
+                                <span style="background: rgba(255, 152, 0, 0.15); border: 1.5px solid #ff9800; border-radius: 12px; padding: 8px 18px; color: #ffb74d; font-weight: 600; font-size: 0.92rem; display: inline-block;">
+                                    ⚠️ Certificate already generated! You cannot generate it again even after retaking the quiz.
+                                </span>
+                            </div>
+                        ` : ''}
+                        <button id="genCertBtn" onclick="generateCertificate()" ${alreadyGenerated ? 'disabled' : ''}
+                                style="${alreadyGenerated 
+                                    ? 'background: #444; color: #aaa; border: 1px solid #666; cursor: not-allowed;' 
+                                    : 'background: linear-gradient(45deg, #00b4d8, #0077b6); color: white; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45);'} 
+                                padding: 14px 28px; border-radius: 30px; font-size: 1.1rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                            ${alreadyGenerated ? '⚠️ Certificate Already Generated' : '📄 Download PDF Certificate'}
                         </button>
                         <button onclick="resetQuiz()" 
                                 style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 14px 28px; border: none; border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer;">
@@ -1434,10 +1450,21 @@
         // Generate Certificate
         async function generateCertificate() {
             const userName = currentUserName || localStorage.getItem('ogdcl_user_name');
+            const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
+            const activityName = 'Activity 4: The Executive Target';
 
             if (!userName) {
                 showNotification('Error: No user name found. Please enter your name.', 'error');
                 return;
+            }
+
+            if (typeof window.checkCertificateClaimed === 'function') {
+                const claimed = await window.checkCertificateClaimed(userEmail, activityName);
+                if (claimed) {
+                    showNotification('⚠️ Certificate already generated! You cannot generate it again.', 'warning');
+                    alert('⚠️ Certificate Already Generated!\n\nYou have already generated your official certificate for this activity.\nEven after retaking the quiz, a certificate can only be generated once.');
+                    return;
+                }
             }
 
             const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
@@ -1447,15 +1474,21 @@
             showNotification('Generating PDF certificate...', 'info');
 
             try {
-                window.downloadOGDCLCertificate({
-                    userName: userName,
-                    refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
-                    score: userScore,
-                    accuracy: accuracy,
-                    level: currentLevel.name,
-                    activity: 'Activity 4: The Executive Target & Phishing Threat Defense',
-                    date: currentDate
-                });
+                if (typeof window.downloadOGDCLCertificate === 'function') {
+                    window.downloadOGDCLCertificate({
+                        userName: userName,
+                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
+                        score: userScore,
+                        accuracy: accuracy,
+                        level: currentLevel.name,
+                        activity: activityName,
+                        date: currentDate
+                    });
+                }
+
+                if (typeof window.markCertificateClaimed === 'function') {
+                    window.markCertificateClaimed(userEmail, activityName);
+                }
 
                 showNotification(`Certificate generated for ${userName}!`, 'success');
 
