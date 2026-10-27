@@ -11,6 +11,8 @@
 CREATE TABLE IF NOT EXISTS public.users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "userName" TEXT NOT NULL,
+    email TEXT,
+    "certificateId" TEXT,
     "employeeId" TEXT,
     department TEXT,
     designation TEXT,
@@ -29,6 +31,11 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 -- Upgrade existing table if already created previously
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "employeeId" TEXT;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "certificateId" TEXT;
+UPDATE public.users
+SET "certificateId" = 'OGDCL-LEGACY-' || id::TEXT
+WHERE "certificateId" IS NULL;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS department TEXT;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS designation TEXT;
 
@@ -36,6 +43,8 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS designation TEXT;
 CREATE INDEX IF NOT EXISTS idx_users_score ON public.users (score DESC);
 CREATE INDEX IF NOT EXISTS idx_users_createdat ON public.users ("createdAt" DESC);
 CREATE INDEX IF NOT EXISTS idx_users_empid ON public.users ("employeeId");
+CREATE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_certificate_id ON public.users ("certificateId") WHERE "certificateId" IS NOT NULL;
 
 -- STEP 4: Create Site Settings Table (Controls Site Lock & Activity Locks)
 CREATE TABLE IF NOT EXISTS public.site_settings (
