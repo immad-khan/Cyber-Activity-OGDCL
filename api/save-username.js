@@ -17,6 +17,35 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  if (req.method === 'GET') {
+    const qEmail = String(req.query?.email || '').trim().toLowerCase();
+    const qActivity = String(req.query?.activity || '').trim();
+    if (!qEmail) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    try {
+      const checkRes = await pool.query(
+        `SELECT "certificateId", "completionDate", score FROM public.users 
+         WHERE LOWER(email) = LOWER($1) 
+           AND ($2 = '' OR activity = $2)
+           AND "certificateId" IS NOT NULL 
+         LIMIT 1`,
+        [qEmail, qActivity]
+      );
+      if (checkRes.rows.length > 0) {
+        return res.status(200).json({
+          alreadyGenerated: true,
+          certificateId: checkRes.rows[0].certificateId,
+          completionDate: checkRes.rows[0].completionDate
+        });
+      }
+      return res.status(200).json({ alreadyGenerated: false });
+    } catch (e) {
+      console.error('Error checking cert status:', e);
+      return res.status(200).json({ alreadyGenerated: false });
+    }
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -41,6 +70,7 @@ export default async function handler(req, res) {
       correctAnswers = 0,
       totalQuestions = 0,
       activity = 'Cybersecurity Awareness',
+      generateCertificate = false,
       date
     } = req.body || {};
 
@@ -55,8 +85,6 @@ export default async function handler(req, res) {
     if (!sanitizedEmail.endsWith('@ogdcl.com')) {
       return res.status(403).json({ error: 'Only official @ogdcl.com email addresses are permitted.' });
     }
-    const certificateId = `OGDCL-${new Date().getFullYear()}-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`;
-    const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const finalCorrect = parseInt(correctAnswers, 10) || 0;
     const finalVideoCompleted = Boolean(videoCompleted);
@@ -69,6 +97,47 @@ export default async function handler(req, res) {
     const finalScore = (score !== undefined && score !== null)
       ? parseInt(score, 10)
       : (finalVideoMarks + finalQuizMarks);
+
+    // ── Check for existing certificate for this email + activity ──
+    const existingCheck = await pool.query(
+      `SELECT id, "certificateId", "completionDate", score FROM public.users 
+       WHERE LOWER(email) = LOWER($1) 
+         AND activity = $2 
+         AND "certificateId" IS NOT NULL 
+       LIMIT 1`,
+      [sanitizedEmail, activity]
+    );
+
+    if (existingCheck.rows.length > 0) {
+      const existing = existingCheck.rows[0];
+      if (generateCertificate) {
+        // Hard block: Certificate can only be generated ONCE per activity
+        return res.status(409).json({
+          success: false,
+          alreadyGenerated: true,
+          certificateId: existing.certificateId,
+          message: 'Certificate already generated for this activity. Re-generation is not permitted even after retaking the quiz.'
+        });
+      } else {
+        // Retake quiz without generating a new certificate: update score
+        await pool.query(
+          `UPDATE public.users 
+           SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3 
+           WHERE id = $4`,
+          [finalScore, finalQuizMarks, finalCorrect, existing.id]
+        );
+        return res.status(200).json({
+          success: true,
+          alreadyGenerated: true,
+          certificateId: existing.certificateId,
+          message: 'Quiz retake recorded. Original certificate preserved.',
+          id: existing.id
+        });
+      }
+    }
+
+    const certificateId = `OGDCL-${new Date().getFullYear()}-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`;
+    const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     // Save to PostgreSQL using pre-warmed connection pool
     const insertQuery = `
