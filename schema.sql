@@ -9,6 +9,8 @@ USE `cybershield`;
 CREATE TABLE IF NOT EXISTS `users` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `userName` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255),
+    `certificateId` VARCHAR(100) UNIQUE,
     `score` INT DEFAULT 0,
     `level` VARCHAR(50) DEFAULT 'Beginner',
     `accuracy` INT DEFAULT 0,
@@ -26,6 +28,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS public.users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     "userName" TEXT NOT NULL,
+    email TEXT,
+    "certificateId" TEXT,
     score INT DEFAULT 0,
     level TEXT DEFAULT 'Beginner',
     accuracy INT DEFAULT 0,
