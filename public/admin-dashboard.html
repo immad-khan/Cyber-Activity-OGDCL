@@ -2200,7 +2200,7 @@
         <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <div style="position: relative; flex: 1; min-width: 200px;">
             <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search by name, Emp ID, department, designation…"
+            <input type="text" id="searchInput" placeholder="Search by name, email, Emp ID, department, designation…"
               oninput="filterUsers()" />
           </div>
           <select id="activityFilter" onchange="filterUsers()"
@@ -2220,6 +2220,8 @@
               <tr>
                 <th>#</th>
                 <th>Name</th>
+                <th>Email</th>
+                <th>Certificate ID</th>
                 <th>Emp ID</th>
                 <th>Department</th>
                 <th>Designation</th>
@@ -3377,6 +3379,8 @@
       filtered = allUsers.filter(u => {
         const matchesQuery = !q || (
           (u.userName || '').toLowerCase().includes(q) ||
+          (u.email || '').toLowerCase().includes(q) ||
+          (u.certificateId || '').toLowerCase().includes(q) ||
           (u.employeeId || '').toLowerCase().includes(q) ||
           (u.department || '').toLowerCase().includes(q) ||
           (u.designation || '').toLowerCase().includes(q)
@@ -3408,6 +3412,8 @@
       tbody.innerHTML = slice.map((u, i) => {
         const idx = start + i + 1;
         const name = u.userName || 'Unknown';
+        const email = u.email || '—';
+        const certificateId = u.certificateId || '—';
         const init = name.charAt(0).toUpperCase();
         const empId = u.employeeId || '—';
         const dept = u.department || '—';
@@ -3443,6 +3449,8 @@
                 <span>${escHtml(name)}</span>
               </div>
             </td>
+            <td><span style="font-size:0.85rem;">${escHtml(email)}</span></td>
+            <td><span style="font-family:monospace;font-size:0.78rem;color:var(--accent-2);">${escHtml(certificateId)}</span></td>
             <td><span style="font-family:monospace;font-size:0.83rem;color:var(--accent-2);">${escHtml(empId)}</span></td>
             <td><span style="font-size:0.85rem;">${escHtml(dept)}</span></td>
             <td><span style="font-size:0.85rem;">${escHtml(desig)}</span></td>
@@ -3572,6 +3580,8 @@
 
         return {
           'Name': u.userName || '',
+          'Email': u.email || '',
+          'Certificate ID': u.certificateId || '',
           'Employee ID': u.employeeId || '',
           'Department': u.department || '',
           'Designation': u.designation || '',
