@@ -2200,7 +2200,7 @@
         <div class="search-bar" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <div style="position: relative; flex: 1; min-width: 200px;">
             <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search by name, email, Emp ID, department, designation…"
+            <input type="text" id="searchInput" placeholder="Search by name, email, Certificate ID, activity…"
               oninput="filterUsers()" />
           </div>
           <select id="activityFilter" onchange="filterUsers()"
@@ -2222,9 +2222,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Certificate ID</th>
-                <th>Emp ID</th>
-                <th>Department</th>
-                <th>Designation</th>
                 <th>Activity</th>
                 <th>Level</th>
                 <th>Score</th>
@@ -2237,7 +2234,7 @@
             </thead>
             <tbody id="usersTableBody">
               <tr class="state-row">
-                <td colspan="13" style="text-align:center;padding:40px;">Loading users…</td>
+                <td colspan="12" style="text-align:center;padding:40px;">Loading users…</td>
               </tr>
             </tbody>
           </table>
@@ -3381,9 +3378,7 @@
           (u.userName || '').toLowerCase().includes(q) ||
           (u.email || '').toLowerCase().includes(q) ||
           (u.certificateId || '').toLowerCase().includes(q) ||
-          (u.employeeId || '').toLowerCase().includes(q) ||
-          (u.department || '').toLowerCase().includes(q) ||
-          (u.designation || '').toLowerCase().includes(q)
+          (u.activity || '').toLowerCase().includes(q)
         );
         const matchesAct = actFilter === 'all' || (u.activity || '').toLowerCase().includes(actFilter.toLowerCase());
         return matchesQuery && matchesAct;
@@ -3402,7 +3397,7 @@
       const slice = filtered.slice(start, start + PAGE_SIZE);
 
       if (slice.length === 0) {
-        tbody.innerHTML = `<tr class="state-row"><td colspan="13" style="text-align:center;padding:40px;color:var(--text-dim)">😕 No user records match the search filter.</td></tr>`;
+        tbody.innerHTML = `<tr class="state-row"><td colspan="12" style="text-align:center;padding:40px;color:var(--text-dim)">😕 No user records match the search filter.</td></tr>`;
         renderPagination(0, 0);
         return;
       }
@@ -3415,9 +3410,6 @@
         const email = u.email || '—';
         const certificateId = u.certificateId || '—';
         const init = name.charAt(0).toUpperCase();
-        const empId = u.employeeId || '—';
-        const dept = u.department || '—';
-        const desig = u.designation || '—';
         const level = u.level || 'Beginner';
         const score = u.score || 0;
         const acc = u.accuracy || 0;
@@ -3438,7 +3430,7 @@
         const badgeCls = getLevelBadge(level);
         const safeId = String(u.id || '').replace(/'/g, "\\'");
         const safeName = escHtml(name).replace(/'/g, "\\'");
-        const safeEmpId = escHtml(empId).replace(/'/g, "\\'");
+        const safeEmail = escHtml(email).replace(/'/g, "\\'");
 
         return `
           <tr>
@@ -3451,9 +3443,6 @@
             </td>
             <td><span style="font-size:0.85rem;">${escHtml(email)}</span></td>
             <td><span style="font-family:monospace;font-size:0.78rem;color:var(--accent-2);">${escHtml(certificateId)}</span></td>
-            <td><span style="font-family:monospace;font-size:0.83rem;color:var(--accent-2);">${escHtml(empId)}</span></td>
-            <td><span style="font-size:0.85rem;">${escHtml(dept)}</span></td>
-            <td><span style="font-size:0.85rem;">${escHtml(desig)}</span></td>
             <td><span class="badge-activity">${escHtml(act)}</span></td>
             <td><span class="badge-level ${badgeCls}">${escHtml(level)}</span></td>
             <td>
@@ -3467,7 +3456,7 @@
             <td style="font-weight:700;color:var(--accent);font-size:0.95rem;">${quiz}</td>
             <td style="color:var(--text-muted);font-size:0.78rem">${escHtml(date)}</td>
             <td style="text-align:center;">
-              <button class="btn-delete-row" title="Delete record" onclick="openDeleteUserModal('${safeId}', '${safeName}', '${safeEmpId}')">
+              <button class="btn-delete-row" title="Delete record" onclick="openDeleteUserModal('${safeId}', '${safeName}', '${safeEmail}')">
                 🗑️ Delete
               </button>
             </td>
@@ -3478,14 +3467,14 @@
     }
 
     // ── Delete User Record Modal & API ──
-    function openDeleteUserModal(id, name, empId) {
+    function openDeleteUserModal(id, name, email) {
       if (!id) {
         showToast('❌ Record identifier missing', 'error');
         return;
       }
       userToDeleteId = id;
       document.getElementById('deleteUserNameSpan').textContent = name || 'Unknown Participant';
-      document.getElementById('deleteUserEmpSpan').textContent = empId && empId !== '—' ? `Emp ID: ${empId}` : `Record ID: ${id}`;
+      document.getElementById('deleteUserEmpSpan').textContent = email && email !== '—' ? `${email}` : `Record ID: ${id}`;
       document.getElementById('deleteUserModal').style.display = 'flex';
     }
 
@@ -3582,9 +3571,6 @@
           'Name': u.userName || '',
           'Email': u.email || '',
           'Certificate ID': u.certificateId || '',
-          'Employee ID': u.employeeId || '',
-          'Department': u.department || '',
-          'Designation': u.designation || '',
           'Activity': u.activity || '',
           'Total Score': u.score || 0,
           'Level': u.level || '',
