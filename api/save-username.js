@@ -19,27 +19,34 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     const qEmail = String(req.query?.email || '').trim().toLowerCase();
+    const qName = String(req.query?.userName || req.query?.name || '').trim();
     const qActivity = String(req.query?.activity || '').trim();
-    if (!qEmail) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
     try {
-      const checkRes = await pool.query(
-        `SELECT "certificateId", "completionDate", score FROM public.users 
-         WHERE LOWER(email) = LOWER($1) 
-           AND ($2 = '' OR activity = $2)
-           AND "certificateId" IS NOT NULL 
-         LIMIT 1`,
-        [qEmail, qActivity]
-      );
-      if (checkRes.rows.length > 0) {
-        return res.status(200).json({
-          alreadyGenerated: true,
-          certificateId: checkRes.rows[0].certificateId,
-          completionDate: checkRes.rows[0].completionDate
-        });
+      let checkRes = { rows: [] };
+      if (qEmail) {
+        checkRes = await pool.query(
+          `SELECT "certificateId", "completionDate", score FROM public.users 
+           WHERE LOWER(email) = LOWER($1) 
+             AND ($2 = '' OR activity = $2)
+             AND "certificateId" IS NOT NULL 
+           LIMIT 1`,
+          [qEmail, qActivity]
+        );
+      } else if (qName) {
+        checkRes = await pool.query(
+          `SELECT "certificateId", "completionDate", score FROM public.users 
+           WHERE LOWER("userName") = LOWER($1) 
+             AND ($2 = '' OR activity = $2)
+             AND "certificateId" IS NOT NULL 
+           LIMIT 1`,
+          [qName, qActivity]
+        );
       }
-      return res.status(200).json({ alreadyGenerated: false });
+      return res.status(200).json({
+        alreadyGenerated: false,
+        certificateId: checkRes.rows[0]?.certificateId || null,
+        completionDate: checkRes.rows[0]?.completionDate || null
+      });
     } catch (e) {
       console.error('Error checking cert status:', e);
       return res.status(200).json({ alreadyGenerated: false });
@@ -78,13 +85,7 @@ export default async function handler(req, res) {
     const sanitizedEmpId = String(employeeId).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedDept = String(department).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedDesig = String(designation).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
-    const sanitizedEmail = String(email).trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
-      return res.status(400).json({ error: 'A valid email address is required' });
-    }
-    if (!sanitizedEmail.endsWith('@ogdcl.com')) {
-      return res.status(403).json({ error: 'Only official @ogdcl.com email addresses are permitted.' });
-    }
+    const sanitizedEmail = String(email || '').trim().toLowerCase();
 
     const finalCorrect = parseInt(correctAnswers, 10) || 0;
     const finalVideoCompleted = Boolean(videoCompleted);
@@ -98,42 +99,52 @@ export default async function handler(req, res) {
       ? parseInt(score, 10)
       : (finalVideoMarks + finalQuizMarks);
 
-    // ── Check for existing certificate for this email + activity ──
-    const existingCheck = await pool.query(
-      `SELECT id, "certificateId", "completionDate", score FROM public.users 
-       WHERE LOWER(email) = LOWER($1) 
-         AND activity = $2 
-         AND "certificateId" IS NOT NULL 
-       LIMIT 1`,
-      [sanitizedEmail, activity]
-    );
+    // ── Check for existing certificate for this email or username + activity ──
+    let existingCheck = { rows: [] };
+    if (sanitizedEmail) {
+      existingCheck = await pool.query(
+        `SELECT id, "certificateId", "completionDate", score FROM public.users 
+         WHERE LOWER(email) = LOWER($1) 
+           AND activity = $2 
+           AND "certificateId" IS NOT NULL 
+         LIMIT 1`,
+        [sanitizedEmail, activity]
+      );
+    } else if (sanitizedName) {
+      existingCheck = await pool.query(
+        `SELECT id, "certificateId", "completionDate", score FROM public.users 
+         WHERE LOWER("userName") = LOWER($1) 
+           AND activity = $2 
+           AND "certificateId" IS NOT NULL 
+         LIMIT 1`,
+        [sanitizedName, activity]
+      );
+    }
 
     if (existingCheck.rows.length > 0) {
       const existing = existingCheck.rows[0];
-      if (generateCertificate) {
-        // Hard block: Certificate can only be generated ONCE per activity
-        return res.status(409).json({
-          success: false,
-          alreadyGenerated: true,
+      // Update score and details if higher or retaken
+      await pool.query(
+        `UPDATE public.users 
+         SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3, level = $4, accuracy = $5, "completionDate" = $6
+         WHERE id = $7`,
+        [finalScore, finalQuizMarks, finalCorrect, level, parseInt(accuracy, 10) || 0, date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), existing.id]
+      );
+      return res.status(200).json({
+        success: true,
+        alreadyGenerated: false,
+        certificateId: existing.certificateId,
+        message: 'Saved successfully',
+        id: existing.id,
+        data: {
+          id: existing.id,
+          userName: sanitizedName,
           certificateId: existing.certificateId,
-          message: 'Certificate already generated for this activity. Re-generation is not permitted even after retaking the quiz.'
-        });
-      } else {
-        // Retake quiz without generating a new certificate: update score
-        await pool.query(
-          `UPDATE public.users 
-           SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3 
-           WHERE id = $4`,
-          [finalScore, finalQuizMarks, finalCorrect, existing.id]
-        );
-        return res.status(200).json({
-          success: true,
-          alreadyGenerated: true,
-          certificateId: existing.certificateId,
-          message: 'Quiz retake recorded. Original certificate preserved.',
-          id: existing.id
-        });
-      }
+          score: Math.max(existing.score || 0, finalScore),
+          level: level,
+          completionDate: existing.completionDate
+        }
+      });
     }
 
     const certificateId = `OGDCL-${new Date().getFullYear()}-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`;
