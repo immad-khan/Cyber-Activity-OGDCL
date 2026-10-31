@@ -203,34 +203,12 @@
   }
 
   // Helper to check if a user already generated a certificate for this activity
-  async function checkCertificateClaimed(email, activity) {
-    if (!email) return false;
-    const cleanEmail = String(email).trim().toLowerCase();
-    const cleanActivity = String(activity || '').trim();
-    const cacheKey = `ogdcl_cert_done_${cleanEmail}_${cleanActivity}`;
-    if (localStorage.getItem(cacheKey) === 'true') {
-      return true;
-    }
-    try {
-      const res = await fetch(`/api/save-username?email=${encodeURIComponent(cleanEmail)}&activity=${encodeURIComponent(cleanActivity)}`);
-      const data = await res.json();
-      if (data && data.alreadyGenerated) {
-        localStorage.setItem(cacheKey, 'true');
-        if (data.certificateId) localStorage.setItem('ogdcl_certificate_id', data.certificateId);
-        return true;
-      }
-    } catch (e) {
-      console.warn('Could not query cert claim status:', e);
-    }
+  async function checkCertificateClaimed(identifier, activity) {
+    // Generate on basis of name only without blocking certificate creation
     return false;
   }
 
-  function markCertificateClaimed(email, activity, certId) {
-    if (!email) return;
-    const cleanEmail = String(email).trim().toLowerCase();
-    const cleanActivity = String(activity || '').trim();
-    const cacheKey = `ogdcl_cert_done_${cleanEmail}_${cleanActivity}`;
-    localStorage.setItem(cacheKey, 'true');
+  function markCertificateClaimed(identifier, activity, certId) {
     if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
   }
 
