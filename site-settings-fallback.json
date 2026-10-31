@@ -2,9 +2,9 @@
   "locked": false,
   "activityLocks": {
     "activity_1": false,
-    "activity_2": false,
-    "activity_3": false,
-    "activity_4": false
+    "activity_2": true,
+    "activity_3": true,
+    "activity_4": true
   },
   "moduleVideos": {
     "index": {
