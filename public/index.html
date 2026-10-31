@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybersecurity Shield - Awareness & Digital Safety</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    <script src="cert-assets.js?v=3" defer></script>
-    <script src="certificate.js?v=5" defer></script>
+    <script src="cert-assets.js?v=5" defer></script>
+    <script src="certificate.js?v=9" defer></script>
     <script src="activity-lock.js" defer></script>
 
     <style>
@@ -1730,15 +1730,28 @@
                         <br>
 
                         <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                            <button id="genCertBtn" onclick="generateCertificate()"
-                                    style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4); padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; transition: all 0.3s ease;">
-                                📄 Download PDF Certificate
-                            </button>
+                            ${alreadyGenerated ? `
+                                <button id="genCertBtn" disabled
+                                        style="background: #4a5568; color: #a0aec0; border: none; cursor: not-allowed; opacity: 0.65; box-shadow: none; padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; pointer-events: none;"
+                                        title="Certificate already generated for this overview on this device.">
+                                    🔒 Certificate Already Generated
+                                </button>
+                            ` : `
+                                <button id="genCertBtn" onclick="generateCertificate()"
+                                        style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4); padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; transition: all 0.3s ease;">
+                                    📄 Download PDF Certificate
+                                </button>
+                            `}
                             <button onclick="resetQuiz()" 
                                     style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
                                 Retake Quiz
                             </button>
                         </div>
+                        ${alreadyGenerated ? `
+                            <p style="color: #ffd166; font-size: 0.88rem; margin-top: 10px; font-weight: 500;">
+                                ⚠️ Certificate for this overview has already been generated on this device. Retaking the quiz is for practice only.
+                            </p>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -1751,6 +1764,13 @@
 
             if (!enteredName || enteredName.length < 2) {
                 showNotification('Please enter your name first!', 'warning');
+                return;
+            }
+
+            if (typeof window.checkCertificateClaimed === 'function' && window.checkCertificateClaimed(enteredName, activityName)) {
+                showNotification('You have already generated a certificate for this overview on this device.', 'warning');
+                const btn = document.getElementById('genCertBtn');
+                if (btn && window.disableCertButton) window.disableCertButton(btn);
                 return;
             }
 
@@ -1791,15 +1811,16 @@
                 if (typeof window.markCertificateClaimed === 'function') {
                     window.markCertificateClaimed(enteredName, activityName, dbResult?.data?.certificateId);
                 }
-                showNotification(`✅ Official certificate generated and downloaded for ${enteredName}!`, 'success');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = '📄 Download PDF Certificate';
+
+                if (btn && window.disableCertButton) {
+                    window.disableCertButton(btn);
                 }
+
+                showNotification(`✅ Official certificate generated and downloaded for ${enteredName}!`, 'success');
             } catch (err) {
                 console.error('Error generating PDF:', err);
                 showNotification('Data saved! PDF export encountered an issue.', 'warning');
-                if (btn) {
+                if (btn && (!window.checkCertificateClaimed || !window.checkCertificateClaimed(enteredName, activityName))) {
                     btn.disabled = false;
                     btn.textContent = '📄 Download PDF Certificate';
                 }
