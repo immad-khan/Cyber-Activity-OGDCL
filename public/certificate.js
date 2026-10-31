@@ -22,6 +22,42 @@
       };
       sigImg.src = 'signature.png?t=' + Date.now();
     } catch (e) { }
+
+    // Automatically keep cybershield logo asset in sync with cybershield.webp / cybershield.png
+    try {
+      const shieldImg = new Image();
+      shieldImg.crossOrigin = 'anonymous';
+      shieldImg.onload = function () {
+        try {
+          const c = document.createElement('canvas');
+          c.width = shieldImg.naturalWidth || shieldImg.width;
+          c.height = shieldImg.naturalHeight || shieldImg.height;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(shieldImg, 0, 0);
+          window.CERT_ASSETS = window.CERT_ASSETS || {};
+          window.CERT_ASSETS.cybershield = c.toDataURL('image/png');
+        } catch (e) { }
+      };
+      shieldImg.onerror = function () {
+        try {
+          const fallback = new Image();
+          fallback.crossOrigin = 'anonymous';
+          fallback.onload = function () {
+            try {
+              const c = document.createElement('canvas');
+              c.width = fallback.naturalWidth || fallback.width;
+              c.height = fallback.naturalHeight || fallback.height;
+              const ctx = c.getContext('2d');
+              ctx.drawImage(fallback, 0, 0);
+              window.CERT_ASSETS = window.CERT_ASSETS || {};
+              window.CERT_ASSETS.cybershield = c.toDataURL('image/png');
+            } catch (e) { }
+          };
+          fallback.src = 'cybershield.png?t=' + Date.now();
+        } catch (e) { }
+      };
+      shieldImg.src = 'cybershield.webp?t=' + Date.now();
+    } catch (e) { }
   }
 
   // ── Palette (unchanged from the original design) ──
@@ -99,7 +135,11 @@
     doc.rect(12.4, 12.4, W - 24.8, H - 24.8);
 
     // ── 1. Header ──
-    if (assets.logo) placeImage(assets.logo, 20, 17, 30, 12.5);
+    // OGDCL logo on left
+    if (assets.logo) placeImage(assets.logo, 16, 14, 46, 20);
+    // CyberShield logo on opposite side (right) - balanced with OGDCL logo
+    const shieldAsset = assets.cybershield || assets.shield;
+    if (shieldAsset) placeImage(shieldAsset, 244, 14, 37, 17.5);
 
     font('helvetica', 'bold', 17, C.hdr1);
     text('OIL & GAS DEVELOPMENT COMPANY LTD', CX, baseline(15, 17), 'center', 0.12);
@@ -108,49 +148,49 @@
     font('helvetica', 'normal', 8, C.hdr3);
     text('ISLAMABAD, PAKISTAN', CX, baseline(32, 8), 'center', 0.56);
 
-    line(20, 39.15, W - 20, 39.15, C.sep, 0.3);
-    line(128.5, 39.25, 168.5, 39.25, C.teal, 0.8);
+    line(20, 41.5, W - 20, 41.5, C.sep, 0.3);
+    line(128.5, 41.6, 168.5, 41.6, C.teal, 0.8);
 
     // ── 2. Body ──
     font('times', 'italic', 12, C.slate);
-    text('Awards this certificate of completion to', CX, baseline(50, 12), 'center');
+    text('Awards this certificate of completion to', CX, baseline(51, 12), 'center');
 
     // Name (bold), shrinks to fit
     const measureName = (pt) => {
       doc.setFont('times', 'bold'); doc.setFontSize(pt);
       return doc.getTextWidth(userName);
     };
-    let namePt = 24;
+    let namePt = 25;
     while (namePt > 9 && measureName(namePt) > 235) namePt -= 0.5;
 
-    const nameBase = baseline(59, namePt);
+    const nameBase = baseline(61, namePt);
     font('times', 'bold', namePt, C.ink);
     doc.text(userName, CX, nameBase, { align: 'center' });
 
     font('times', 'italic', 12, C.slate);
-    text('for successfully completing the', CX, baseline(85, 12), 'center');
+    text('for successfully completing the', CX, baseline(75, 12), 'center');
 
-    font('times', 'bolditalic', 21, C.ink);
-    text(`\u201C${title}\u201D`, CX, baseline(93, 21), 'center');
+    font('times', 'bolditalic', 20, C.ink);
+    text(`\u201C${title}\u201D`, CX, baseline(85, 20), 'center');
 
     // "Completed on <date>"
-    const dBase = baseline(105, 12);
-    font('times', 'italic', 12, C.slate);
+    const dBase = baseline(98, 11.5);
+    font('times', 'italic', 11.5, C.slate);
     const w1 = doc.getTextWidth('Completed on');
-    font('times', 'normal', 12, C.body);
+    font('times', 'normal', 11.5, C.body);
     const wSp = doc.getTextWidth(' ');
     const w2 = doc.getTextWidth(currentDate);
     const dx = CX - (w1 + wSp + w2) / 2;
-    font('times', 'italic', 12, C.slate);
+    font('times', 'italic', 11.5, C.slate);
     doc.text('Completed on', dx, dBase);
-    font('times', 'normal', 12, C.body);
+    font('times', 'normal', 11.5, C.body);
     doc.text(currentDate, dx + w1 + wSp, dBase);
 
     // ── 3. Performance strip ──
     doc.setFillColor(...C.box); doc.setDrawColor(...C.teal); doc.setLineWidth(0.4);
-    doc.roundedRect(83.7, 114.2, 129.6, 13.6, 2, 2, 'FD');
-    line(126.9, 114.4, 126.9, 127.6, C.sep, 0.3);
-    line(170.1, 114.4, 170.1, 127.6, C.sep, 0.3);
+    doc.roundedRect(83.7, 108.5, 129.6, 14, 2, 2, 'FD');
+    line(126.9, 108.7, 126.9, 122.3, C.sep, 0.3);
+    line(170.1, 108.7, 170.1, 122.3, C.sep, 0.3);
 
     const stats = [
       ['TOTAL SCORE', `${score} pts`, 105.4],
@@ -159,36 +199,27 @@
     ];
     stats.forEach(([label, value, cx]) => {
       font('helvetica', 'bold', 6.5, C.tealDk);
-      text(label, cx, 118.9, 'center', 0.32);
+      text(label, cx, 113.3, 'center', 0.32);
       font('helvetica', 'bold', 12, C.ink);
-      text(value, cx, 124.1, 'center');
+      text(value, cx, 118.8, 'center');
     });
 
-    // ── 4. Seal (center) ──
-    const sx = CX, sy = 154;
-    doc.setFillColor(...C.teal); doc.circle(sx, sy, 14, 'F');
-    doc.setDrawColor(...C.white); doc.setLineWidth(0.35); doc.circle(sx, sy, 12.2, 'S');
-    doc.setFillColor(...C.tealDk); doc.circle(sx, sy, 10.6, 'F');
-    font('helvetica', 'bold', 9.5, C.white);
-    text('OGDCL', sx, 153.7, 'center', 0.2);
-    font('helvetica', 'normal', 4.8, C.white);
-    text('VERIFIED', sx, 157, 'center', 0.37);
-
-    // ── 5. Reference (left) and Signature (right) ──
+    // ── 4. Reference (left) and Signature (right) ──
+    // Note: Seal removed per user request
     font('helvetica', 'bold', 9, C.ink);
-    text(refNumber, 55, 159.5, 'center');
-    line(33, 163.15, 77, 163.15, C.faint, 0.3);
+    text(refNumber, 55, 153.5, 'center');
+    line(33, 157.15, 77, 157.15, C.faint, 0.3);
     font('helvetica', 'bold', 8.5, C.muted);
-    text('Certificate ID', 55, 168, 'center');
+    text('Certificate ID', 55, 162, 'center');
 
-    if (assets.signature) placeImage(assets.signature, 226.25, 143.5, 31.5, 18.6);
-    line(220, 163.15, 264, 163.15, C.faint, 0.3);
+    if (assets.signature) placeImage(assets.signature, 226.25, 137.5, 31.5, 18.6);
+    line(220, 157.15, 264, 157.15, C.faint, 0.3);
     const sigX = 242;
     font('helvetica', 'bold', 9.5, C.ink);
-    text('( M. Danish Hussain )', sigX, 168, 'center');
+    text('( M. Danish Hussain )', sigX, 162, 'center');
     font('helvetica', 'normal', 8.5, C.muted);
-    text('Head Information Security', sigX, 172.3, 'center');
-    text('OGDCL Islamabad', sigX, 176.5, 'center');
+    text('Head Information Security', sigX, 166.3, 'center');
+    text('OGDCL Islamabad', sigX, 170.5, 'center');
 
     // ── 6. Footer ──
     line(20, 184.15, W - 20, 184.15, C.foot, 0.3);
@@ -202,17 +233,69 @@
     doc.save(`OGDCL_Certificate_${safeFileName}.pdf`);
   }
 
-  // Helper to check if a user already generated a certificate for this activity
-  async function checkCertificateClaimed(identifier, activity) {
-    // Generate on basis of name only without blocking certificate creation
-    return false;
+  function getActivityCertKey(activity) {
+    const slug = String(activity || 'default')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    return 'ogdcl_cert_claimed_' + slug;
   }
 
+  // Helper to check if this local device already generated a certificate for this specific activity
+  function checkCertificateClaimed(identifier, activity) {
+    try {
+      const key = getActivityCertKey(activity);
+      const val = localStorage.getItem(key);
+      if (!val) return false;
+      try {
+        const parsed = JSON.parse(val);
+        return Boolean(parsed && (parsed.claimed === true || parsed.certId));
+      } catch (e) {
+        return val === 'true' || val.length > 0;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Marks certificate as claimed on this device for this activity
   function markCertificateClaimed(identifier, activity, certId) {
-    if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
+    try {
+      const key = getActivityCertKey(activity);
+      const payload = {
+        claimed: true,
+        claimedAt: new Date().toISOString(),
+        certId: certId || ('OGDCL-' + Date.now().toString(36).toUpperCase()),
+        activity: activity || '',
+        userName: identifier || ''
+      };
+      localStorage.setItem(key, JSON.stringify(payload));
+      if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
+    } catch (e) {
+      console.warn('Could not store certificate claim in localStorage', e);
+    }
   }
 
+  // UI helper: Grey out and disable certificate download button
+  function disableCertButton(btn, reason) {
+    if (!btn) return;
+    btn.disabled = true;
+    btn.onclick = null;
+    btn.removeAttribute('onclick');
+    btn.style.setProperty('background', '#4a5568', 'important');
+    btn.style.setProperty('color', '#a0aec0', 'important');
+    btn.style.setProperty('cursor', 'not-allowed', 'important');
+    btn.style.setProperty('opacity', '0.65', 'important');
+    btn.style.setProperty('box-shadow', 'none', 'important');
+    btn.style.setProperty('transform', 'none', 'important');
+    btn.style.setProperty('pointer-events', 'none', 'important');
+    btn.innerHTML = '🔒 Certificate Already Generated';
+    btn.title = reason || 'Certificate already generated for this activity on this device.';
+  }
+
+  window.getActivityCertKey = getActivityCertKey;
   window.downloadOGDCLCertificate = downloadOGDCLCertificate;
   window.checkCertificateClaimed = checkCertificateClaimed;
   window.markCertificateClaimed = markCertificateClaimed;
+  window.disableCertButton = disableCertButton;
 })(window);
