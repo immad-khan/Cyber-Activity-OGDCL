@@ -99,38 +99,6 @@ const DEFAULT_MODULE_VIDEOS = {
 };
 
 const DEFAULT_MODULE_MCQS = {
-  index: [
-    {
-      question: "Which of these makes the strongest password?",
-      options: ["Password123", "mypassword", "M7$kL9#pR2@qN8!", "123456789"],
-      correct: 2,
-      explanation: "Complex passwords with mixed characters, symbols, and adequate length are exponentially more secure and virtually impossible to crack through brute force attacks."
-    },
-    {
-      question: "What is the safest way to connect to public Wi-Fi?",
-      options: ["Connect directly", "Use a VPN", "Share your hotspot", "Disable firewall"],
-      correct: 1,
-      explanation: "A VPN encrypts your internet traffic, protecting your data from potential eavesdroppers on public networks."
-    },
-    {
-      question: "How often should you update your software?",
-      options: ["Never", "Once a year", "When prompted/available", "Only when broken"],
-      correct: 2,
-      explanation: "Regular updates patch security vulnerabilities that hackers could exploit to gain unauthorized access to your system."
-    },
-    {
-      question: "What should you do with suspicious emails?",
-      options: ["Click all links", "Forward to friends", "Delete and report", "Reply with info"],
-      correct: 2,
-      explanation: "Deleting suspicious emails and reporting them helps protect you and others from potential phishing attacks."
-    },
-    {
-      question: "What makes two-factor authentication effective?",
-      options: ["Uses two passwords", "Requires something you know + something you have", "Takes twice as long", "Works on two devices"],
-      correct: 1,
-      explanation: "2FA combines something you know (password) with something you have (phone/token), making unauthorized access extremely difficult."
-    }
-  ],
   activity_1: [
     {
       question: "What makes a password strong according to best practices?",
