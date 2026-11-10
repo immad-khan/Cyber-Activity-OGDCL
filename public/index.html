@@ -7,7 +7,7 @@
     <title>Cybersecurity Shield - Awareness & Digital Safety</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
-    <script src="certificate.js?v=9" defer></script>
+    <script src="certificate.js?v=12" defer></script>
     <script src="activity-lock.js" defer></script>
 
     <style>
@@ -946,24 +946,26 @@
                             <span class="week-num">Activity 1</span>
                         </span>
                     </a>
-
-                    <a href="social-engineering-week.html" class="week-button">
+                    <a href="phishing-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 2</span>
                         </span>
                     </a>
-
                     <a href="privacy-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 3</span>
                         </span>
-                    </a>
 
-                    <a href="phishing-week.html" class="week-button">
+                    <a href="social-engineering-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 4</span>
                         </span>
                     </a>
+
+
+                    </a>
+
+
                 </div>
 
                 <div class="score-display">
@@ -1072,15 +1074,15 @@
                 <h2 class="section-title">Cybersecurity Statistics</h2>
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <div class="stat-number">95%</div>
+                        <div class="stat-number">62%</div>
                         <p>of successful cyber breaches are due to human error</p>
+                    </div>  
+                    <div class="stat-item">
+                        <div class="stat-number">$4.4M</div>
+                        <p>average cost of a data breach in 2026</p>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">$4.8M</div>
-                        <p>average cost of a data breach in 2024</p>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">3.2B</div>
+                        <div class="stat-number">3.4B</div>
                         <p>phishing emails sent daily worldwide</p>
                     </div>
                     <div class="stat-item">
@@ -1800,7 +1802,6 @@
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: enteredName,
-                        refNumber: (dbResult && dbResult.data?.certificateId) || localStorage.getItem('ogdcl_certificate_id') || undefined,
                         score: userScore,
                         accuracy: accuracy,
                         level: currentLevel.name,
@@ -2113,9 +2114,9 @@
                     if (data.activityLocks) {
                         const actMap = {
                             activity_1: { page: 'mfa-week.html', label: 'Activity 1' },
-                            activity_2: { page: 'social-engineering-week.html', label: 'Activity 2' },
+                            activity_2: { page: 'social-engineering-week.html', label: 'Activity 4: Social Engineering' },
                             activity_3: { page: 'privacy-week.html', label: 'Activity 3' },
-                            activity_4: { page: 'phishing-week.html', label: 'Activity 4' }
+                            activity_4: { page: 'phishing-week.html', label: 'Activity 2: QR Code' }
                         };
 
                         Object.entries(data.activityLocks).forEach(([key, isActLocked]) => {
