@@ -17,7 +17,7 @@
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
-    <script src="certificate.js?v=9" defer></script>
+    <script src="certificate.js?v=12" defer></script>
     <script src="activity-lock.js?v=activity-banner-2" defer></script>
     
     <style>
@@ -236,7 +236,14 @@
             font-size: 1.5rem;
             color: #4ecdc4;
             font-weight: 600;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
+        }
+
+        .hero .video-heading {
+            margin: 0 0 18px;
+            color: #4ecdc4;
+            font-size: 1.6rem;
+            font-weight: 700;
         }
 
         .content-wrapper {
@@ -630,9 +637,11 @@
                 <div class="weeks-buttons" id="weekMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
                     <a href="mfa-week.html" class="week-button active">Activity 1</a>
-                    <a href="social-engineering-week.html" class="week-button">Activity 2</a>
+                    <a href="phishing-week.html" class="week-button">Activity 2</a>
                     <a href="privacy-week.html" class="week-button">Activity 3</a>
-                    <a href="phishing-week.html" class="week-button">Activity 4</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 4</a>
+                    
+                    
                 </div>
                 
                 <div class="score-display">
@@ -649,23 +658,22 @@
         </div>
     </header>
 
-    <section id="sharedActivityVideoSection" style="display:none; margin-top:115px; padding:20px 20px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.96));">
-        <div style="max-width:900px; margin:0 auto;">
+    <section id="sharedActivityVideoSection" style="display:none; margin-top:95px; padding:10px 10px 14px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.96));">
+        <div style="max-width:800px; margin:0 auto;">
             <div id="sharedActivityVideoTitle" role="heading" aria-level="2" style="display:block!important; visibility:visible!important; opacity:1!important; position:relative; z-index:1; color:#00ffff!important; font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; line-height:1.25; margin:0 0 10px;">Activity Video Briefing</div>
-            <p id="sharedActivityVideoSubtitle" style="max-width:720px; margin:0 auto 24px; color:rgba(255,255,255,.85); font-size:1.05rem; line-height:1.55;">Watch this shared cybersecurity briefing before starting the activities.</p>
-            <div id="sharedActivityVideoContainer" style="max-width:880px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 15px 50px rgba(0,0,0,.5); border:2px solid rgba(0,255,255,.3); background:#000;"></div>
+            <p id="sharedActivityVideoSubtitle" style="max-width:620px; margin:0 auto 24px; color:rgba(255,255,255,.85); font-size:1.05rem; line-height:1.55;">Watch this shared cybersecurity briefing before starting the activities.</p>
+            <div id="sharedActivityVideoContainer" style="max-width:750px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 15px 50px rgba(0,0,0,.5); border:2px solid rgba(0,255,255,.3); background:#000;"></div>
         </div>
     </section>
 
     <section class="hero">
         <h1>Activity 1: Password Protection</h1>
         <p>Strong passwords and smart security habits keep everyone safe.</p>
+        <h2 class="video-heading">Protect Your Digital Identity</h2>
     </section>
 
     <div class="content-wrapper">
         <div class="study-section">
-            <h2 class="section-title">Protect Your Digital Identity</h2>
-
             <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
                 <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/Password_policy_poster.jpg">
                     <source src="./videos/Password_policy.mp4" type="video/mp4">
@@ -1427,7 +1435,6 @@
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: userName,
-                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
                         score: userScore,
                         accuracy: accuracy,
                         level: currentLevel.name,
