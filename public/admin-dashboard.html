@@ -2455,8 +2455,9 @@
         const modBtn = document.getElementById(`navMod-${currentModuleId}`);
         if (modBtn) modBtn.classList.add('active');
         const meta = MODULES_META[currentModuleId] || {};
-        titleEl.textContent = `${meta.name || 'Module'}: Content & Assessment Manager`;
-        subEl.textContent = meta.desc || 'Manage video and assessment questions';
+        const isVideoOnly = currentModuleId === 'index' || currentModuleId.endsWith('_banner');
+        titleEl.textContent = `${meta.name || 'Module'}: ${isVideoOnly ? 'Content Manager' : 'Content & Assessment Manager'}`;
+        subEl.textContent = meta.desc || (isVideoOnly ? 'Manage video content' : 'Manage video and assessment questions');
       } else if (section === 'users') {
         secContent.style.display = 'none';
         secUsers.style.display = 'block';
@@ -2526,7 +2527,8 @@
       // Update Topbar and Banner Info
       const secContent = document.getElementById('sectionContent');
       if (secContent && secContent.style.display !== 'none') {
-        document.getElementById('pageTitle').textContent = `${meta.name}: Content & Assessment Manager`;
+        const isVideoOnly = modId === 'index' || modId.endsWith('_banner');
+        document.getElementById('pageTitle').textContent = `${meta.name}: ${isVideoOnly ? 'Content Manager' : 'Content & Assessment Manager'}`;
         document.getElementById('pageSubtitle').textContent = meta.desc;
       }
       document.getElementById('bannerIcon').textContent = meta.icon;
