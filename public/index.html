@@ -148,30 +148,7 @@
             opacity: 0.6;
         }
 
-        .score-display {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(0, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 2px solid;
-            animation: scoreGlow 2s ease-in-out infinite alternate;
-            font-weight: 600;
-            white-space: nowrap;
-        }
 
-        @keyframes scoreGlow {
-            from {
-                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-                border-color: rgba(0, 255, 255, 0.6);
-            }
-
-            to {
-                box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
-                border-color: #00ffff;
-            }
-        }
 
         .progress-container {
             width: 100px;
@@ -477,150 +454,7 @@
             opacity: 0.9;
         }
 
-        .interactive-section {
-            padding: 100px 0;
-            text-align: center;
-            background: radial-gradient(ellipse at center, rgba(69, 183, 209, 0.1) 0%, transparent 70%);
-        }
 
-        .security-quiz {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 50px;
-            border-radius: 30px;
-            margin: 60px 0;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            backdrop-filter: blur(15px);
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .security-quiz h3 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            color: #00ffff;
-        }
-
-        #quiz-question {
-            font-size: 1.4rem;
-            margin-bottom: 30px;
-        }
-
-        #quiz-options {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .quiz-button {
-            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            font-size: 1.1rem;
-            font-weight: 500;
-            min-width: 300px;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .quiz-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-            background: linear-gradient(45deg, #26c6da, #42a5f5);
-        }
-
-        #quiz-result {
-            margin-top: 30px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .name-input-section {
-            background: rgba(78, 205, 196, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .name-input-section p {
-            font-size: 1.15rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .name-input-section input {
-            padding: 14px 18px;
-            border: 2px solid #4ecdc4;
-            border-radius: 12px;
-            background: rgba(78, 205, 196, 0.1);
-            color: white;
-            font-size: 1rem;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .name-input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .name-input-grid input {
-            margin-bottom: 0 !important;
-        }
-
-        .name-input-section input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .name-input-section input:focus {
-            outline: none;
-            border-color: #00ffff;
-            background: rgba(0, 255, 255, 0.15);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-        }
-
-        .start-button {
-            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
-            color: white;
-            padding: 15px 35px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.15rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .start-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-            background: linear-gradient(45deg, #26c6da, #00ffff);
-        }
-
-        .user-name-display {
-            background: rgba(78, 205, 196, 0.12);
-            padding: 14px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            text-align: center;
-        }
-
-        .user-name-display p {
-            margin: 0;
-            font-size: 0.95rem;
-        }
 
         .footer {
             background: rgba(0, 0, 0, 0.6);
@@ -804,12 +638,6 @@
                 font-size: 0.88rem;
                 white-space: nowrap;
             }
-            .score-display {
-                padding: 8px 12px;
-                font-size: 0.85rem;
-                gap: 8px;
-                white-space: nowrap;
-            }
             .logo {
                 font-size: 1.5rem;
             }
@@ -824,15 +652,6 @@
 
             .logo {
                 font-size: 1.6rem;
-            }
-
-            .score-display {
-                flex-direction: column;
-                text-align: center;
-                width: auto;
-                padding: 10px 15px;
-                gap: 8px;
-                font-size: 0.9rem;
             }
 
             .hero h1 {
@@ -862,16 +681,6 @@
             .stats-grid {
                 gap: 30px;
             }
-
-            .security-quiz {
-                padding: 30px;
-            }
-
-            .quiz-button {
-                min-width: 200px;
-                font-size: 1rem;
-                padding: 12px 20px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -890,14 +699,6 @@
             .section-title {
                 font-size: 2rem;
             }
-
-            .quiz-button {
-                min-width: 180px;
-            }
-
-            .score-display {
-                font-size: 0.9rem;
-            }
         }
 
         ::-webkit-scrollbar {
@@ -915,11 +716,6 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(45deg, #26c6da, #e91e63);
-        }
-
-        #userScore {
-            font-weight: bold;
-            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -955,28 +751,12 @@
                         <span class="text">
                             <span class="week-num">Activity 3</span>
                         </span>
-
+                    </a>
                     <a href="social-engineering-week.html" class="week-button">
                         <span class="text">
                             <span class="week-num">Activity 4</span>
                         </span>
                     </a>
-
-
-                    </a>
-
-
-                </div>
-
-                <div class="score-display">
-                    <div>
-                        <span id="levelIcon">🔓</span>
-                        <span id="levelName">Beginner</span>
-                    </div>
-                    <div>Score: <span id="userScore">0</span>/100</div>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
                 </div>
             </nav>
         </div>
@@ -1092,34 +872,6 @@
                 </div>
             </div>
         </section>
-
-        <section class="interactive-section">
-            <div class="container">
-                <h2 class="section-title">Test Your Knowledge</h2>
-                <div class="security-quiz">
-                    <h3>Quick Security Quiz</h3>
-
-                    <div id="name-input-section" class="name-input-section">
-                        <p>Enter your details to begin the assessment.</p>
-                        <div class="name-input-grid">
-                            <input type="text" id="userNameStart" placeholder="Full Name *" required />
-                        </div>
-                        <button onclick="startQuiz()" class="start-button">Start Quiz</button>
-                    </div>
-
-                    <div id="quiz-content" style="display: none;">
-                        <div class="user-name-display">
-                            <p>
-                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span>
-                            </p>
-                        </div>
-                        <p id="quiz-question"></p>
-                        <div id="quiz-options"></div>
-                        <div id="quiz-result"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer class="footer">
@@ -1136,18 +888,11 @@
     </div>
 
     <script>
-        const API_ENDPOINT = '/api/save-username';
-
         let userInteractions = {};
         let sessionStartTime = Date.now();
         let uniqueVisitorId = 'visitor_' + Math.random().toString(36).substr(2, 9);
-        let userScore = 0;
-        let correctAnswers = 0;
-        let totalQuestions = 0;
-        let securityLevelAchieved = 'Beginner';
         let currentUserName = '';
         let currentUserEmail = '';
-        let currentQuizIndex = 0;
         let scrollDepth = 0;
         window.videoWatched = false;
 
@@ -1168,148 +913,9 @@
 
                 if (n) { currentUserName = n; }
                 if (email) { currentUserEmail = email; }
-
-                const elName = document.getElementById('userNameStart');
-                if (elName && n) elName.value = n;
             } catch (err) {
                 console.warn('Could not read from localStorage', err);
             }
-        }
-
-        function startQuiz() {
-            const nameInput = document.getElementById('userNameStart');
-            const userName = nameInput ? nameInput.value.trim() : '';
-
-            if (!userName || userName.length < 2) {
-                showNotification('Please enter your full name!', 'warning');
-                nameInput?.focus();
-                return;
-            }
-            currentUserName = userName;
-
-            try {
-                localStorage.setItem('ogdcl_user_name', userName);
-            } catch (e) {}
-
-            // If admin added more than 5 questions, select any 5 questions for this user
-            const poolSource = (Array.isArray(window.allModuleMcqsPool) && window.allModuleMcqsPool.length > 5)
-                ? window.allModuleMcqsPool
-                : (quizQuestions.length > 5 ? [...quizQuestions] : null);
-            if (poolSource) {
-                const sampled = [...poolSource].sort(() => 0.5 - Math.random()).slice(0, 5);
-                quizQuestions.splice(0, quizQuestions.length, ...sampled);
-            }
-
-            currentQuizIndex = 0;
-            totalQuestions = 0;
-            correctAnswers = 0;
-
-            const nameSec = document.getElementById('name-input-section');
-            const quizContent = document.getElementById('quiz-content');
-            if (nameSec) nameSec.style.display = 'none';
-            if (quizContent) quizContent.style.display = 'block';
-
-            const dName = document.getElementById('displayUserName');
-            if (dName) dName.textContent = userName;
-
-            renderCurrentIndexQuestion();
-            showNotification(`Welcome ${userName}! Quiz started.`, 'success');
-        }
-
-        const SCORING = {
-            tip_interaction: 5,
-            quiz_correct: 20,
-            quiz_attempt: 0,
-            floating_tip: 5,
-            hero_button: 5,
-            threat_alert_button: 5,
-            time_bonus_per_minute: 0,
-            completion_bonus: 0,
-            week1_button: 5
-        };
-
-        const SECURITY_LEVELS = [
-            { name: 'Beginner', threshold: 0, color: '#ff6b6b', icon: '🔓', bgColor: 'rgba(255, 107, 107, 0.2)' },
-            { name: 'Aware', threshold: 20, color: '#ffd93d', icon: '⚠️', bgColor: 'rgba(255, 217, 61, 0.2)' },
-            { name: 'Cautious', threshold: 40, color: '#6bcf7f', icon: '🛡️', bgColor: 'rgba(107, 207, 127, 0.2)' },
-            { name: 'Secure', threshold: 60, color: '#4ecdc4', icon: '🔐', bgColor: 'rgba(78, 205, 196, 0.2)' },
-            { name: 'Expert', threshold: 80, color: '#45b7d1', icon: '👑', bgColor: 'rgba(69, 183, 209, 0.2)' },
-            { name: 'Guardian', threshold: 100, color: '#ff00ff', icon: '🚀', bgColor: 'rgba(255, 0, 255, 0.2)' }
-        ];
-
-        window.quizQuestions = [
-            {
-                question: "Which of these makes the strongest password?",
-                options: ["Password123", "mypassword", "M7$kL9#pR2@qN8!", "123456789"],
-                correct: 2,
-                explanation: "Complex passwords with mixed characters, symbols, and adequate length are exponentially more secure and virtually impossible to crack through brute force attacks."
-            },
-            {
-                question: "What is the safest way to connect to public Wi-Fi?",
-                options: ["Connect directly", "Use a VPN", "Share your hotspot", "Disable firewall"],
-                correct: 1,
-                explanation: "A VPN encrypts your internet traffic, protecting your data from potential eavesdroppers on public networks."
-            },
-            {
-                question: "How often should you update your software?",
-                options: ["Never", "Once a year", "When prompted/available", "Only when broken"],
-                correct: 2,
-                explanation: "Regular updates patch security vulnerabilities that hackers could exploit to gain unauthorized access to your system."
-            },
-            {
-                question: "What should you do with suspicious emails?",
-                options: ["Click all links", "Forward to friends", "Delete and report", "Reply with info"],
-                correct: 2,
-                explanation: "Deleting suspicious emails and reporting them helps protect you and others from potential phishing attacks."
-            },
-            {
-                question: "What makes two-factor authentication effective?",
-                options: ["Uses two passwords", "Requires something you know + something you have", "Takes twice as long", "Works on two devices"],
-                correct: 1,
-                explanation: "2FA combines something you know (password) with something you have (phone/token), making unauthorized access extremely difficult."
-            }
-        ];
-        let quizQuestions = window.quizQuestions;
-
-        window.applyDynamicQuizQuestions = function(newMcqs, fullPool) {
-            if (Array.isArray(newMcqs) && newMcqs.length > 0) {
-                if (Array.isArray(fullPool)) window.allModuleMcqsPool = fullPool;
-                // If more than 5 questions, pick any 5 questions
-                const pool = newMcqs.length > 5
-                    ? [...newMcqs].sort(() => 0.5 - Math.random()).slice(0, 5)
-                    : newMcqs;
-                quizQuestions.splice(0, quizQuestions.length, ...pool);
-                if (typeof renderCurrentIndexQuestion === 'function' && currentQuizIndex === 0) {
-                    renderCurrentIndexQuestion();
-                }
-            }
-        };
-
-        function renderCurrentIndexQuestion() {
-            if (!quizQuestions || quizQuestions.length === 0) return;
-            if (currentQuizIndex >= quizQuestions.length) {
-                showQuizCompletion();
-                return;
-            }
-            const quiz = quizQuestions[currentQuizIndex];
-            const qEl = document.getElementById('quiz-question');
-            if (qEl) qEl.innerHTML = `<strong>Question ${currentQuizIndex + 1}/${quizQuestions.length}:</strong><br>${quiz.question}`;
-            const optionsDiv = document.getElementById('quiz-options');
-            if (optionsDiv) {
-                optionsDiv.innerHTML = '';
-                quiz.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'quiz-button';
-                    button.textContent = option;
-                    button.onclick = () => {
-                        optionsDiv.querySelectorAll('.quiz-button').forEach(btn => btn.disabled = true);
-                        handleQuizAnswer(index === quiz.correct, option);
-                    };
-                    optionsDiv.appendChild(button);
-                });
-            }
-            const resEl = document.getElementById('quiz-result');
-            if (resEl) resEl.innerHTML = '';
         }
 
         function toggleMenu() {
@@ -1336,9 +942,9 @@
             modal.className = 'lock-modal';
             modal.innerHTML = `
                 <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
-                <h2>Week Locked!</h2>
-                <p><strong>${weekName}</strong> is currently locked. Complete Week 1 first to unlock the next week's content!</p>
-                <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 15px;">Keep learning and earning points to progress through all cybersecurity modules.</p>
+                <h2>Activity Locked!</h2>
+                <p><strong>${weekName}</strong> is currently locked. Complete Activity 1 first to unlock subsequent modules!</p>
+                <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 15px;">Complete each training module to progress through all cybersecurity activities.</p>
                 <button onclick="this.parentElement.remove()">Got It!</button>
             `;
             document.body.appendChild(modal);
@@ -1347,127 +953,11 @@
                     modal.remove();
                 }
             }, 8000);
-            showNotification(`${weekName} is locked! Complete Week 1 to unlock more content.`, 'warning');
-        }
-
-        function updateScore(points, reason = '') {
-            userScore += points;
-            document.getElementById('userScore').textContent = userScore;
-
-            const newLevel = getCurrentSecurityLevel();
-            if (newLevel.name !== securityLevelAchieved) {
-                const oldLevel = securityLevelAchieved;
-                securityLevelAchieved = newLevel.name;
-                showLevelUpNotification(oldLevel, newLevel);
-            }
-
-            updateScoreVisual();
-            updateProgressBar();
-            animateScoreIncrease();
-
-            logAnalytics('score_update', {
-                points: points,
-                totalScore: userScore,
-                reason: reason,
-                level: securityLevelAchieved
-            });
-        }
-
-        function getCurrentSecurityLevel() {
-            for (let i = SECURITY_LEVELS.length - 1; i >= 0; i--) {
-                if (userScore >= SECURITY_LEVELS[i].threshold) {
-                    return SECURITY_LEVELS[i];
-                }
-            }
-            return SECURITY_LEVELS[0];
-        }
-
-        function updateScoreVisual() {
-            const currentLevel = getCurrentSecurityLevel();
-            const scoreElement = document.getElementById('userScore');
-            const levelIconElement = document.getElementById('levelIcon');
-            const levelNameElement = document.getElementById('levelName');
-            const scoreDisplay = document.querySelector('.score-display');
-
-            scoreElement.style.color = currentLevel.color;
-            scoreElement.style.textShadow = `0 0 10px ${currentLevel.color}`;
-            levelIconElement.textContent = currentLevel.icon;
-            levelNameElement.textContent = currentLevel.name;
-            levelNameElement.style.color = currentLevel.color;
-
-            scoreDisplay.style.background = currentLevel.bgColor;
-            scoreDisplay.style.borderColor = currentLevel.color;
-        }
-
-        function updateProgressBar() {
-            const progressBar = document.getElementById('progressBar');
-            if (progressBar) {
-                const percent = Math.min(100, Math.max(0, userScore));
-                progressBar.style.width = percent + '%';
-            }
-        }
-
-        function animateScoreIncrease() {
-            const scoreElement = document.getElementById('userScore');
-            scoreElement.style.transform = 'scale(1.3)';
-            scoreElement.style.transition = 'transform 0.4s ease';
-
-            setTimeout(() => {
-                scoreElement.style.transform = 'scale(1)';
-            }, 400);
-        }
-
-        function showLevelUpNotification(oldLevel, newLevel) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: linear-gradient(45deg, ${newLevel.color}, ${newLevel.color}aa);
-                color: white;
-                padding: 40px 50px;
-                border-radius: 25px;
-                z-index: 20000;
-                text-align: center;
-                box-shadow: 0 25px 80px rgba(0,0,0,0.6);
-                backdrop-filter: blur(20px);
-                border: 3px solid ${newLevel.color};
-                animation: levelUpAnimation 1s ease-out;
-                max-width: 450px;
-            `;
-
-            notification.innerHTML = `
-                <div style="font-size: 5rem; margin-bottom: 20px;">${newLevel.icon}</div>
-                <h2 style="margin-bottom: 15px; font-size: 2.5rem;">LEVEL UP!</h2>
-                <p style="margin-bottom: 10px; font-size: 1.2rem;">Congratulations! You've reached</p>
-                <p style="margin-bottom: 20px; font-size: 1.8rem; font-weight: bold;">${newLevel.name} Level</p>
-                <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 25px;">Total Score: ${userScore} points</p>
-                <button onclick="this.parentElement.remove()" 
-                        style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: 600;">
-                    Continue Learning
-                </button>
-            `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                showNotification(`Welcome to ${newLevel.name} level! Your cybersecurity knowledge is growing!`, 'success');
-            }, 1000);
-
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    notification.remove();
-                }
-            }, 10000);
+            showNotification(`${weekName} is locked! Complete Activity 1 first.`, 'warning');
         }
 
         function trackInteraction(action) {
-            if (userInteractions[action]) {
-                showNotification('You already earned points for this!', 'info');
-                return;
-            }
-
+            if (userInteractions[action]) return;
             userInteractions[action] = 1;
 
             if (action.includes('tip')) {
@@ -1477,19 +967,13 @@
                 }
             }
 
-            let points = SCORING[action.replace('-', '_')] || SCORING.tip_interaction;
-
-            updateScore(points, action);
-
             logAnalytics(action, {
                 count: userInteractions[action],
                 timestamp: new Date().toISOString(),
-                sessionDuration: Date.now() - sessionStartTime,
-                pointsAwarded: points
+                sessionDuration: Date.now() - sessionStartTime
             });
 
-            showInteractionFeedback(action, points);
-            checkCompletionBonus();
+            showInteractionFeedback(action);
         }
 
         function logAnalytics(event, data) {
@@ -1497,7 +981,6 @@
                 visitorId: uniqueVisitorId,
                 event: event,
                 data: data,
-                totalScore: userScore,
                 userAgent: navigator.userAgent,
                 screenResolution: screen.width + 'x' + screen.height,
                 timestamp: new Date().toISOString()
@@ -1509,21 +992,21 @@
             window.sessionAnalytics.push(analyticsData);
         }
 
-        function showInteractionFeedback(action, points = 0) {
+        function showInteractionFeedback(action) {
             const messages = {
-                'hero-button': `Ready to learn! Your cybersecurity journey begins! (+${points} points)`,
-                'password-tip': `Excellent! Strong passwords are your first defense! (+${points} points)`,
-                '2fa-tip': `Smart! 2FA blocks 99.9% of automated attacks! (+${points} points)`,
-                'phishing-tip': `Great awareness! Phishing is the #1 attack vector! (+${points} points)`,
-                'update-tip': `Perfect! Patched systems stop most exploits! (+${points} points)`,
-                'wifi-tip': `Wise choice! Public WiFi can be dangerous! (+${points} points)`,
-                'backup-tip': `Essential! Backups defeat ransomware! (+${points} points)`,
-                'threat-alert-button': `Stay informed about current threats! (+${points} points)`,
-                'floating-tip': `Active learning - excellent security habit! (+${points} points)`
+                'hero-button': 'Ready to learn! Explore the training activities above to begin.',
+                'password-tip': 'Strong passwords and password managers are your first line of defense!',
+                '2fa-tip': 'Two-factor authentication blocks over 99% of automated account takeovers!',
+                'phishing-tip': 'Great vigilance! Phishing remains the #1 initial attack vector worldwide.',
+                'update-tip': 'Keeping software up-to-date patches vital security vulnerabilities promptly.',
+                'wifi-tip': 'Always use VPNs and verified connections on public Wi-Fi networks!',
+                'backup-tip': 'Regular, isolated backups safeguard against ransomware and accidental data loss.',
+                'threat-alert-button': 'Stay informed about emerging threats and security advisories!',
+                'floating-tip': 'Consistent awareness turns every employee into a human firewall!'
             };
 
-            const message = messages[action] || `Learning through exploration! (+${points} points)`;
-            showNotification(message, 'success');
+            const message = messages[action] || 'Continuous awareness is key to cybersecurity!';
+            showNotification(message, 'info');
         }
 
         function showNotification(message, type = 'info') {
@@ -1570,316 +1053,12 @@
             }, 5000);
         }
 
-        function handleQuizAnswer(isCorrect, selectedAnswer) {
-            totalQuestions++;
-            const resultDiv = document.getElementById('quiz-result');
 
-            let bonusPoints = 0;
-            if (isCorrect) {
-                correctAnswers++;
-                bonusPoints = SCORING.quiz_correct;
-                updateScore(bonusPoints, 'quiz_correct');
-            }
-
-            logAnalytics('quiz_answer', {
-                correct: isCorrect,
-                selectedAnswer: selectedAnswer,
-                bonusPoints: bonusPoints,
-                totalCorrect: correctAnswers,
-                totalQuestions: totalQuestions
-            });
-
-            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-            const currentQuestion = quizQuestions[currentQuizIndex] || {};
-
-            if (isCorrect) {
-                resultDiv.innerHTML = `
-                    <div style="color: #4ecdc4; margin-top: 30px; padding: 25px; background: rgba(78, 205, 196, 0.15); border-radius: 20px; border: 2px solid rgba(78, 205, 196, 0.4);">
-                        <div style="font-size: 2.2rem; margin-bottom: 12px;">✅ +${bonusPoints} points!</div>
-                        <h4 style="margin-bottom: 12px; font-size: 1.25rem;">Perfect! Outstanding security knowledge!</h4>
-                        <p>${currentQuestion.explanation || ''}</p>
-                        <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 10px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
-                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
-                        </div>
-                    </div>
-                `;
-                showNotification(`Outstanding! (+${bonusPoints} points)`, 'success');
-            } else {
-                resultDiv.innerHTML = `
-                    <div style="color: #ffd93d; margin-top: 30px; padding: 25px; background: rgba(255, 217, 61, 0.15); border-radius: 20px; border: 2px solid rgba(255, 217, 61, 0.4);">
-                        <div style="font-size: 2.2rem; margin-bottom: 12px;">📚 Keep learning!</div>
-                        <h4 style="margin-bottom: 12px; font-size: 1.25rem;">Good effort!</h4>
-                        <p>${currentQuestion.explanation || ''}</p>
-                        <div style="margin-top: 15px; font-size: 0.95rem; opacity: 0.9; padding: 10px; background: rgba(255, 217, 61, 0.1); border-radius: 10px;">
-                            📊 Quiz Progress: ${Math.min(totalQuestions, quizQuestions.length)}/${quizQuestions.length} | Accuracy: ${accuracy}%
-                        </div>
-                    </div>
-                `;
-                showNotification('Great attempt! Keep learning!', 'warning');
-            }
-
-            if (totalQuestions >= quizQuestions.length) {
-                setTimeout(() => {
-                    showQuizCompletion();
-                }, 2500);
-            } else {
-                currentQuizIndex++;
-                setTimeout(renderCurrentIndexQuestion, 3000);
-            }
-        }
-
-        async function saveToDatabase(override = {}) {
-            try {
-                const nameInput = document.getElementById('userName') || document.getElementById('userNameEnd') || document.getElementById('userNameStart');
-                const name = (override.userName || (nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
-                const email = (override.email || currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
-
-                if (!name) {
-                    console.log('Skipping save: no username provided yet');
-                    return null;
-                }
-
-                currentUserName = name;
-                if (email) currentUserEmail = email;
-
-                try {
-                    localStorage.setItem('ogdcl_user_name', name);
-                    if (email) localStorage.setItem('ogdcl_user_email', email);
-                } catch (e) {}
-
-                const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
-                const currentLevel = getCurrentSecurityLevel();
-                const videoMarks = window.videoWatched ? 50 : 0;
-                const quizMarks = correctAnswers > 0 ? (correctAnswers * 20) : Math.max(0, userScore - videoMarks);
-
-                const payload = {
-                    userName: name,
-                    email: email,
-                    score: userScore || (quizMarks + videoMarks),
-                    level: currentLevel.name,
-                    accuracy: accuracy,
-                    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                    videoCompleted: !!window.videoWatched,
-                    videoMarks: videoMarks,
-                    quizMarks: quizMarks,
-                    correctAnswers: correctAnswers || (totalQuestions || 5),
-                    totalQuestions: totalQuestions || 5,
-                    activity: 'Index: Cybersecurity Awareness Overview',
-                    generateCertificate: Boolean(override.generateCertificate)
-                };
-
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-                if (data && data.alreadyGenerated) {
-                    return data;
-                }
-                if (response.ok && data.success) {
-                    if (data.data?.certificateId) localStorage.setItem('ogdcl_certificate_id', data.data.certificateId);
-                    console.log('Quiz data saved to admin dashboard:', data);
-                    showNotification('✅ Quiz results recorded!', 'success');
-                    return data;
-                } else {
-                    console.error('Error saving quiz results:', data);
-                    showNotification(data?.message || 'Could not save to database', 'warning');
-                    return data || null;
-                }
-            } catch (error) {
-                console.error('Network error saving to database:', error);
-                showNotification('Network error. Data not saved.', 'error');
-                return null;
-            }
-        }
-
-        async function showQuizCompletion() {
-            const quizContainer = document.querySelector('.security-quiz');
-            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
-            const currentLevel = getCurrentSecurityLevel();
-            const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || '';
-            const email = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
-            const activityName = 'Index: Cybersecurity Awareness Overview';
-
-            if (displayName) {
-                saveToDatabase({ generateCertificate: false });
-            }
-
-            // Check if certificate has already been generated
-            const alreadyGenerated = (typeof window.checkCertificateClaimed === 'function')
-                ? await window.checkCertificateClaimed(displayName, activityName)
-                : false;
-
-            quizContainer.innerHTML = `
-                <div style="text-align: center; padding: 40px 20px;">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">${currentLevel.icon}</div>
-                    <h2 style="color: #00ffff; margin-bottom: 20px; font-size: 2.5rem;">Quiz Complete!</h2>
-                    
-                    <div style="background: rgba(0, 255, 255, 0.1); padding: 30px; border-radius: 20px; margin: 20px auto; max-width: 600px; border: 2px solid rgba(0, 255, 255, 0.3);">
-                        <h3 style="color: #4ecdc4; margin-bottom: 15px; font-size: 1.5rem;">Your Performance</h3>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Questions: ${totalQuestions || 5}/${quizQuestions.length}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Correct: ${correctAnswers || 0}</p>
-                        <p style="font-size: 1.2rem; margin-bottom: 10px;">Accuracy: ${accuracy}%</p>
-                        <p style="font-size: 1.4rem; font-weight: bold; color: ${currentLevel.color};">Level: ${currentLevel.name}</p>
-                        <p style="font-size: 1.6rem; font-weight: bold; color: #00ffff; margin-top: 15px;">Quiz Score: ${correctAnswers * 20} / 100 points</p>
-                    </div>
-
-                    <div style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                        <input type="text" id="userName" placeholder="Full name for certificate" value="${escHtml(displayName)}" readonly
-                               style="padding: 15px 20px; border: 2px solid #00ffff; border-radius: 25px; background: rgba(0, 255, 255, 0.1); color: white; font-size: 1.15rem; text-align: center; margin-bottom: 15px; width: 100%; max-width: 360px;" />
-                        <br>
-
-                        <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                            ${alreadyGenerated ? `
-                                <button id="genCertBtn" disabled
-                                        style="background: #4a5568; color: #a0aec0; border: none; cursor: not-allowed; opacity: 0.65; box-shadow: none; padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; pointer-events: none;"
-                                        title="Certificate already generated for this overview on this device.">
-                                    🔒 Certificate Already Generated
-                                </button>
-                            ` : `
-                                <button id="genCertBtn" onclick="generateCertificate()"
-                                        style="background: linear-gradient(45deg, #4ecdc4, #45b7d1); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4); padding: 15px 32px; border-radius: 30px; font-size: 1.15rem; font-weight: 700; transition: all 0.3s ease;">
-                                    📄 Download PDF Certificate
-                                </button>
-                            `}
-                            <button onclick="resetQuiz()" 
-                                    style="background: linear-gradient(45deg, #ff6b6b, #ff5252); color: white; padding: 15px 30px; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-                                Retake Quiz
-                            </button>
-                        </div>
-                        ${alreadyGenerated ? `
-                            <p style="color: #ffd166; font-size: 0.88rem; margin-top: 10px; font-weight: 500;">
-                                ⚠️ Certificate for this overview has already been generated on this device. Retaking the quiz is for practice only.
-                            </p>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        async function generateCertificate() {
-            const nameInput = document.getElementById('userName') || document.getElementById('userNameStart');
-            const enteredName = ((nameInput ? nameInput.value.trim() : '') || currentUserName || localStorage.getItem('ogdcl_user_name') || '').trim();
-            const activityName = 'Index: Cybersecurity Awareness Overview';
-
-            if (!enteredName || enteredName.length < 2) {
-                showNotification('Please enter your name first!', 'warning');
-                return;
-            }
-
-            if (typeof window.checkCertificateClaimed === 'function' && window.checkCertificateClaimed(enteredName, activityName)) {
-                showNotification('You have already generated a certificate for this overview on this device.', 'warning');
-                const btn = document.getElementById('genCertBtn');
-                if (btn && window.disableCertButton) window.disableCertButton(btn);
-                return;
-            }
-
-            const btn = document.getElementById('genCertBtn');
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = '⏳ Generating PDF...';
-            }
-
-            // 1. SAVE TO DATABASE WITH generateCertificate: true
-            let dbResult = null;
-            try {
-                dbResult = await saveToDatabase({
-                    userName: enteredName,
-                    generateCertificate: true
-                });
-            } catch (err) {
-                console.warn('Could not save certificate record to DB:', err);
-            }
-
-            // 2. GENERATE AND DOWNLOAD PDF CERTIFICATE
-            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : (userScore > 0 ? 100 : 0);
-            const currentLevel = getCurrentSecurityLevel();
-            const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            try {
-                if (typeof window.downloadOGDCLCertificate === 'function') {
-                    window.downloadOGDCLCertificate({
-                        userName: enteredName,
-                        score: userScore,
-                        accuracy: accuracy,
-                        level: currentLevel.name,
-                        title: 'Cybersecurity Awareness Assessment',
-                        date: currentDate
-                    });
-                }
-                if (typeof window.markCertificateClaimed === 'function') {
-                    window.markCertificateClaimed(enteredName, activityName, dbResult?.data?.certificateId);
-                }
-
-                if (btn && window.disableCertButton) {
-                    window.disableCertButton(btn);
-                }
-
-                showNotification(`✅ Official certificate generated and downloaded for ${enteredName}!`, 'success');
-            } catch (err) {
-                console.error('Error generating PDF:', err);
-                showNotification('Data saved! PDF export encountered an issue.', 'warning');
-                if (btn && (!window.checkCertificateClaimed || !window.checkCertificateClaimed(enteredName, activityName))) {
-                    btn.disabled = false;
-                    btn.textContent = '📄 Download PDF Certificate';
-                }
-            }
-        }
-
-        async function generateCertificateFromEnd() {
-            return generateCertificate();
-        }
-
-        function resetQuiz() {
-            if (confirm('Are you sure you want to retake the quiz?')) {
-                currentQuizIndex = 0;
-                correctAnswers = 0;
-                totalQuestions = 0;
-
-                const quizContainer = document.querySelector('.security-quiz');
-                quizContainer.innerHTML = `
-                    <h3>Quick Security Quiz</h3>
-
-                    <div id="name-input-section" class="name-input-section">
-                        <p>Enter your details to begin the assessment.</p>
-                        <div class="name-input-grid">
-                            <input type="text" id="userNameStart" placeholder="Full Name *" required />
-                        </div>
-                        <button onclick="startQuiz()" class="start-button">Start Quiz</button>
-                    </div>
-
-                    <div id="quiz-content" style="display: none;">
-                        <div class="user-name-display">
-                            <p>
-                                <strong>Name:</strong> <span id="displayUserName" style="color: #00ffff;"></span>
-                            </p>
-                        </div>
-                        <p id="quiz-question"></p>
-                        <div id="quiz-options"></div>
-                        <div id="quiz-result"></div>
-                    </div>
-                `;
-
-                loadStoredUserData();
-                if (typeof renderGoogleAuthUI === 'function') {
-                    renderGoogleAuthUI();
-                }
-                showNotification('Quiz reset! Ready for a fresh start.', 'info');
-            }
-        }
 
         function awardVideoMarks() {
             if (!window.videoWatched) {
                 window.videoWatched = true;
-                updateScore(50, 'video_completed');
-                showNotification('🎬 Video Complete! You earned 50 marks!', 'success');
-                if (currentUserName) {
-                    saveToDatabase();
-                }
-            } else {
-                showNotification('Video marks already awarded!', 'info');
+                showNotification('🎬 Video Complete! Ready to explore Activity 1.', 'success');
             }
         }
         window.awardVideoMarks = awardVideoMarks;
@@ -1927,21 +1106,8 @@
             }
         });
 
-        function checkCompletionBonus() {
-            const requiredActions = ['password-tip', '2fa-tip', 'phishing-tip', 'update-tip', 'wifi-tip', 'backup-tip'];
-            const completedActions = requiredActions.filter(action => userInteractions[action] > 0);
-
-            if (completedActions.length === requiredActions.length && !window.completionBonusAwarded) {
-                window.completionBonusAwarded = true;
-                updateScore(SCORING.completion_bonus, 'completion_bonus');
-                showNotification(`COMPLETION MASTER! (+${SCORING.completion_bonus} points)`, 'success');
-            }
-        }
-
         window.addEventListener('load', function () {
             loadStoredUserData();
-            updateScoreVisual();
-            updateProgressBar();
 
             const v = document.getElementById('trainingVideo');
             if (v) {
@@ -1950,7 +1116,7 @@
                 });
             }
 
-            showNotification('Welcome to Cybersecurity Shield! Earn points by exploring!', 'success');
+            showNotification('Welcome to Cybersecurity Shield! Explore essential security practices!', 'success');
 
             setTimeout(() => {
                 showNotification('Pro tip: Click on security cards to learn!', 'info');
@@ -1959,12 +1125,9 @@
 
         window.addEventListener('beforeunload', function () {
             logAnalytics('session_end', {
-                totalScore: userScore,
                 sessionDuration: Date.now() - sessionStartTime,
                 scrollDepth: scrollDepth,
-                completedActions: Object.keys(userInteractions).length,
-                securityLevel: securityLevelAchieved,
-                quizAccuracy: totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
+                completedActions: Object.keys(userInteractions).length
             });
         });
 
@@ -2023,14 +1186,8 @@
                     body.site-locked {
                         padding-top: 56px !important;
                     }
-                    body.site-locked .quiz-button,
                     body.site-locked .weeks-buttons button,
                     body.site-locked .weeks-buttons a,
-                    body.site-locked button[onclick*="quiz"],
-                    body.site-locked button[onclick*="Quiz"],
-                    body.site-locked button[onclick*="handleQuizAnswer"],
-                    body.site-locked button[onclick*="resetQuiz"],
-                    body.site-locked button[onclick*="downloadCertificate"],
                     body.site-locked button[onclick*="showRandomTip"],
                     body.site-locked .tip-button,
                     body.site-locked .security-card {
