@@ -18,7 +18,7 @@
     <!-- jsPDF Library & Certificate Assets -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
-    <script src="certificate.js?v=9" defer></script>
+    <script src="certificate.js?v=12" defer></script>
     <script src="activity-lock.js?v=activity-banner-2" defer></script>
     <script src="https://www.youtube.com/iframe_api" defer></script>
 
@@ -244,7 +244,14 @@
             font-size: 1.5rem;
             color: #48cae4;
             font-weight: 600;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
+        }
+
+        .hero .video-heading {
+            margin: 0 0 18px;
+            color: #48cae4;
+            font-size: 1.6rem;
+            font-weight: 700;
         }
 
         .content-wrapper {
@@ -679,9 +686,10 @@
                 <div class="weeks-buttons" id="navMenu">
                     <a href="index.html" class="week-button back-home-btn">Home</a>
                     <a href="mfa-week.html" class="week-button">Activity 1</a>
-                    <a href="social-engineering-week.html" class="week-button">Activity 2</a>
+                    <a href="phishing-week.html" class="week-button">Activity 2</a>
                     <a href="privacy-week.html" class="week-button active">Activity 3</a>
-                    <a href="phishing-week.html" class="week-button">Activity 4</a>
+                    <a href="social-engineering-week.html" class="week-button">Activity 4</a>
+                    
                 </div>
 
                 <div class="score-display">
@@ -706,14 +714,13 @@
     <section class="hero">
         <h1>Activity 3: Data Privacy & Protection</h1>
         <p>Safeguard Sensitive Information, Master PII Standards & Defend OGDCL Assets</p>
+        <h2 class="video-heading">Training Video</h2>
     </section>
 
     <!-- Content Section -->
     <div class="content-wrapper">
         <!-- Study Section (Left Column) -->
         <div class="study-section">
-            <h2 class="section-title">Training Video</h2>
-
             <div class="video-container">
                 <iframe id="trainingVideoIframe" src="" title="Data Privacy &amp; Cybersecurity Training Video"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
@@ -1424,7 +1431,6 @@
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: userName,
-                        refNumber: localStorage.getItem('ogdcl_certificate_id') || undefined,
                         score: userScore,
                         accuracy: accuracy,
                         level: currentLevel.name,

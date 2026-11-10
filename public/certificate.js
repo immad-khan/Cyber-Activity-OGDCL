@@ -1,5 +1,5 @@
 // File: public/certificate.js
-// Official OGDCL Certificate Generator (landscape A4, NUST-style layout)
+// Official OGDCL Certificate Generator (landscape A4)
 
 (function (window) {
   'use strict';
@@ -58,14 +58,52 @@
       };
       shieldImg.src = 'cybershield.webp?t=' + Date.now();
     } catch (e) { }
+
+    // Faded background watermark
+    try {
+      const backgroundImg = new Image();
+      backgroundImg.onload = function () {
+        try {
+          const c = document.createElement('canvas');
+          c.width = backgroundImg.naturalWidth || backgroundImg.width;
+          c.height = backgroundImg.naturalHeight || backgroundImg.height;
+          const ctx = c.getContext('2d');
+          if (!ctx) return;
+          ctx.globalAlpha = 0.1;
+          ctx.drawImage(backgroundImg, 0, 0);
+          window.CERT_ASSETS = window.CERT_ASSETS || {};
+          window.CERT_ASSETS.background = c.toDataURL('image/png');
+        } catch (e) { }
+      };
+      backgroundImg.src = 'background.webp?t=' + Date.now();
+    } catch (e) { }
+
+    // Automatically keep cyber logo asset in sync with cyber-logo.png (top-right logo)
+    try {
+      const cyberImg = new Image();
+      cyberImg.crossOrigin = 'anonymous';
+      cyberImg.onload = function () {
+        try {
+          const c = document.createElement('canvas');
+          c.width = cyberImg.naturalWidth || cyberImg.width;
+          c.height = cyberImg.naturalHeight || cyberImg.height;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(cyberImg, 0, 0);
+          window.CERT_ASSETS = window.CERT_ASSETS || {};
+          window.CERT_ASSETS.cyberLogo = c.toDataURL('image/png');
+        } catch (e) { }
+      };
+      cyberImg.src = 'cyber-logo.png?t=' + Date.now();
+    } catch (e) { }
   }
 
-  // ── Palette (unchanged from the original design) ──
+  // ── Palette ──
   const C = {
-    teal: [0, 180, 150], tealDk: [0, 140, 115],
-    ink: [15, 23, 42], body: [30, 41, 59], slate: [51, 65, 85], muted: [71, 85, 105],
-    faint: [148, 163, 184], hdr1: [20, 24, 33], hdr2: [50, 60, 75], hdr3: [80, 90, 105],
-    frame: [210, 215, 225], sep: [220, 225, 235], foot: [226, 232, 240], box: [248, 250, 252],
+    teal: [73, 193, 165],
+    gold: [190, 143, 43],
+    blue: [0, 126, 224],
+    ink: [25, 38, 58],
+    muted: [71, 85, 105],
     white: [255, 255, 255]
   };
 
@@ -83,15 +121,8 @@
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
     const userName = (opts.userName || 'Participant').trim();
-    const score = opts.score || 0;
-    const accuracy = opts.accuracy || 100;
-    const level = opts.level || 'Guardian';
-    const title = opts.title || 'Cybersecurity Awareness & Digital Safety Assessment';
-    const currentDate = opts.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const fallbackId = (window.crypto && typeof window.crypto.randomUUID === 'function')
-      ? window.crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()
-      : `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-    const refNumber = opts.refNumber || `OGDCL-${new Date().getFullYear()}-${fallbackId}`;
+    const title = opts.title || 'Cybersecurity Awareness Assessment';
+    const currentDate = opts.date || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
     const W = 297, H = 210, CX = W / 2;
     const assets = window.CERT_ASSETS || {};
@@ -126,107 +157,64 @@
       }
     }
 
-    // ── Background + double frame ──
+    // ── Background + frame ──
     doc.setFillColor(...C.white);
     doc.rect(0, 0, W, H, 'F');
-    doc.setDrawColor(...C.frame); doc.setLineWidth(0.4);
-    doc.rect(10.2, 10.2, W - 20.4, H - 20.4);
+    if (assets.background) placeImage(assets.background, 80, 38, 137, 130);
     doc.setDrawColor(...C.teal); doc.setLineWidth(0.8);
-    doc.rect(12.4, 12.4, W - 24.8, H - 24.8);
+    doc.rect(6, 6, W - 12, H - 12);
 
-    // ── 1. Header ──
-    // OGDCL logo on left
-    if (assets.logo) placeImage(assets.logo, 16, 14, 46, 20);
-    // CyberShield logo on opposite side (right) - balanced with OGDCL logo
-    const shieldAsset = assets.cybershield || assets.shield;
-    if (shieldAsset) placeImage(shieldAsset, 244, 14, 37, 17.5);
+    // ── Top logos (left: existing logo, right: cyber-logo.png, mirrored) ──
+    const LOGO_W = 40, LOGO_H = 16, LOGO_MARGIN = 19, LOGO_TOP = 13;
+    if (assets.logo) placeImage(assets.logo, LOGO_MARGIN, LOGO_TOP, LOGO_W, LOGO_H);
+    if (assets.cyberLogo) placeImage(assets.cyberLogo, W - LOGO_MARGIN - LOGO_W, LOGO_TOP, LOGO_W, LOGO_H);
 
-    font('helvetica', 'bold', 17, C.hdr1);
-    text('OIL & GAS DEVELOPMENT COMPANY LTD', CX, baseline(15, 17), 'center', 0.12);
-    font('times', 'bold', 15, C.hdr2);
-    text('Cybersecurity Department', CX, baseline(24, 15), 'center', 0.16);
-    font('helvetica', 'normal', 8, C.hdr3);
-    text('ISLAMABAD, PAKISTAN', CX, baseline(32, 8), 'center', 0.56);
+    font('times', 'bold', 30, C.gold);
+    text('CERTIFICATE OF PARTICIPATION', CX, baseline(46, 30), 'center', 0.28);
+    font('helvetica', 'bold', 16, C.blue);
+    text('IS PROUDLY PRESENTED TO', CX, baseline(57, 16), 'center', 0.95);
 
-    line(20, 41.5, W - 20, 41.5, C.sep, 0.3);
-    line(128.5, 41.6, 168.5, 41.6, C.teal, 0.8);
-
-    // ── 2. Body ──
-    font('times', 'italic', 12, C.slate);
-    text('Awards this certificate of completion to', CX, baseline(51, 12), 'center');
-
-    // Name (bold), shrinks to fit
     const measureName = (pt) => {
-      doc.setFont('times', 'bold'); doc.setFontSize(pt);
+      doc.setFont('times', 'italic'); doc.setFontSize(pt);
       return doc.getTextWidth(userName);
     };
-    let namePt = 25;
-    while (namePt > 9 && measureName(namePt) > 235) namePt -= 0.5;
 
-    const nameBase = baseline(61, namePt);
-    font('times', 'bold', namePt, C.ink);
+    let namePt = 31;
+    while (namePt > 12 && measureName(namePt) > 220) namePt -= 0.5;
+    font('times', 'italic', namePt, C.ink);
+    const nameBase = baseline(70, namePt);
     doc.text(userName, CX, nameBase, { align: 'center' });
+    const nameWidth = measureName(namePt);
+    line(CX - nameWidth / 2, nameBase + 2, CX + nameWidth / 2, nameBase + 2, C.ink, 0.55);
 
-    font('times', 'italic', 12, C.slate);
-    text('for successfully completing the', CX, baseline(75, 12), 'center');
+    const completionText = 'has successfully completed activity on';
+    font('helvetica', 'normal', 15, C.ink);
+    text(completionText, CX, baseline(102, 15), 'center');
 
-    font('times', 'bolditalic', 20, C.ink);
-    text(`\u201C${title}\u201D`, CX, baseline(85, 20), 'center');
+    let titlePt = 26;
+    const measureTitle = (pt) => {
+      doc.setFont('times', 'bold'); doc.setFontSize(pt);
+      return doc.getTextWidth(title);
+    };
+    while (titlePt > 9 && measureTitle(titlePt) > 260) titlePt -= 0.5;
+    font('times', 'bold', titlePt, C.blue);
+    text(title, CX, baseline(111, titlePt), 'center');
 
-    // "Completed on <date>"
-    const dBase = baseline(98, 11.5);
-    font('times', 'italic', 11.5, C.slate);
-    const w1 = doc.getTextWidth('Completed on');
-    font('times', 'normal', 11.5, C.body);
-    const wSp = doc.getTextWidth(' ');
-    const w2 = doc.getTextWidth(currentDate);
-    const dx = CX - (w1 + wSp + w2) / 2;
-    font('times', 'italic', 11.5, C.slate);
-    doc.text('Completed on', dx, dBase);
-    font('times', 'normal', 11.5, C.body);
-    doc.text(currentDate, dx + w1 + wSp, dBase);
+    font('times', 'bolditalic', 18, C.ink);
+    text('Your commitment is our shield and your vigilance is our strength.', CX, baseline(133, 18), 'center');
 
-    // ── 3. Performance strip ──
-    doc.setFillColor(...C.box); doc.setDrawColor(...C.teal); doc.setLineWidth(0.4);
-    doc.roundedRect(83.7, 108.5, 129.6, 14, 2, 2, 'FD');
-    line(126.9, 108.7, 126.9, 122.3, C.sep, 0.3);
-    line(170.1, 108.7, 170.1, 122.3, C.sep, 0.3);
+    font('helvetica', 'normal', 11, C.ink);
+    text(currentDate, 66, 185, 'center');
+    line(32, 188, 100, 188, C.ink, 0.4);
+    font('helvetica', 'normal', 9, C.muted);
+    text('Date', 66, 193, 'center');
 
-    const stats = [
-      ['TOTAL SCORE', `${score} pts`, 105.4],
-      ['ACCURACY', `${accuracy}%`, CX],
-      ['SECURITY LEVEL', String(level), 191.6]
-    ];
-    stats.forEach(([label, value, cx]) => {
-      font('helvetica', 'bold', 6.5, C.tealDk);
-      text(label, cx, 113.3, 'center', 0.32);
-      font('helvetica', 'bold', 12, C.ink);
-      text(value, cx, 118.8, 'center');
-    });
-
-    // ── 4. Reference (left) and Signature (right) ──
-    // Note: Seal removed per user request
-    font('helvetica', 'bold', 9, C.ink);
-    text(refNumber, 55, 153.5, 'center');
-    line(33, 157.15, 77, 157.15, C.faint, 0.3);
-    font('helvetica', 'bold', 8.5, C.muted);
-    text('Certificate ID', 55, 162, 'center');
-
-    if (assets.signature) placeImage(assets.signature, 226.25, 137.5, 31.5, 18.6);
-    line(220, 157.15, 264, 157.15, C.faint, 0.3);
-    const sigX = 242;
-    font('helvetica', 'bold', 9.5, C.ink);
-    text('( M. Danish Hussain )', sigX, 162, 'center');
-    font('helvetica', 'normal', 8.5, C.muted);
-    text('Head Information Security', sigX, 166.3, 'center');
-    text('OGDCL Islamabad', sigX, 170.5, 'center');
-
-    // ── 6. Footer ──
-    line(20, 184.15, W - 20, 184.15, C.foot, 0.3);
-    font('helvetica', 'italic', 7, C.faint);
-    text('This certificate is an officially verified electronic credential issued by the OGDCL Information Security & Training Division.', CX, 188.85, 'center');
-    font('helvetica', 'normal', 6.5, C.faint);
-    text('Cybersecurity Department, OGDCL Head Office, Jinnah Avenue, Islamabad  |  Tel: 051-920024061, 4177  |  Email: cyber.security@ogdcl.com', CX, 193.2, 'center');
+    if (assets.signature) placeImage(assets.signature, 226, 169, 37, 13);
+    font('times', 'italic', 13, C.ink);
+    text('M. Danish Hussain', 244.5, 184, 'center');
+    line(210, 188, 279, 188, C.ink, 0.4);
+    font('helvetica', 'normal', 9, C.muted);
+    text('Head of Information/CISO', 244.5, 193, 'center');
 
     // Save PDF
     const safeFileName = userName.replace(/[^a-zA-Z0-9]/g, '_');
