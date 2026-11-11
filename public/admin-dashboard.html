@@ -1975,12 +1975,20 @@
         <div class="module-banner">
           <div class="module-banner-left">
             <div class="module-banner-icon" id="bannerIcon">🏠</div>
-            <div>
-              <div class="module-banner-title" id="bannerTitle">Index: Cybersecurity Overview</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div class="module-banner-title" id="bannerTitle">Index: Cybersecurity Overview</div>
+                <button type="button" class="btn-secondary" id="btnEditActivityName" onclick="openEditActivityNameModal()" style="padding: 4px 10px; font-size: 0.76rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; color: var(--accent-1); border-color: rgba(0, 255, 255, 0.4);" title="Edit Activity Name">
+                  ✏️ Edit Name
+                </button>
+              </div>
               <div class="module-banner-sub" id="bannerDesc">Foundational awareness video and introductory overview.</div>
             </div>
           </div>
           <div class="module-banner-actions">
+            <button type="button" class="btn-primary" id="btnEditActivityNameBanner" onclick="openEditActivityNameModal()" style="padding: 9px 15px; font-size: 0.82rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+              ✏️ Edit Activity Name
+            </button>
             <a href="index.html" target="_blank" class="live-link-btn" id="bannerPageLink">
               🔗 Open Live Page ↗
             </a>
@@ -2344,6 +2352,51 @@
     </div>
   </div>
 
+  <!-- Edit Activity Name & Details Modal -->
+  <div class="modal-backdrop" id="editActivityNameModal" style="display:none;"
+    onclick="if(event.target===this)closeEditActivityNameModal()">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-icon-danger" style="background: rgba(0, 255, 255, 0.15); color: #00ffff; border-color: rgba(0, 255, 255, 0.3);">✏️</div>
+        <div>
+          <div class="modal-title">Edit Activity Name & Details</div>
+          <div class="modal-sub" id="editActivityModalSub">Change the display name, full title, subtitle and description for this module</div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Activity Short Name / Badge Label</label>
+          <input type="text" class="form-input" id="editActShortName" placeholder="e.g. Activity 1" />
+          <div class="form-hint">Shown in top navigation tabs and left sidebar list.</div>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label">Activity Full Title / Main Heading</label>
+          <input type="text" class="form-input" id="editActTitle" placeholder="e.g. Activity 1: Password Security & Multi-Factor Authentication" />
+          <div class="form-hint">Main heading displayed in the module header banner and page hero.</div>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label">Sub-topic / Short Subtitle</label>
+          <input type="text" class="form-input" id="editActSub" placeholder="e.g. Password & Multi-Factor Auth" />
+          <div class="form-hint">Short topic subtitle shown under the tab button and sidebar.</div>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="form-label">Activity Description</label>
+          <textarea class="form-textarea" id="editActDesc" rows="3" placeholder="Brief overview of what this activity covers..."></textarea>
+          <div class="form-hint">Detailed description shown in the header banner.</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" type="button" onclick="closeEditActivityNameModal()">Cancel</button>
+        <button class="btn-primary" type="button" id="btnSaveActivityNameAction" onclick="executeSaveActivityName()">
+          💾 Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const ADMIN_TOKEN = 'cybershield-admin-2024';
     const API_USERS = '/api/get-users';
@@ -2364,6 +2417,7 @@
         id: 'index',
         name: 'Index',
         title: 'Index: Cybersecurity Awareness Overview',
+        sub: 'Overview & Home Page',
         desc: 'Introductory awareness video and cybersecurity overview.',
         icon: '🏠',
         pageUrl: 'index.html',
@@ -2373,6 +2427,7 @@
         id: 'activity_1',
         name: 'Activity 1',
         title: 'Activity 1: Password Security & Multi-Factor Authentication',
+        sub: 'Password & Multi-Factor Auth',
         desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
         icon: '🔐',
         pageUrl: 'mfa-week.html',
@@ -2382,6 +2437,7 @@
         id: 'activity_2',
         name: 'Activity 2',
         title: 'Activity 2: QR Code',
+        sub: 'Social Engineering Defense',
         desc: 'Pretexting, human manipulation, psychological urgency, and human firewall defenses.',
         icon: '🧠',
         pageUrl: 'social-engineering-week.html',
@@ -2391,6 +2447,7 @@
         id: 'activity_3',
         name: 'Activity 3',
         title: 'Activity 3: Data Privacy & Corporate Asset Protection',
+        sub: 'Data Privacy & Compliance',
         desc: 'Personally identifiable information (PII), clean desk policies, and confidentiality.',
         icon: '🛡️',
         pageUrl: 'privacy-week.html',
@@ -2400,15 +2457,16 @@
         id: 'activity_4',
         name: 'Activity 4',
         title: 'Activity 4: Social Engineering',
+        sub: 'Executive Phishing Defense',
         desc: 'Spear-phishing, business email compromise, deepfakes, and verification protocols.',
         icon: '🎣',
         pageUrl: 'phishing-week.html',
         pageName: 'Activity 4: Social Engineering'
       },
-      activity_1_banner: { id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing', desc: 'Video displayed above the Activity 1 hero section.', icon: '🎬', pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner' },
-      activity_2_banner: { id: 'activity_2_banner', name: 'Activity 2 QR Code Banner Video', title: 'Activity 2 QR Code Video Briefing', desc: 'Video displayed above the Activity 2 hero section.', icon: '🎬', pageUrl: 'social-engineering-week.html', pageName: 'Activity 2: Hero video banner' },
-      activity_3_banner: { id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing', desc: 'Video displayed above the Activity 3 hero section.', icon: '🎬', pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner' },
-      activity_4_banner: { id: 'activity_4_banner', name: 'Activity 4 Social Engineering Banner Video', title: 'Activity 4 Social Engineering Video Briefing', desc: 'Video displayed above the Activity 4 hero section.', icon: '🎬', pageUrl: 'phishing-week.html', pageName: 'Activity 4: Hero video banner' }
+      activity_1_banner: { id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing', sub: 'Above Activity 1 hero', desc: 'Video displayed above the Activity 1 hero section.', icon: '🎬', pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner' },
+      activity_2_banner: { id: 'activity_2_banner', name: 'Activity 2 QR Code Banner Video', title: 'Activity 2 QR Code Video Briefing', sub: 'Above Activity 2 hero', desc: 'Video displayed above the Activity 2 hero section.', icon: '🎬', pageUrl: 'social-engineering-week.html', pageName: 'Activity 2: Hero video banner' },
+      activity_3_banner: { id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing', sub: 'Above Activity 3 hero', desc: 'Video displayed above the Activity 3 hero section.', icon: '🎬', pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner' },
+      activity_4_banner: { id: 'activity_4_banner', name: 'Activity 4 Social Engineering Banner Video', title: 'Activity 4 Social Engineering Video Briefing', sub: 'Above Activity 4 hero', desc: 'Video displayed above the Activity 4 hero section.', icon: '🎬', pageUrl: 'phishing-week.html', pageName: 'Activity 4: Hero video banner' }
     };
 
     const ACTIVITIES = [
@@ -2422,6 +2480,7 @@
     let currentModuleId = 'index';
     let moduleVideosData = {};
     let moduleMcqsData = {};
+    let activityMetaData = {};
     let allUsers = [];
     let filtered = [];
     let isLocked = false;
@@ -2430,6 +2489,143 @@
     let activityLocks = { activity_1: false, activity_2: false, activity_3: false, activity_4: false };
     const PAGE_SIZE = 15;
     let currentPage = 1;
+
+    // ── Update Activity Labels Everywhere in Admin ──
+    function updateAllActivityLabels() {
+      Object.keys(MODULES_META).forEach(id => {
+        const meta = MODULES_META[id];
+        if (!meta) return;
+
+        // Top navigation tabs
+        const tab = document.querySelector(`.mod-tab[data-mod="${id}"]`);
+        if (tab) {
+          const t = tab.querySelector('.mod-title');
+          const s = tab.querySelector('.mod-sub');
+          if (t && meta.name) t.textContent = meta.name;
+          if (s && meta.sub) s.textContent = meta.sub;
+        }
+
+        // Sidebar items
+        const navItem = document.getElementById(`navMod-${id}`);
+        if (navItem) {
+          const l = navItem.querySelector('.nav-item-label');
+          const s = navItem.querySelector('.nav-item-sub');
+          if (l && meta.name) l.textContent = meta.name;
+          if (s && meta.sub) s.textContent = meta.sub;
+          navItem.title = `Manage ${meta.name}`;
+        }
+      });
+
+      // Update current module header and banner
+      const cur = MODULES_META[currentModuleId];
+      if (cur) {
+        const bannerTitle = document.getElementById('bannerTitle');
+        const bannerDesc = document.getElementById('bannerDesc');
+        if (bannerTitle) bannerTitle.textContent = cur.title || cur.name;
+        if (bannerDesc) bannerDesc.textContent = cur.desc || '';
+
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const secContent = document.getElementById('sectionContent');
+        if (secContent && secContent.style.display !== 'none') {
+          const isVideoOnly = currentModuleId === 'index' || currentModuleId.endsWith('_banner');
+          if (pageTitle) pageTitle.textContent = `${cur.name}: ${isVideoOnly ? 'Content Manager' : 'Content & Assessment Manager'}`;
+          if (pageSubtitle) pageSubtitle.textContent = cur.desc || '';
+        }
+      }
+
+      // Update ACTIVITIES array for Section 3 locks cards
+      ACTIVITIES.forEach(act => {
+        const meta = MODULES_META[act.id];
+        if (meta) {
+          act.title = meta.title || meta.name;
+          act.desc = meta.desc || act.desc;
+        }
+      });
+      renderActivityCards();
+    }
+
+    // ── Edit Activity Name Modal Handlers ──
+    function openEditActivityNameModal(modId) {
+      const targetId = modId || currentModuleId;
+      const meta = MODULES_META[targetId];
+      if (!meta) return;
+
+      document.getElementById('editActivityModalSub').textContent = `Editing: ${meta.name} (${targetId})`;
+      document.getElementById('editActShortName').value = meta.name || '';
+      document.getElementById('editActTitle').value = meta.title || '';
+      document.getElementById('editActSub').value = meta.sub || '';
+      document.getElementById('editActDesc').value = meta.desc || '';
+
+      document.getElementById('editActivityNameModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('editActTitle').focus(), 50);
+    }
+
+    function closeEditActivityNameModal() {
+      document.getElementById('editActivityNameModal').style.display = 'none';
+    }
+
+    async function executeSaveActivityName() {
+      const name = (document.getElementById('editActShortName').value || '').trim();
+      const title = (document.getElementById('editActTitle').value || '').trim();
+      const sub = (document.getElementById('editActSub').value || '').trim();
+      const desc = (document.getElementById('editActDesc').value || '').trim();
+
+      if (!title) {
+        showToast('Please enter an activity title', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnSaveActivityNameAction');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Saving…';
+
+      try {
+        const payload = {
+          name: name || MODULES_META[currentModuleId].name,
+          title: title,
+          sub: sub || MODULES_META[currentModuleId].sub,
+          desc: desc
+        };
+
+        const res = await fetch(API_SETTINGS, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({
+            moduleId: currentModuleId,
+            meta: payload
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          MODULES_META[currentModuleId] = {
+            ...MODULES_META[currentModuleId],
+            ...payload
+          };
+          if (data.activityMeta) {
+            activityMetaData = data.activityMeta;
+            Object.keys(data.activityMeta).forEach(k => {
+              if (MODULES_META[k]) MODULES_META[k] = { ...MODULES_META[k], ...data.activityMeta[k] };
+            });
+          }
+
+          updateAllActivityLabels();
+          closeEditActivityNameModal();
+          showToast(`✅ Activity "${payload.name}" updated successfully!`, 'success');
+        } else {
+          showToast(data.error || 'Failed to update activity name', 'error');
+        }
+      } catch (e) {
+        showToast('Network error updating activity name', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '💾 Save Changes';
+      }
+    }
 
     // ── Initialization ──
     async function init() {
@@ -2481,7 +2677,7 @@
       selectModule(modId);
     }
 
-    // ── Fetch Site Settings (Locks, Videos, MCQs) ──
+    // ── Fetch Site Settings (Locks, Videos, MCQs, Activity Meta) ──
     async function fetchSettings() {
       try {
         const res = await fetch(API_SETTINGS, { cache: 'no-store' });
@@ -2498,6 +2694,15 @@
           }
           if (data.moduleMcqs) {
             moduleMcqsData = data.moduleMcqs;
+          }
+          if (data.activityMeta) {
+            activityMetaData = data.activityMeta;
+            Object.keys(data.activityMeta).forEach(k => {
+              if (MODULES_META[k]) {
+                MODULES_META[k] = { ...MODULES_META[k], ...data.activityMeta[k] };
+              }
+            });
+            updateAllActivityLabels();
           }
           updateAllTabBadges();
           updateSidebarBadges();
