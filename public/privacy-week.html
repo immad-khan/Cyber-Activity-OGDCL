@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 3: Data Privacy & Protection - OGDCL</title>
+    <title>Activity 3: Data Protection - OGDCL</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
@@ -712,7 +712,7 @@
     </section>
 
     <section class="hero">
-        <h1>Activity 3: Data Privacy & Protection</h1>
+        <h1>Activity 3: Data Protection</h1>
         <p>Safeguard Sensitive Information, Master PII Standards & Defend OGDCL Assets</p>
         <h2 class="video-heading">Training Video</h2>
     </section>
@@ -1099,7 +1099,7 @@
                         quizMarks: quizMarks,
                         correctAnswers: correctAnswers,
                         totalQuestions: totalQuestions,
-                        activity: 'Activity 3: Data Privacy & Protection',
+                        activity: 'Activity 3: Data Protection',
                         date: currentDate
                     })
                 });
@@ -1292,7 +1292,7 @@
             const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant';
             const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
-            const activityName = 'Activity 3: Data Privacy & Protection';
+            const activityName = 'Activity 3: Data Protection';
 
             saveToDatabase();
 
@@ -1304,7 +1304,7 @@
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
                     <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 3 Complete!</h2>
-                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Data Privacy & Information Protection Assessment.</p>
+                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Data Protection Assessment.</p>
                     
                     <!-- Official OGDCL Certificate Preview Card -->
                     <div style="background: linear-gradient(135deg, rgba(11, 25, 44, 0.95), rgba(0, 40, 70, 0.95)); border: 2px solid #00ffff; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(0, 255, 255, 0.35); position: relative; overflow: hidden;">
@@ -1327,7 +1327,7 @@
                             <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 8px 0; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
                             <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
                                 Has successfully demonstrated operational compliance in<br>
-                                <strong style="color: #48cae4;">Activity 3: Data Privacy & Corporate Information Protection</strong>
+                                <strong style="color: #48cae4;">Activity 3: Data Protection</strong>
                             </div>
                         </div>
 
@@ -1407,7 +1407,7 @@
         // Generate Certificate
         async function generateCertificate() {
             const userName = (currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant').trim();
-            const activityName = 'Activity 3: Data Privacy & Protection';
+            const activityName = 'Activity 3: Data Protection';
 
             if (!userName) {
                 showNotification('Error: No user name found. Please enter your name.', 'error');
