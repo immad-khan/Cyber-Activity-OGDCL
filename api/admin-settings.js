@@ -13,10 +13,10 @@ const FALLBACK_FILE = path.resolve(__dirname, '..', 'site-settings-fallback.json
 const TMP_FALLBACK_FILE = path.join(os.tmpdir(), 'site-settings-fallback.json');
 
 const DEFAULT_ACTIVITY_LOCKS = {
-  activity_1: false, // Activity 1: Password Protection & MFA
-  activity_2: false, // Activity 2: Social Engineering
-  activity_3: false, // Activity 3: Data Privacy
-  activity_4: false  // Activity 4: The Executive Target (Phishing)
+  activity_1: false, // Activity 1: Password
+  activity_2: false, // Activity 2: Email Security
+  activity_3: false, // Activity 3: Data Protection
+  activity_4: false  // Activity 4: QR Code
 };
 
 const DEFAULT_MODULE_VIDEOS = {
@@ -35,66 +35,66 @@ const DEFAULT_MODULE_VIDEOS = {
   activity_1: {
     id: 'activity_1',
     name: 'Activity 1',
-    title: 'Activity 1: Password Protection',
-    desc: 'Strong passwords and smart security habits keep everyone safe.',
+    title: 'Activity 1: Password',
+    desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
     sourceType: 'mp4',
     url: 'videos/Password_policy.mp4',
     poster: 'videos/Password_policy_poster.jpg',
     pageUrl: 'mfa-week.html',
-    pageName: 'Activity 1: Password Protection'
+    pageName: 'Activity 1: Password'
   },
   activity_2: {
     id: 'activity_2',
     name: 'Activity 2',
-    title: 'Activity 2: QR Code',
-    desc: "When You Lead, You're on the Front Line.",
+    title: 'Activity 2: Email Security',
+    desc: 'Recognize phishing, spear-phishing, business email compromise, and verify senders.',
     sourceType: 'mp4',
     url: 'videos/phishing-awareness.mp4',
     poster: 'videos/phishing-awareness_poster.jpg',
     pageUrl: 'phishing-week.html',
-    pageName: 'Activity 2: QR Code'
+    pageName: 'Activity 2: Email Security'
   },
   activity_3: {
     id: 'activity_3',
     name: 'Activity 3',
-    title: 'Activity 3: Data Privacy & Protection',
-    desc: 'Safeguard Sensitive Information, Master PII Standards & Defend OGDCL Assets',
+    title: 'Activity 3: Data Protection',
+    desc: 'Safeguard sensitive corporate information, clean desk policies, and data privacy.',
     sourceType: 'youtube',
     url: 'https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0',
     poster: '',
     pageUrl: 'privacy-week.html',
-    pageName: 'Activity 3: Data Privacy & Protection'
+    pageName: 'Activity 3: Data Protection'
   },
   activity_4: {
     id: 'activity_4',
     name: 'Activity 4',
-    title: 'Activity 4: Social Engineering Defense',
-    desc: 'Recognize Manipulation. Verify Identity. Protect OGDCL.',
+    title: 'Activity 4: QR Code',
+    desc: 'Pretexting, quishing, human manipulation defenses, and QR code security.',
     sourceType: 'youtube',
     url: '',
     poster: '',
     pageUrl: 'social-engineering-week.html',
-    pageName: 'Activity 4: Social Engineering Defense'
+    pageName: 'Activity 4: QR Code'
   },
   activity_1_banner: {
     id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 1.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'mfa-week.html', pageName: 'Activity 1: Shared hero video', enabled: true
+    pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner', enabled: true
   },
   activity_2_banner: {
-    id: 'activity_2_banner', name: 'Activity 2 QR Code Banner Video', title: 'Activity 2 Video Briefing',
+    id: 'activity_2_banner', name: 'Activity 2 Banner Video', title: 'Activity 2 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 2.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'phishing-week.html', pageName: 'Activity 2: Shared hero video', enabled: true
+    pageUrl: 'phishing-week.html', pageName: 'Activity 2: Hero video banner', enabled: true
   },
   activity_3_banner: {
     id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 3.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'privacy-week.html', pageName: 'Activity 3: Shared hero video', enabled: true
+    pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner', enabled: true
   },
   activity_4_banner: {
-    id: 'activity_4_banner', name: 'Activity 4 Social Engineering Banner Video', title: 'Activity 4 Video Briefing',
+    id: 'activity_4_banner', name: 'Activity 4 Banner Video', title: 'Activity 4 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 4.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'social-engineering-week.html', pageName: 'Activity 4: Shared hero video', enabled: true
+    pageUrl: 'social-engineering-week.html', pageName: 'Activity 4: Hero video banner', enabled: true
   }
 };
 
