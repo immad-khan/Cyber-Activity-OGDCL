@@ -776,59 +776,59 @@
 
         window.quizQuestions = [
             {
-                question: "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
+                question: "You receive an email from a known contractor claiming that their bank account details have changed and requesting immediate payment to a new account. What should you do?",
                 options: [
-                    "Process immediately",
-                    "Reply to email",
-                    "Call CEO using known number",
-                    "Forward to finance"
+                    "Update the account details and process the payment immediately",
+                    "Reply to the email asking for confirmation",
+                    "Verify the request through an official phone call or approved business channel before taking any action",
+                    "Forward the email to colleagues for advice"
                 ],
                 correct: 2,
-                explanation: "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
+                explanation: "Always verify bank account detail changes through an official, established phone call or trusted out-of-band communication channel before taking action."
             },
             {
-                question: "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
+                question: "An attacker compromises a vendor's mailbox and replies to an existing legitimate email conversation with a malicious attachment. Why is this attack particularly dangerous?",
                 options: [
-                    "Approve it",
-                    "Ignore it",
-                    "Deny and report to IT security",
-                    "Approve and change password later"
+                    "The email comes from a trusted and familiar conversation thread",
+                    "The attachment is always malware-free",
+                    "The email bypasses all security controls automatically",
+                    "Vendor emails cannot be inspected"
                 ],
-                correct: 2,
-                explanation: "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
+                correct: 0,
+                explanation: "Thread hijacking is dangerous because the attacker replies within an existing, trusted email thread from a compromised legitimate account, bypassing natural suspicion."
             },
             {
-                question: "A LinkedIn connection requests your work email. What should you do?",
+                question: "An email claims to be from the IT Department and asks you to verify your VPN credentials due to 'security upgrades' by clicking a link. What is the safest action?",
                 options: [
-                    "Share it",
-                    "Share personal email instead",
-                    "Politely decline",
-                    "Share but ask not to spam"
+                    "Enter your credentials immediately",
+                    "Share your password with the sender",
+                    "Access the official company portal directly and report the email if suspicious",
+                    "Forward your credentials to your supervisor"
                 ],
                 correct: 2,
-                explanation: "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
+                explanation: "Never click verification links in unexpected emails to enter credentials. Always navigate directly to official company portals and report suspicious requests."
             },
             {
-                question: "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
+                question: "An external email contains a link to download engineering drawings related to a pipeline project. Before opening the link, what should you verify?",
                 options: [
-                    "Provide credentials",
-                    "Ask for email request",
-                    "End call and verify through another channel",
-                    "Share screen instead"
+                    "Whether the sender is trusted and the link points to a legitimate approved domain",
+                    "Whether the email contains a company logo",
+                    "Whether the email says 'confidential'",
+                    "Whether other employees were copied"
                 ],
-                correct: 2,
-                explanation: "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
+                correct: 0,
+                explanation: "Always verify that the sender is legitimate and that the destination URL points to an approved, legitimate corporate file-sharing domain before clicking."
             },
             {
-                question: "What's the most secure type of multi-factor authentication for executives?",
+                question: "Why are AI-generated phishing emails considered more dangerous?",
                 options: [
-                    "SMS codes",
-                    "Email codes",
-                    "Hardware security keys",
-                    "Authenticator app"
+                    "They cannot be detected",
+                    "They often contain fewer spelling and grammar mistakes and can be highly personalized",
+                    "They automatically bypass firewalls",
+                    "They are sent only to executives"
                 ],
-                correct: 2,
-                explanation: "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
+                correct: 1,
+                explanation: "Generative AI allows attackers to craft persuasive, grammatically flawless, and highly contextual spear-phishing messages at scale."
             }
         ];
         let quizQuestions = window.quizQuestions;
