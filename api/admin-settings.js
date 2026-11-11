@@ -450,13 +450,6 @@ async function ensureTableOnce() {
       ON CONFLICT (key) DO NOTHING
     `, [JSON.stringify(DEFAULT_MODULE_MCQS)]);
 
-    // Seed default activity meta if not present
-    await pool.query(`
-      INSERT INTO site_settings (key, value)
-      VALUES ('activity_meta', $1)
-      ON CONFLICT (key) DO NOTHING
-    `, [JSON.stringify(DEFAULT_ACTIVITY_META)]);
-
     isTableInitialized = true;
     isDbReachable = true;
   } catch (err) {
@@ -503,14 +496,13 @@ export default async function handler(req, res) {
       let activityLocks = { ...DEFAULT_ACTIVITY_LOCKS };
       let moduleVideos = { ...DEFAULT_MODULE_VIDEOS };
       let moduleMcqs = { ...DEFAULT_MODULE_MCQS };
-      let activityMeta = { ...DEFAULT_ACTIVITY_META };
       let dbLoaded = false;
 
       if (shouldAttemptDb()) {
         try {
           await ensureTableOnce();
           const result = await pool.query(
-            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs', 'activity_meta')"
+            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs')"
           );
 
           result.rows.forEach(row => {
@@ -534,12 +526,6 @@ export default async function handler(req, res) {
               } catch (e) {
                 console.warn('Error parsing module_mcqs json', e);
               }
-            } else if (row.key === 'activity_meta') {
-              try {
-                activityMeta = mergeActivityMeta(JSON.parse(row.value));
-              } catch (e) {
-                console.warn('Error parsing activity_meta json', e);
-              }
             }
           });
           dbLoaded = true;
@@ -556,7 +542,6 @@ export default async function handler(req, res) {
         activityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...(fb.activityLocks || {}) };
         moduleVideos = fb.moduleVideos || { ...DEFAULT_MODULE_VIDEOS };
         moduleMcqs = { ...DEFAULT_MODULE_MCQS, ...(fb.moduleMcqs || {}) };
-        activityMeta = fb.activityMeta || { ...DEFAULT_ACTIVITY_META };
       }
 
       cachedSettings = {
@@ -564,14 +549,13 @@ export default async function handler(req, res) {
         locked: globalLocked,
         activityLocks,
         moduleVideos,
-        moduleMcqs,
-        activityMeta
+        moduleMcqs
       };
       cacheTimestamp = now;
 
       // Keep fallback file in sync
       if (dbLoaded) {
-        writeFallbackFile({ locked: globalLocked, activityLocks, moduleVideos, moduleMcqs, activityMeta });
+        writeFallbackFile({ locked: globalLocked, activityLocks, moduleVideos, moduleMcqs });
       }
 
       return res.status(200).json(cachedSettings);
@@ -590,14 +574,13 @@ export default async function handler(req, res) {
       let curActivityLocks = { ...DEFAULT_ACTIVITY_LOCKS, ...(fb.activityLocks || {}) };
       let curModuleVideos = fb.moduleVideos || { ...DEFAULT_MODULE_VIDEOS };
       let curModuleMcqs = { ...DEFAULT_MODULE_MCQS, ...(fb.moduleMcqs || {}) };
-      let curActivityMeta = fb.activityMeta || { ...DEFAULT_ACTIVITY_META };
 
       // Load latest values from database if available
       if (shouldAttemptDb()) {
         try {
           await ensureTableOnce();
           const result = await pool.query(
-            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs', 'activity_meta')"
+            "SELECT key, value FROM site_settings WHERE key IN ('site_locked', 'activity_locks', 'module_videos', 'module_mcqs')"
           );
           result.rows.forEach(row => {
             if (row.key === 'site_locked') curGlobal = row.value === 'true';
@@ -607,8 +590,6 @@ export default async function handler(req, res) {
               try { curModuleVideos = mergeModuleVideos(JSON.parse(row.value)); } catch (e) {}
             } else if (row.key === 'module_mcqs') {
               try { curModuleMcqs = { ...DEFAULT_MODULE_MCQS, ...JSON.parse(row.value) }; } catch (e) {}
-            } else if (row.key === 'activity_meta') {
-              try { curActivityMeta = mergeActivityMeta(JSON.parse(row.value)); } catch (e) {}
             }
           });
           isDbReachable = true;
@@ -684,42 +665,12 @@ export default async function handler(req, res) {
         await saveDbSetting('module_mcqs', JSON.stringify(curModuleMcqs));
       }
 
-      // 9. Update Specific Module Activity Meta: { moduleId: 'activity_1', meta: { name, title, sub, desc } }
-      if (body.moduleId && body.meta && typeof body.meta === 'object') {
-        const modKey = body.moduleId;
-        const currentMeta = curActivityMeta[modKey] || DEFAULT_ACTIVITY_META[modKey] || {};
-        curActivityMeta[modKey] = {
-          ...currentMeta,
-          ...(body.meta.name !== undefined ? { name: String(body.meta.name).trim() } : {}),
-          ...(body.meta.title !== undefined ? { title: String(body.meta.title).trim() } : {}),
-          ...(body.meta.sub !== undefined ? { sub: String(body.meta.sub).trim() } : {}),
-          ...(body.meta.desc !== undefined ? { desc: String(body.meta.desc).trim() } : {}),
-          id: modKey
-        };
-        await saveDbSetting('activity_meta', JSON.stringify(curActivityMeta));
-
-        // Also update matching moduleVideos entry name & title so video settings reflect the rename
-        if (curModuleVideos[modKey]) {
-          if (body.meta.name) curModuleVideos[modKey].name = String(body.meta.name).trim();
-          if (body.meta.title) curModuleVideos[modKey].title = String(body.meta.title).trim();
-          if (body.meta.desc) curModuleVideos[modKey].desc = String(body.meta.desc).trim();
-          await saveDbSetting('module_videos', JSON.stringify(curModuleVideos));
-        }
-      }
-
-      // 10. Bulk Activity Meta if provided: { activityMeta: { ... } }
-      if (body.activityMeta && typeof body.activityMeta === 'object') {
-        curActivityMeta = { ...curActivityMeta, ...body.activityMeta };
-        await saveDbSetting('activity_meta', JSON.stringify(curActivityMeta));
-      }
-
       // Always write to fallback file
       writeFallbackFile({
         locked: curGlobal,
         activityLocks: curActivityLocks,
         moduleVideos: curModuleVideos,
-        moduleMcqs: curModuleMcqs,
-        activityMeta: curActivityMeta
+        moduleMcqs: curModuleMcqs
       });
 
       // Update in-memory cache immediately
@@ -728,8 +679,7 @@ export default async function handler(req, res) {
         locked: curGlobal,
         activityLocks: curActivityLocks,
         moduleVideos: curModuleVideos,
-        moduleMcqs: curModuleMcqs,
-        activityMeta: curActivityMeta
+        moduleMcqs: curModuleMcqs
       };
       cacheTimestamp = Date.now();
 
@@ -747,7 +697,6 @@ export default async function handler(req, res) {
       activityLocks: fb.activityLocks || DEFAULT_ACTIVITY_LOCKS,
       moduleVideos: fb.moduleVideos || DEFAULT_MODULE_VIDEOS,
       moduleMcqs: fb.moduleMcqs || DEFAULT_MODULE_MCQS,
-      activityMeta: fb.activityMeta || DEFAULT_ACTIVITY_META,
       warning: 'Served from resilient storage'
     });
   }
