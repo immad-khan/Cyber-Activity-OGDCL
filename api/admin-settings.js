@@ -19,72 +19,6 @@ const DEFAULT_ACTIVITY_LOCKS = {
   activity_4: false  // Activity 4: The Executive Target (Phishing)
 };
 
-const DEFAULT_ACTIVITY_META = {
-  index: {
-    id: 'index',
-    name: 'Index',
-    title: 'Index: Cybersecurity Awareness Overview',
-    sub: 'Overview & Home Page',
-    desc: 'Introductory awareness video and cybersecurity overview.'
-  },
-  activity_1: {
-    id: 'activity_1',
-    name: 'Activity 1',
-    title: 'Activity 1: Password Security & Multi-Factor Authentication',
-    sub: 'Password & Multi-Factor Auth',
-    desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.'
-  },
-  activity_2: {
-    id: 'activity_2',
-    name: 'Activity 2',
-    title: 'Activity 2: QR Code',
-    sub: 'Social Engineering Defense',
-    desc: 'Pretexting, human manipulation, psychological urgency, and human firewall defenses.'
-  },
-  activity_3: {
-    id: 'activity_3',
-    name: 'Activity 3',
-    title: 'Activity 3: Data Privacy & Corporate Asset Protection',
-    sub: 'Data Privacy & Compliance',
-    desc: 'Personally identifiable information (PII), clean desk policies, and confidentiality.'
-  },
-  activity_4: {
-    id: 'activity_4',
-    name: 'Activity 4',
-    title: 'Activity 4: Social Engineering',
-    sub: 'Executive Phishing Defense',
-    desc: 'Spear-phishing, business email compromise, deepfakes, and verification protocols.'
-  },
-  activity_1_banner: {
-    id: 'activity_1_banner',
-    name: 'Activity 1 Banner Video',
-    title: 'Activity 1 Video Briefing',
-    sub: 'Above Activity 1 hero',
-    desc: 'Video displayed above the Activity 1 hero section.'
-  },
-  activity_2_banner: {
-    id: 'activity_2_banner',
-    name: 'Activity 2 QR Code Banner Video',
-    title: 'Activity 2 QR Code Video Briefing',
-    sub: 'Above Activity 2 hero',
-    desc: 'Video displayed above the Activity 2 hero section.'
-  },
-  activity_3_banner: {
-    id: 'activity_3_banner',
-    name: 'Activity 3 Banner Video',
-    title: 'Activity 3 Video Briefing',
-    sub: 'Above Activity 3 hero',
-    desc: 'Video displayed above the Activity 3 hero section.'
-  },
-  activity_4_banner: {
-    id: 'activity_4_banner',
-    name: 'Activity 4 Social Engineering Banner Video',
-    title: 'Activity 4 Social Engineering Video Briefing',
-    sub: 'Above Activity 4 hero',
-    desc: 'Video displayed above the Activity 4 hero section.'
-  }
-};
-
 const DEFAULT_MODULE_VIDEOS = {
   index: {
     id: 'index',
@@ -101,8 +35,8 @@ const DEFAULT_MODULE_VIDEOS = {
   activity_1: {
     id: 'activity_1',
     name: 'Activity 1',
-    title: 'Password Security & Multi-Factor Authentication',
-    desc: 'Password policy, Bitwarden vault security, and multi-factor authentication defense.',
+    title: 'Activity 1: Password Protection',
+    desc: 'Strong passwords and smart security habits keep everyone safe.',
     sourceType: 'mp4',
     url: 'videos/Password_policy.mp4',
     poster: 'videos/Password_policy_poster.jpg',
@@ -112,35 +46,35 @@ const DEFAULT_MODULE_VIDEOS = {
   activity_2: {
     id: 'activity_2',
     name: 'Activity 2',
-    title: 'Social Engineering Defense Training',
-    desc: 'Recognize manipulation, verify identity, and defend against pretexting and human attacks.',
-    sourceType: 'mp4',
-    url: '',
-    poster: '',
-    pageUrl: 'social-engineering-week.html',
-    pageName: 'Activity 2: Social Engineering'
-  },
-  activity_3: {
-    id: 'activity_3',
-    name: 'Activity 3',
-    title: 'Data Privacy & Corporate Asset Protection',
-    desc: 'Safeguard sensitive corporate information, master PII standards, and defend company data.',
-    sourceType: 'mp4',
-    url: '',
-    poster: '',
-    pageUrl: 'privacy-week.html',
-    pageName: 'Activity 3: Data Privacy'
-  },
-  activity_4: {
-    id: 'activity_4',
-    name: 'Activity 4',
-    title: 'The Executive Target & Phishing Defense',
-    desc: 'Executive spear-phishing, business email compromise, deepfakes, and verification protocols.',
+    title: 'Activity 2: QR Code',
+    desc: "When You Lead, You're on the Front Line.",
     sourceType: 'mp4',
     url: 'videos/phishing-awareness.mp4',
     poster: 'videos/phishing-awareness_poster.jpg',
     pageUrl: 'phishing-week.html',
-    pageName: 'Activity 4: The Executive Target'
+    pageName: 'Activity 2: QR Code'
+  },
+  activity_3: {
+    id: 'activity_3',
+    name: 'Activity 3',
+    title: 'Activity 3: Data Privacy & Protection',
+    desc: 'Safeguard Sensitive Information, Master PII Standards & Defend OGDCL Assets',
+    sourceType: 'youtube',
+    url: 'https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0',
+    poster: '',
+    pageUrl: 'privacy-week.html',
+    pageName: 'Activity 3: Data Privacy & Protection'
+  },
+  activity_4: {
+    id: 'activity_4',
+    name: 'Activity 4',
+    title: 'Activity 4: Social Engineering Defense',
+    desc: 'Recognize Manipulation. Verify Identity. Protect OGDCL.',
+    sourceType: 'youtube',
+    url: '',
+    poster: '',
+    pageUrl: 'social-engineering-week.html',
+    pageName: 'Activity 4: Social Engineering Defense'
   },
   activity_1_banner: {
     id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing',
@@ -148,9 +82,9 @@ const DEFAULT_MODULE_VIDEOS = {
     pageUrl: 'mfa-week.html', pageName: 'Activity 1: Shared hero video', enabled: true
   },
   activity_2_banner: {
-    id: 'activity_2_banner', name: 'Activity 2 Banner Video', title: 'Activity 2 Video Briefing',
+    id: 'activity_2_banner', name: 'Activity 2 QR Code Banner Video', title: 'Activity 2 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 2.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'social-engineering-week.html', pageName: 'Activity 2: Shared hero video', enabled: true
+    pageUrl: 'phishing-week.html', pageName: 'Activity 2: Shared hero video', enabled: true
   },
   activity_3_banner: {
     id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing',
@@ -158,9 +92,9 @@ const DEFAULT_MODULE_VIDEOS = {
     pageUrl: 'privacy-week.html', pageName: 'Activity 3: Shared hero video', enabled: true
   },
   activity_4_banner: {
-    id: 'activity_4_banner', name: 'Activity 4 Banner Video', title: 'Activity 4 Video Briefing',
+    id: 'activity_4_banner', name: 'Activity 4 Social Engineering Banner Video', title: 'Activity 4 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 4.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'phishing-week.html', pageName: 'Activity 4: Shared hero video', enabled: true
+    pageUrl: 'social-engineering-week.html', pageName: 'Activity 4: Shared hero video', enabled: true
   }
 };
 
@@ -224,61 +158,62 @@ const DEFAULT_MODULE_MCQS = {
   ],
   activity_2: [
     {
-      question: "According to the video (Chapter 0:30), what is Social Engineering?",
+      question: "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
       options: [
-        "Writing complex software scripts to crack firewall ports directly",
-        "A manipulation technique that exploits human psychology, trust, and emotions to trick victims into handing over confidential data or access",
-        "An automatic software update sent by your operating system",
-        "A marketing discipline for managing corporate social media accounts"
+        "Process immediately",
+        "Reply to email",
+        "Call CEO using known number",
+        "Forward to finance"
       ],
-      correct: 1,
-      explanation: "Social engineering targets the human element rather than technical software vulnerabilities—manipulating human psychology, curiosity, and trust to breach security."
+      correct: 2,
+      explanation: "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
     },
     {
-      question: "As highlighted in the video (Chapter 1:09), what are the core traits that social engineers weaponize?",
+      question: "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
       options: [
-        "Patiently waiting months without contacting the victim",
-        "Triggering heightened emotions, creating artificial urgency, and exploiting trust or authority",
-        "Sending complex mathematical formulas that only computers can read",
-        "Offering free printed textbooks and physical user manuals"
+        "Approve it",
+        "Ignore it",
+        "Deny and report to IT security",
+        "Approve and change password later"
       ],
-      correct: 1,
-      explanation: "Social engineering attacks rely on triggering heightened emotional states combined with artificial urgency so targets act on impulse before thinking critically."
+      correct: 2,
+      explanation: "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
     },
     {
-      question: "Why do attackers specifically rely on creating 'Heightened Emotions' and 'Urgency' (Chapter 1:35)?",
+      question: "A LinkedIn connection requests your work email. What should you do?",
       options: [
-        "To give the target sufficient time to consult with IT Security",
-        "Because pressure and heightened emotions cloud logical judgment and prevent the victim from pausing to verify the request",
-        "To ensure their emails comply with corporate spam transmission filters",
-        "Because security firewalls can only detect slowly delivered messages"
+        "Share it",
+        "Share personal email instead",
+        "Politely decline",
+        "Share but ask not to spam"
       ],
-      correct: 1,
-      explanation: "When you are stressed, hurried, or alarmed, your rational cognitive defense drops. Attackers manufacture urgent deadlines so you won't pause to verify."
+      correct: 2,
+      explanation: "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
     },
     {
-      question: "Where do social engineering attacks happen according to the video (Chapter 2:19)?",
+      question: "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
       options: [
-        "Exclusively through personal spam email folders",
-        "Across multiple communication channels including emails, phone calls (vishing), SMS/messaging, social networks, and in-person physical spaces",
-        "Only on dark web chat forums",
-        "Strictly inside physical server rooms by cutting network wires"
+        "Provide credentials",
+        "Ask for email request",
+        "End call and verify through another channel",
+        "Share screen instead"
       ],
-      correct: 1,
-      explanation: "Social engineering attacks occur everywhere: via emails (phishing), phone calls (vishing), text messages (smishing), social platforms (LinkedIn), and in-person interactions (tailgating)."
+      correct: 2,
+      explanation: "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
     },
     {
-      question: "What is the recommended action if you think you are being targeted by a social engineering attack?",
+      question: "What's the most secure type of multi-factor authentication for executives?",
       options: [
-        "Reply to the attacker and demand that they prove their identity",
-        "Slow down, do not click links or share credentials, verify through an independent official channel, and notify IT Security immediately",
-        "Forward the message to all department colleagues to see if anyone wants to click it",
-        "Comply with the urgent instructions immediately just to avoid potential trouble"
+        "SMS codes",
+        "Email codes",
+        "Hardware security keys",
+        "Authenticator app"
       ],
-      correct: 1,
-      explanation: "Always slow down and pause. Never use phone numbers or links provided in the suspicious message. Verify independently through official channels and report it immediately."
+      correct: 2,
+      explanation: "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
     }
   ],
+
   activity_3: [
     {
       question: "Which of the following is considered Personally Identifiable Information (PII) and corporate confidential data that must be strictly protected under OGDCL's privacy policy?",
@@ -338,61 +273,61 @@ const DEFAULT_MODULE_MCQS = {
   ],
   activity_4: [
     {
-      question: "You receive an urgent email appearing to be from the CEO requesting an immediate wire transfer. What should you do?",
+      question: "According to the video (Chapter 0:30), what is Social Engineering?",
       options: [
-        "Process immediately",
-        "Reply to email",
-        "Call CEO using known number",
-        "Forward to finance"
+        "Writing complex software scripts to crack firewall ports directly",
+        "A manipulation technique that exploits human psychology, trust, and emotions to trick victims into handing over confidential data or access",
+        "An automatic software update sent by your operating system",
+        "A marketing discipline for managing corporate social media accounts"
       ],
-      correct: 2,
-      explanation: "Always verify high-stakes requests through a separate communication channel. Business Email Compromise is one of the most costly attacks."
+      correct: 1,
+      explanation: "Social engineering targets the human element rather than technical software vulnerabilities—manipulating human psychology, curiosity, and trust to breach security."
     },
     {
-      question: "You notice an MFA prompt on your phone but you're not trying to log in. What's the best action?",
+      question: "As highlighted in the video (Chapter 1:09), what are the core traits that social engineers weaponize?",
       options: [
-        "Approve it",
-        "Ignore it",
-        "Deny and report to IT security",
-        "Approve and change password later"
+        "Patiently waiting months without contacting the victim",
+        "Triggering heightened emotions, creating artificial urgency, and exploiting trust or authority",
+        "Sending complex mathematical formulas that only computers can read",
+        "Offering free printed textbooks and physical user manuals"
       ],
-      correct: 2,
-      explanation: "Unexpected MFA prompts indicate someone has your password. Deny immediately and report to IT security to prevent account takeover."
+      correct: 1,
+      explanation: "Social engineering attacks rely on triggering heightened emotional states combined with artificial urgency so targets act on impulse before thinking critically."
     },
     {
-      question: "A LinkedIn connection requests your work email. What should you do?",
+      question: "Why do attackers specifically rely on creating 'Heightened Emotions' and 'Urgency' (Chapter 1:35)?",
       options: [
-        "Share it",
-        "Share personal email instead",
-        "Politely decline",
-        "Share but ask not to spam"
+        "To give the target sufficient time to consult with IT Security",
+        "Because pressure and heightened emotions cloud logical judgment and prevent the victim from pausing to verify the request",
+        "To ensure their emails comply with corporate spam transmission filters",
+        "Because security firewalls can only detect slowly delivered messages"
       ],
-      correct: 2,
-      explanation: "Work email addresses are valuable for targeted phishing attacks. Protect your corporate identity by not sharing it publicly."
+      correct: 1,
+      explanation: "When you are stressed, hurried, or alarmed, your rational cognitive defense drops. Attackers manufacture urgent deadlines so you won't pause to verify."
     },
     {
-      question: "You receive a video call from your CFO on Teams with poor quality. They're requesting urgent credentials. What do you do?",
+      question: "Where do social engineering attacks happen according to the video (Chapter 2:19)?",
       options: [
-        "Provide credentials",
-        "Ask for email request",
-        "End call and verify through another channel",
-        "Share screen instead"
+        "Exclusively through personal spam email folders",
+        "Across multiple communication channels including emails, phone calls (vishing), SMS/messaging, social networks, and in-person physical spaces",
+        "Only on dark web chat forums",
+        "Strictly inside physical server rooms by cutting network wires"
       ],
-      correct: 2,
-      explanation: "Deepfake technology can impersonate executives. Always verify through established channels, especially for sensitive requests."
+      correct: 1,
+      explanation: "Social engineering attacks occur everywhere: via emails (phishing), phone calls (vishing), text messages (smishing), social platforms (LinkedIn), and in-person interactions (tailgating)."
     },
     {
-      question: "What's the most secure type of multi-factor authentication for executives?",
+      question: "What is the recommended action if you think you are being targeted by a social engineering attack?",
       options: [
-        "SMS codes",
-        "Email codes",
-        "Hardware security keys",
-        "Authenticator app"
+        "Reply to the attacker and demand that they prove their identity",
+        "Slow down, do not click links or share credentials, verify through an independent official channel, and notify IT Security immediately",
+        "Forward the message to all department colleagues to see if anyone wants to click it",
+        "Comply with the urgent instructions immediately just to avoid potential trouble"
       ],
-      correct: 2,
-      explanation: "Hardware security keys provide the highest protection against phishing and credential theft. They're immune to social engineering attacks."
+      correct: 1,
+      explanation: "Always slow down and pause. Never use phone numbers or links provided in the suspicious message. Verify independently through official channels and report it immediately."
     }
-  ]
+  ],
 };
 
 // In-memory cache for ultra-fast page loads (<1ms)
@@ -405,14 +340,6 @@ function mergeModuleVideos(savedVideos) {
   const result = {};
   for (const [key, def] of Object.entries(DEFAULT_MODULE_VIDEOS)) {
     result[key] = { ...def, ...(savedVideos?.[key] || {}) };
-  }
-  return result;
-}
-
-function mergeActivityMeta(savedMeta) {
-  const result = {};
-  for (const [key, def] of Object.entries(DEFAULT_ACTIVITY_META)) {
-    result[key] = { ...def, ...(savedMeta?.[key] || {}) };
   }
   return result;
 }
@@ -431,8 +358,7 @@ function readFallbackFile() {
         locked: data.locked ?? false,
         activityLocks: { ...DEFAULT_ACTIVITY_LOCKS, ...(data.activityLocks || {}) },
         moduleVideos: mergeModuleVideos(data.moduleVideos),
-        moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) },
-        activityMeta: mergeActivityMeta(data.activityMeta)
+        moduleMcqs: { ...DEFAULT_MODULE_MCQS, ...(data.moduleMcqs || {}) }
       };
     } catch (e) {
       console.warn(`⚠️ Could not read settings fallback file ${file}:`, e.message);
@@ -442,8 +368,7 @@ function readFallbackFile() {
     locked: false,
     activityLocks: { ...DEFAULT_ACTIVITY_LOCKS },
     moduleVideos: { ...DEFAULT_MODULE_VIDEOS },
-    moduleMcqs: { ...DEFAULT_MODULE_MCQS },
-    activityMeta: { ...DEFAULT_ACTIVITY_META }
+    moduleMcqs: { ...DEFAULT_MODULE_MCQS }
   };
 }
 
