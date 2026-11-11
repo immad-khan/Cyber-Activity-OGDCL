@@ -826,59 +826,59 @@
         // Quiz Questions Data (5 Questions = 100 Marks)
         window.quizQuestions = [
             {
-                question: "Which of the following is considered Personally Identifiable Information (PII) and corporate confidential data that must be strictly protected under OGDCL's privacy policy?",
+                question: "You are preparing a presentation for senior management and plan to include Employee’s Technical & Financial Information, CNIC numbers and contact details because they make the report more informative and productive.",
                 options: [
-                    "Public press releases published on the official company website",
-                    "Employee CNIC numbers, payroll records, and proprietary exploration well logs",
-                    "General public holiday announcements",
-                    "Marketing brochures distributed at public energy conferences"
+                    "Include all details for completeness.",
+                    "Include only information necessary for the business purpose and mask sensitive data where possible.",
+                    "Share the presentation only verbally.",
+                    "Add a confidentiality footer and include all data."
                 ],
                 correct: 1,
-                explanation: "Employee CNIC numbers, payroll details, health records, and proprietary exploration files constitute sensitive personal and corporate data requiring strict confidentiality and encryption."
+                explanation: "Include only information necessary for the business purpose and mask sensitive data where possible. Data minimization and protecting personal information such as CNIC numbers are essential."
             },
             {
-                question: "When working in public environments (airports, cafes, or public transit), what is the best security measure against 'Shoulder Surfing'?",
+                question: "While visiting a gas processing plant, you notice a contractor connecting an engineering laptop directly to the OT network. The contractor claims it was used at another site earlier that day for maintenance activities.",
                 options: [
-                    "Turn screen brightness to maximum so everyone can see you are working",
-                    "Use a physical privacy screen filter, position your screen away from bystanders, and connect via corporate VPN",
-                    "Share your mobile hotspot with nearby travelers without a password",
-                    "Leave your laptop unlocked while visiting the restroom for just one minute"
-                ],
-                correct: 1,
-                explanation: "A physical privacy filter prevents onlookers from reading your screen from side angles. Combined with a secure VPN and discreet positioning, it protects sensitive company data from visual snooping."
-            },
-            {
-                question: "According to the Clean Desk and Clear Screen Policy, what should an employee do whenever leaving their workstation unattended?",
-                options: [
-                    "Leave all physical files open on the desk so colleagues know you are returning soon",
-                    "Lock the computer screen immediately (Win + L) and secure confidential physical documents in locked drawers",
-                    "Turn off only the computer monitor while leaving the PC unlocked",
-                    "Place a sticky note with your password on the keyboard for emergencies"
-                ],
-                correct: 1,
-                explanation: "Always lock your computer workstation immediately (Windows key + L) and lock physical files away when stepping away, even briefly, to prevent unauthorized physical access."
-            },
-            {
-                question: "How should physical documents containing customer or employee personal data be disposed of when no longer needed?",
-                options: [
-                    "Tossed into the standard office wastepaper recycling bin",
-                    "Taken home for domestic paper recycling",
-                    "Deposited into locked, dedicated shredder bins or securely shredded using cross-cut shredders",
-                    "Kept stacked in open cardboard boxes in unmonitored hallways"
-                ],
-                correct: 2,
-                explanation: "Sensitive paper records must be destroyed using approved cross-cut shredders or placed into locked disposal bins to prevent dumpster diving and physical data breaches."
-            },
-            {
-                question: "What is the 'Principle of Least Privilege' (PoLP) in data privacy and access management?",
-                options: [
-                    "Granting users only the minimum access rights necessary to perform their specific job responsibilities",
-                    "Granting every employee full administrative access to all files to maximize team collaboration",
-                    "Allowing contractors to view all employee payroll records without verification",
-                    "Never granting anyone access to any computer systems at all"
+                    "Ensure the device follows OT onboarding, verification and approval procedures before connection.",
+                    "Allow the connection because the contractor is authorized.",
+                    "Permit access if the laptop has antivirus installed.",
+                    "Allow temporary access and disconnect it afterward."
                 ],
                 correct: 0,
-                explanation: "The Principle of Least Privilege ensures that users and applications are provided only the minimum level of access necessary for their legitimate business duties, drastically minimizing exposure risks."
+                explanation: "Ensure the device follows OT onboarding, verification and approval procedures before connection to prevent introducing threats into critical operational networks."
+            },
+            {
+                question: "At midnight, you receive a WhatsApp message from a Field Manager stating that he is unable to access an OT monitoring system. He explains that a production issue is escalating and requests your VPN credentials so that operations are not disrupted.",
+                options: [
+                    "Provide your VPN credentials because maintaining operational continuity is a business priority.",
+                    "Share a temporary password and request that it be changed immediately after the issue is resolved.",
+                    "Escalate the issue to the Service Desk and authorize them to share your credentials with the Field Manager for emergency use.",
+                    "Verify the request through authorized communication channels and follow established access management procedures."
+                ],
+                correct: 3,
+                explanation: "Never share individual VPN credentials or passwords. Always verify requests through official authorized channels and follow established access management procedures."
+            },
+            {
+                question: "An employee uses a public AI tool to summarize a contract and uploads the complete agreement containing confidential commercial information.",
+                options: [
+                    "Acceptable because the intent was productivity.",
+                    "Acceptable if the employee does not share the output.",
+                    "Potentially a privacy and confidentiality violation if the AI platform is not approved.",
+                    "Acceptable because AI tools automatically protect all uploaded data."
+                ],
+                correct: 2,
+                explanation: "Uploading confidential commercial contracts to unapproved public AI tools exposes proprietary corporate data and may constitute a serious privacy and confidentiality violation."
+            },
+            {
+                question: "A cybersecurity policy is preventing an urgent business activity from being completed on time. Senior management is under pressure, operational deadlines are approaching, and bypassing the control would save significant time and effort. There is no evidence of an active cyber threat.",
+                options: [
+                    "Temporarily bypass the control because the business impact outweighs the security risk.",
+                    "Follow the organization's approved exception and risk management process before any control is modified or bypassed.",
+                    "Bypass the control after receiving verbal approval from management.",
+                    "Disable the control and restore it once the activity is completed."
+                ],
+                correct: 1,
+                explanation: "Security controls must never be bypassed informally. Any modification or exemption must follow the organization's approved exception and risk management process."
             }
         ];
         let quizQuestions = window.quizQuestions;
