@@ -5,19 +5,19 @@
     const ACTIVITY_CONFIG = {
         'mfa-week': {
             id: 'activity_1',
-            name: 'Activity 1: Password Protection'
+            name: 'Activity 1: Password'
         },
         'phishing-week': {
             id: 'activity_2',
-            name: 'Activity 2: QR Code'
+            name: 'Activity 2: Email Security'
         },
         'privacy-week': {
             id: 'activity_3',
-            name: 'Activity 3: Data Privacy & Protection'
+            name: 'Activity 3: Data Protection'
         },
         'social-engineering-week': {
             id: 'activity_4',
-            name: 'Activity 4: Social Engineering Defense'
+            name: 'Activity 4: QR Code'
         },
         'index': {
             id: 'index',
