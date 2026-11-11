@@ -398,6 +398,47 @@
         video.load();
     }
 
+    // ── Dynamic Activity Meta Sync (Name & Title) ──
+    function syncDynamicActivityMeta(meta) {
+        if (!meta || typeof meta !== 'object') return;
+
+        // 1. If on an activity page, update its main heading and document title
+        if (currentActivity && currentActivity.id && meta[currentActivity.id]) {
+            const m = meta[currentActivity.id];
+            if (m.title) {
+                const h1 = document.querySelector('h1');
+                if (h1 && (h1.textContent.includes('Activity') || h1.textContent.includes('Password') || h1.textContent.includes('Social') || h1.textContent.includes('Privacy') || h1.textContent.includes('Target') || h1.textContent.includes('QR'))) {
+                    h1.textContent = m.title;
+                }
+                document.title = `${m.title} - OGDCL`;
+            }
+            if (m.name) {
+                currentActivity.name = m.name;
+            }
+        }
+
+        // 2. Update navigation menu week buttons across pages
+        const modPageMap = {
+            activity_1: 'mfa-week.html',
+            activity_2: 'social-engineering-week.html',
+            activity_3: 'privacy-week.html',
+            activity_4: 'phishing-week.html'
+        };
+
+        Object.entries(modPageMap).forEach(([modId, pageUrl]) => {
+            if (meta[modId] && meta[modId].name) {
+                document.querySelectorAll(`a[href*="${pageUrl}"].week-button`).forEach(btn => {
+                    const numSpan = btn.querySelector('.week-num');
+                    if (numSpan) {
+                        numSpan.textContent = meta[modId].name;
+                    } else if (btn.childNodes.length === 1 && btn.firstChild.nodeType === Node.TEXT_NODE) {
+                        btn.textContent = meta[modId].name;
+                    }
+                });
+            }
+        });
+    }
+
     // ── Dynamic MCQs Sync ──
     let lastLoadedMcqHash = null;
 
@@ -479,6 +520,11 @@
 
             if (data.activityLocks) {
                 updateNavLocks(data.activityLocks);
+            }
+
+            // Sync dynamic module activity names & titles
+            if (data.activityMeta) {
+                syncDynamicActivityMeta(data.activityMeta);
             }
 
             // Sync dynamic module video & MCQs
