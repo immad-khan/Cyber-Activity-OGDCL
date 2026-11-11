@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity 4: Social Engineering Defense - OGDCL</title>
+    <title>Activity 4: QR Code - OGDCL</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-61N7MJQNCD"></script>
@@ -873,9 +873,9 @@
     </section>
 
     <section class="hero">
-        <h1>Activity 4: Social Engineering Defense</h1>
+        <h1>Activity 4: QR Code</h1>
         <p>Recognize Manipulation. Verify Identity. Protect OGDCL.</p>
-        <h2 class="video-heading">Social Engineering Defense Landscape</h2>
+        <h2 class="video-heading">QR Code Security Landscape</h2>
     </section>
 
     <div class="content-wrapper">
@@ -1102,7 +1102,7 @@
                     quizMarks: correctAnswers * SCORING.quiz_correct,
                     correctAnswers,
                     totalQuestions,
-                    activity: 'Activity 4: Social Engineering Defense'
+                    activity: 'Activity 4: QR Code'
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -1505,7 +1505,7 @@
             const currentDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
             const displayName = currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant';
             const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
-            const activityName = 'Activity 4: Social Engineering Defense';
+            const activityName = 'Activity 4: QR Code';
 
             saveToDatabase();
 
@@ -1517,7 +1517,7 @@
                 <div style="text-align: center; padding: 25px 20px;">
                     <div style="font-size: 3.5rem; margin-bottom: 10px;">${currentLevel.icon}</div>
                     <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 4 Complete!</h2>
-                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the Social Engineering Defense Assessment.</p>
+                    <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the QR Code Assessment.</p>
                     
                     <div class="certificate-preview">
                         <img class="certificate-watermark" src="background.webp" alt="">
@@ -1590,7 +1590,7 @@
         // Generate Certificate
         async function generateCertificate() {
             const userName = (currentUserName || localStorage.getItem('ogdcl_user_name') || 'Valued Participant').trim();
-            const activityName = 'Activity 4: Social Engineering Defense';
+            const activityName = 'Activity 4: QR Code';
 
             if (!userName) {
                 showNotification('Error: No user name found. Please enter your name.', 'error');
