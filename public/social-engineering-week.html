@@ -667,6 +667,16 @@
             object-fit: contain;
         }
 
+        .certificate-logo-right {
+            position: absolute;
+            top: 3%;
+            right: 5%;
+            z-index: 1;
+            width: 14%;
+            max-height: 9%;
+            object-fit: contain;
+        }
+
         .certificate-title,
         .certificate-subtitle,
         .certificate-recipient,
@@ -697,7 +707,7 @@
             display: inline-block;
             width: fit-content;
             max-width: 90%;
-            margin-top: 5%;
+            margin-top: 8%;
             padding-bottom: 0.15%;
             border-bottom: 2px solid #19263a;
             color: #111;
@@ -1522,6 +1532,7 @@
                     <div class="certificate-preview">
                         <img class="certificate-watermark" src="background.webp" alt="">
                         <img class="certificate-logo" src="ogdcl-logo.png" alt="OGDCL">
+                        <img class="certificate-logo-right" src="cybershield.webp" alt="CyberShield" onerror="this.src='cybershield-opt.png'">
                         <h3 class="certificate-title">CERTIFICATE OF PARTICIPATION</h3>
                         <div class="certificate-subtitle">IS PROUDLY PRESENTED TO</div>
                         <div class="certificate-recipient">${displayName}</div>
