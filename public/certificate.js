@@ -202,10 +202,11 @@
     doc.setDrawColor(...C.teal); doc.setLineWidth(0.8);
     doc.rect(6, 6, W - 12, H - 12);
 
-    // ── Top logos (left: existing logo, right: cyber-logo.png, mirrored) ──
-    const LOGO_W = 40, LOGO_H = 16, LOGO_MARGIN = 19, LOGO_TOP = 13;
+    // ── Top logos (left: existing logo, right: cybershield logo) ──
+    const LOGO_W = 42, LOGO_H = 18, LOGO_MARGIN = 18, LOGO_TOP = 12;
+    const rightLogo = assets.cybershield || assets.cyberLogo;
     if (assets.logo) placeImage(assets.logo, LOGO_MARGIN, LOGO_TOP, LOGO_W, LOGO_H);
-    if (assets.cyberLogo) placeImage(assets.cyberLogo, W - LOGO_MARGIN - LOGO_W, LOGO_TOP, LOGO_W, LOGO_H);
+    if (rightLogo) placeImage(rightLogo, W - LOGO_MARGIN - LOGO_W, LOGO_TOP, LOGO_W, LOGO_H);
 
     font('times', 'bold', 30, C.gold);
     text('CERTIFICATE OF PARTICIPATION', CX, baseline(46, 30), 'center', 0.28);
@@ -220,7 +221,7 @@
     let namePt = 31;
     while (namePt > 12 && measureName(namePt) > 220) namePt -= 0.5;
     font('times', 'italic', namePt, C.ink);
-    const nameBase = baseline(70, namePt);
+    const nameBase = baseline(78, namePt);
     doc.text(userName, CX, nameBase, { align: 'center' });
     const nameWidth = measureName(namePt);
     line(CX - nameWidth / 2, nameBase + 2, CX + nameWidth / 2, nameBase + 2, C.ink, 0.55);
