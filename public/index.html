@@ -368,21 +368,30 @@
 
         .threat-alert {
             background: rgba(255, 107, 107, 0.15);
-            border: 3px solid #ff6b6b;
-            padding: 80px 40px;
+            border: 2px solid #ff6b6b;
+            padding: 35px 30px;
             text-align: center;
-            margin: 80px 0;
-            border-radius: 30px;
+            margin: 50px auto;
+            max-width: 880px;
+            width: calc(100% - 40px);
+            border-radius: 18px;
             position: relative;
             backdrop-filter: blur(10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+
+        .threat-alert .container {
+            max-width: 100%;
+            padding: 0;
         }
 
         .alert-icon {
-            font-size: 5rem;
+            font-size: 2.6rem;
             color: #ff6b6b;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             animation: warningPulse 2s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.7);
         }
 
         @keyframes warningPulse {
@@ -400,17 +409,25 @@
         }
 
         .threat-alert h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
             color: #ff6b6b;
+            letter-spacing: 0.5px;
         }
 
         .threat-alert p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            max-width: 800px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+            max-width: 720px;
             margin-left: auto;
             margin-right: auto;
+            opacity: 0.92;
+        }
+
+        .threat-alert .cta-button {
+            padding: 12px 32px;
+            font-size: 1rem;
         }
 
         .stats-section {
@@ -681,6 +698,30 @@
             .stats-grid {
                 gap: 30px;
             }
+
+            .threat-alert {
+                padding: 25px 20px;
+                margin: 35px auto;
+                width: calc(100% - 30px);
+            }
+
+            .alert-icon {
+                font-size: 2.2rem;
+                margin-bottom: 8px;
+            }
+
+            .threat-alert h2 {
+                font-size: 1.3rem;
+            }
+
+            .threat-alert p {
+                font-size: 0.95rem;
+            }
+
+            .threat-alert .cta-button {
+                padding: 10px 24px;
+                font-size: 0.95rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -835,20 +876,6 @@
             </div>
         </section>
 
-        <!-- Dynamic Landing Page Video Section (Managed by Admin: Show/Hide, Heading & Video) -->
-        <section class="video-section" id="landingVideoSection" style="padding: 45px 0; display: none;">
-            <div class="container">
-                <h2 class="section-title" id="landingVideoTitle">Cybersecurity Awareness Overview</h2>
-                <p id="landingVideoSubtitle" style="text-align: center; max-width: 720px; margin: -10px auto 35px; color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; line-height: 1.5;">Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.</p>
-                <div class="video-container" id="landingVideoContainer" style="max-width: 880px; margin: 0 auto 25px; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(0,255,255,0.3); background: #000;">
-                    <video id="trainingVideo" src="videos/phishing-awareness.mp4" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg" style="width:100%;aspect-ratio:16/9;display:block;">
-                        <source src="videos/phishing-awareness.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-        </section>
-
         <section class="stats-section">
             <div class="container">
                 <h2 class="section-title">Cybersecurity Statistics</h2>
@@ -869,6 +896,20 @@
                         <div class="stat-number">43%</div>
                         <p>of cyber attacks target small businesses</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Landing Page Video Section (Managed by Admin: Show/Hide, Heading & Video) -->
+        <section class="video-section" id="landingVideoSection" style="padding: 45px 0; display: none;">
+            <div class="container">
+                <h2 class="section-title" id="landingVideoTitle">Cybersecurity Awareness Overview</h2>
+                <p id="landingVideoSubtitle" style="text-align: center; max-width: 720px; margin: -10px auto 35px; color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; line-height: 1.5;">Master foundational cybersecurity awareness to protect yourself and OGDCL digital assets.</p>
+                <div class="video-container" id="landingVideoContainer" style="max-width: 880px; margin: 0 auto 25px; border-radius: 18px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.5); border: 2px solid rgba(0,255,255,0.3); background: #000;">
+                    <video id="trainingVideo" src="videos/phishing-awareness.mp4" controls controlsList="nodownload" preload="metadata" playsinline poster="videos/phishing-awareness_poster.jpg" style="width:100%;aspect-ratio:16/9;display:block;">
+                        <source src="videos/phishing-awareness.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
             </div>
         </section>
