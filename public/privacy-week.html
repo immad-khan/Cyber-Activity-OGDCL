@@ -1100,7 +1100,8 @@
                         correctAnswers: correctAnswers,
                         totalQuestions: totalQuestions,
                         activity: 'Activity 3: Data Protection',
-                        date: currentDate
+                        date: currentDate,
+                        deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || ''))
                     })
                 });
 
@@ -1414,7 +1415,7 @@
                 return;
             }
 
-            if (typeof window.checkCertificateClaimed === 'function' && window.checkCertificateClaimed(userName, activityName)) {
+            if (typeof window.checkCertificateClaimed === 'function' && (await window.checkCertificateClaimed(userName, activityName))) {
                 showNotification('You have already generated a certificate for this activity on this device.', 'warning');
                 const btn = document.getElementById('genCertBtn');
                 if (btn && window.disableCertButton) window.disableCertButton(btn);
