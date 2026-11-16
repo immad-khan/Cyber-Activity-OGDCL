@@ -945,7 +945,8 @@
                     quizMarks: correctAnswers * 20,
                     correctAnswers,
                     totalQuestions,
-                    activity: 'Activity 2: Email Security'
+                    activity: 'Activity 2: Email Security',
+                    deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || ''))
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -1442,7 +1443,7 @@
                 return;
             }
 
-            if (typeof window.checkCertificateClaimed === 'function' && window.checkCertificateClaimed(userName, activityName)) {
+            if (typeof window.checkCertificateClaimed === 'function' && (await window.checkCertificateClaimed(userName, activityName))) {
                 showNotification('You have already generated a certificate for this activity on this device.', 'warning');
                 const btn = document.getElementById('genCertBtn');
                 if (btn && window.disableCertButton) window.disableCertButton(btn);
