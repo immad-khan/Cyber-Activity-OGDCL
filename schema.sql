@@ -40,8 +40,12 @@ CREATE TABLE IF NOT EXISTS public.users (
     "totalQuestions" INT DEFAULT 0,
     activity TEXT DEFAULT 'Cybersecurity Awareness',
     "completionDate" TEXT,
+    "deviceId" TEXT,
     "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "deviceId" TEXT;
+CREATE INDEX IF NOT EXISTS idx_users_deviceid ON public.users ("deviceId");
 
 -- Enable RLS and public policies for Supabase
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
