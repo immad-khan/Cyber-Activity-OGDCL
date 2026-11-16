@@ -268,11 +268,84 @@
     return 'ogdcl_cert_claimed_' + slug;
   }
 
-  // Helper to check if this local device already generated a certificate for this specific activity
-  function checkCertificateClaimed(identifier, activity) {
+  // Persistent unique identifier for the current browser/device
+  function getDeviceId() {
+    try {
+      let id = localStorage.getItem('ogdcl_device_id');
+      if (!id || typeof id !== 'string' || id.length < 8) {
+        id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem('ogdcl_device_id', id);
+      }
+      return id;
+    } catch (e) {
+      return 'dev_fallback_' + Math.random().toString(36).substring(2, 10);
+    }
+  }
+
+  // Clears certificate claims and device lock from localStorage (used when admin deletes a user record)
+  function clearCertificateClaim(activity) {
+    try {
+      if (activity) {
+        const key = getActivityCertKey(activity);
+        localStorage.removeItem(key);
+      } else {
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('ogdcl_cert_claimed_')) {
+            toRemove.push(k);
+          }
+        }
+        toRemove.forEach(k => localStorage.removeItem(k));
+      }
+      localStorage.removeItem('ogdcl_certificate_id');
+    } catch (e) {
+      console.warn('Could not clear certificate claim in localStorage', e);
+    }
+  }
+
+  // Helper to check if this local device or user already generated a certificate for this specific activity.
+  // Performs live verification with the backend so if the admin deletes a record, the device lock is cleared immediately!
+  async function checkCertificateClaimed(identifier, activity) {
     try {
       const key = getActivityCertKey(activity);
       const val = localStorage.getItem(key);
+      const devId = getDeviceId();
+      const userName = (identifier || localStorage.getItem('ogdcl_user_name') || '').trim();
+      const email = (localStorage.getItem('ogdcl_user_email') || '').trim();
+
+      // Check live database to see if record still exists
+      try {
+        const params = new URLSearchParams({
+          activity: activity || '',
+          deviceId: devId || '',
+          userName: userName || '',
+          email: email || ''
+        });
+        const resp = await fetch(`/api/save-username?${params.toString()}`, {
+          method: 'GET',
+          cache: 'no-store'
+        });
+        if (resp.ok) {
+          const resData = await resp.json();
+          // If server confirmed no certificate exists in DB (e.g. admin deleted the user record)
+          if (!resData.alreadyGenerated && !resData.claimed) {
+            // Delete local device claim so user can take the test and earn certificate again!
+            localStorage.removeItem(key);
+            localStorage.removeItem('ogdcl_certificate_id');
+            return false;
+          } else {
+            // Certificate confirmed in database
+            if (!val && resData.certificateId) {
+              markCertificateClaimed(userName, activity, resData.certificateId);
+            }
+            return true;
+          }
+        }
+      } catch (netErr) {
+        // Network offline: fall back to local storage check below
+      }
+
       if (!val) return false;
       try {
         const parsed = JSON.parse(val);
@@ -289,12 +362,14 @@
   function markCertificateClaimed(identifier, activity, certId) {
     try {
       const key = getActivityCertKey(activity);
+      const devId = getDeviceId();
       const payload = {
         claimed: true,
         claimedAt: new Date().toISOString(),
         certId: certId || ('OGDCL-' + Date.now().toString(36).toUpperCase()),
         activity: activity || '',
-        userName: identifier || ''
+        userName: identifier || '',
+        deviceId: devId
       };
       localStorage.setItem(key, JSON.stringify(payload));
       if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
@@ -320,6 +395,8 @@
     btn.title = reason || 'Certificate already generated for this activity on this device.';
   }
 
+  window.getDeviceId = getDeviceId;
+  window.clearCertificateClaim = clearCertificateClaim;
   window.getActivityCertKey = getActivityCertKey;
   window.resolveCertificateTitle = resolveCertificateTitle;
   window.downloadOGDCLCertificate = downloadOGDCLCertificate;
