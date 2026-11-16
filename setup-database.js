@@ -85,6 +85,7 @@ async function runSetup() {
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "employeeId" TEXT;
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS email TEXT;
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "certificateId" TEXT;
+      ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "deviceId" TEXT;
       UPDATE public.users
       SET "certificateId" = 'OGDCL-LEGACY-' || id::TEXT
       WHERE "certificateId" IS NULL;
@@ -92,6 +93,7 @@ async function runSetup() {
       ALTER TABLE public.users ADD COLUMN IF NOT EXISTS designation TEXT;
     `);
     console.log('   ✅ Table "public.users" created/verified with Google Authentication (Name & Email).');
+    console.log('   ✅ Device Tracking column ("deviceId") verified and ready.');
 
     // 2. Indexes
     await pool.query(`
@@ -99,9 +101,10 @@ async function runSetup() {
       CREATE INDEX IF NOT EXISTS idx_users_createdat ON public.users ("createdAt" DESC);
       CREATE INDEX IF NOT EXISTS idx_users_empid ON public.users ("employeeId");
       CREATE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
+      CREATE INDEX IF NOT EXISTS idx_users_deviceid ON public.users ("deviceId");
       CREATE UNIQUE INDEX IF NOT EXISTS idx_users_certificate_id ON public.users ("certificateId") WHERE "certificateId" IS NOT NULL;
     `);
-    console.log('   ✅ Indexes "idx_users_score", "idx_users_createdat", and "idx_users_empid" ready.');
+    console.log('   ✅ Indexes "idx_users_score", "idx_users_createdat", "idx_users_empid", and "idx_users_deviceid" ready.');
 
     // 3. Site Settings Table
     await pool.query(`
