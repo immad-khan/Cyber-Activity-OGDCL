@@ -20,21 +20,36 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const qEmail = String(req.query?.email || '').trim().toLowerCase();
     const qName = String(req.query?.userName || req.query?.name || '').trim();
+    const qDeviceId = String(req.query?.deviceId || '').trim();
     const qActivity = String(req.query?.activity || '').trim();
     try {
       let checkRes = { rows: [] };
-      if (qEmail) {
+      // 1. Check by deviceId first if provided
+      if (qDeviceId) {
         checkRes = await pool.query(
-          `SELECT "certificateId", "completionDate", score FROM public.users 
+          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
+           WHERE "deviceId" = $1 
+             AND ($2 = '' OR activity = $2)
+             AND "certificateId" IS NOT NULL 
+           LIMIT 1`,
+          [qDeviceId, qActivity]
+        );
+      }
+      // 2. Check by email
+      if (checkRes.rows.length === 0 && qEmail) {
+        checkRes = await pool.query(
+          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
            WHERE LOWER(email) = LOWER($1) 
              AND ($2 = '' OR activity = $2)
              AND "certificateId" IS NOT NULL 
            LIMIT 1`,
           [qEmail, qActivity]
         );
-      } else if (qName) {
+      }
+      // 3. Check by userName
+      if (checkRes.rows.length === 0 && qName) {
         checkRes = await pool.query(
-          `SELECT "certificateId", "completionDate", score FROM public.users 
+          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
            WHERE LOWER("userName") = LOWER($1) 
              AND ($2 = '' OR activity = $2)
              AND "certificateId" IS NOT NULL 
@@ -42,14 +57,18 @@ export default async function handler(req, res) {
           [qName, qActivity]
         );
       }
+
+      const hasCert = checkRes.rows.length > 0;
       return res.status(200).json({
-        alreadyGenerated: false,
+        alreadyGenerated: hasCert,
+        claimed: hasCert,
         certificateId: checkRes.rows[0]?.certificateId || null,
-        completionDate: checkRes.rows[0]?.completionDate || null
+        completionDate: checkRes.rows[0]?.completionDate || null,
+        userName: checkRes.rows[0]?.userName || null
       });
     } catch (e) {
       console.error('Error checking cert status:', e);
-      return res.status(200).json({ alreadyGenerated: false });
+      return res.status(200).json({ alreadyGenerated: false, claimed: false });
     }
   }
 
@@ -68,6 +87,7 @@ export default async function handler(req, res) {
       employeeId = '',
       department = '',
       designation = '',
+      deviceId = '',
       score,
       level = 'Beginner',
       accuracy = 0,
@@ -86,6 +106,7 @@ export default async function handler(req, res) {
     const sanitizedDept = String(department).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedDesig = String(designation).replace(/[<>:"\/\\|?*\x00-\x1F]/g, '').trim();
     const sanitizedEmail = String(email || '').trim().toLowerCase();
+    const sanitizedDeviceId = String(deviceId || '').trim();
 
     const finalCorrect = parseInt(correctAnswers, 10) || 0;
     const finalVideoCompleted = Boolean(videoCompleted);
@@ -99,7 +120,7 @@ export default async function handler(req, res) {
       ? parseInt(score, 10)
       : (finalVideoMarks + finalQuizMarks);
 
-    // ── Check for existing certificate for this email or username + activity ──
+    // ── Check for existing certificate for this email, deviceId, or username + activity ──
     let existingCheck = { rows: [] };
     if (sanitizedEmail) {
       existingCheck = await pool.query(
@@ -109,6 +130,15 @@ export default async function handler(req, res) {
            AND "certificateId" IS NOT NULL 
          LIMIT 1`,
         [sanitizedEmail, activity]
+      );
+    } else if (sanitizedDeviceId) {
+      existingCheck = await pool.query(
+        `SELECT id, "certificateId", "completionDate", score FROM public.users 
+         WHERE "deviceId" = $1 
+           AND activity = $2 
+           AND "certificateId" IS NOT NULL 
+         LIMIT 1`,
+        [sanitizedDeviceId, activity]
       );
     } else if (sanitizedName) {
       existingCheck = await pool.query(
@@ -126,9 +156,9 @@ export default async function handler(req, res) {
       // Update score and details if higher or retaken
       await pool.query(
         `UPDATE public.users 
-         SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3, level = $4, accuracy = $5, "completionDate" = $6
-         WHERE id = $7`,
-        [finalScore, finalQuizMarks, finalCorrect, level, parseInt(accuracy, 10) || 0, date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), existing.id]
+         SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3, level = $4, accuracy = $5, "completionDate" = $6, "deviceId" = COALESCE(NULLIF($7, ''), "deviceId")
+         WHERE id = $8`,
+        [finalScore, finalQuizMarks, finalCorrect, level, parseInt(accuracy, 10) || 0, date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), sanitizedDeviceId, existing.id]
       );
       return res.status(200).json({
         success: true,
@@ -142,7 +172,8 @@ export default async function handler(req, res) {
           certificateId: existing.certificateId,
           score: Math.max(existing.score || 0, finalScore),
           level: level,
-          completionDate: existing.completionDate
+          completionDate: existing.completionDate,
+          deviceId: sanitizedDeviceId
         }
       });
     }
@@ -168,10 +199,11 @@ export default async function handler(req, res) {
         "correctAnswers",
         "totalQuestions",
         activity,
-        "completionDate"
+        "completionDate",
+        "deviceId"
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-      RETURNING id, "userName", email, "certificateId", "employeeId", department, designation, score, level, "createdAt";
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      RETURNING id, "userName", email, "certificateId", "employeeId", department, designation, score, level, "deviceId", "createdAt";
     `;
 
     const values = [
@@ -190,7 +222,8 @@ export default async function handler(req, res) {
       finalCorrect,
       parseInt(totalQuestions, 10) || 0,
       activity,
-      completionDate
+      completionDate,
+      sanitizedDeviceId
     ];
 
     const result = await pool.query(insertQuery, values);
@@ -230,6 +263,9 @@ export default async function handler(req, res) {
           level: req.body?.level || 'Beginner',
           accuracy: req.body?.accuracy || 0,
           completionDate: req.body?.date || new Date().toLocaleDateString(),
+          activity: req.body?.activity || 'Cybersecurity Awareness',
+          certificateId: certificateId,
+          deviceId: sanitizedDeviceId,
           timestamp: new Date().toISOString()
         };
         const docRef = await db.collection('users').add(userData);
