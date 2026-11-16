@@ -35,7 +35,8 @@ export default async function handler(req, res) {
         "totalQuestions",
         activity,
         "completionDate",
-        "createdAt"
+        "createdAt",
+        "deviceId"
       FROM public.users
       ORDER BY "createdAt" DESC, score DESC
     `);
