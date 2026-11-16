@@ -66,6 +66,8 @@ pool.on('error', (err) => {
   try {
     const t0 = Date.now();
     await pool.query('SELECT 1');
+    await pool.query('ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "deviceId" TEXT').catch(() => {});
+    await pool.query('CREATE INDEX IF NOT EXISTS idx_users_deviceid ON public.users ("deviceId")').catch(() => {});
     const maskedConn = CONNECTION_STRING.replace(/:([^:@]+)@/, ':****@');
     console.log(`⚡ [DB Pool] Database connection established to ${maskedConn} in ${Date.now() - t0}ms (SSL: ${sslConfig ? 'enabled' : 'disabled'})`);
   } catch (err) {
