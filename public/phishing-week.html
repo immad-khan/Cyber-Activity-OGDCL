@@ -315,18 +315,27 @@
             border-color: rgba(255, 107, 107, 0.3);
         }
 
-        .section-title,
-        .study-section h2 {
-            font-size: 2.5rem;
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .content-column .study-section,
+        .content-column .quiz-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
             color: #00ffff;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            text-align: center;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        .quiz-section h2 {
-            font-size: 2.5rem;
+        .section-title.quiz-title {
             color: #ff6b6b;
-            margin-bottom: 30px;
             text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
         }
 
@@ -626,10 +635,8 @@
                 font-size: 1.2rem;
             }
 
-            .section-title,
-            .study-section h2,
-            .quiz-section h2 {
-                font-size: 2rem;
+            .section-title {
+                font-size: 1.8rem;
             }
         }
 
@@ -719,8 +726,9 @@
     </section>
 
     <div class="content-wrapper">
-        <div class="study-section">
+        <div class="content-column">
             <h2 class="section-title">Watch Video</h2>
+            <div class="study-section">
             <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
                 <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/phishing-awareness_poster.jpg">
                     <source src="./videos/phishing-awareness.mp4" type="video/mp4">
@@ -762,8 +770,9 @@
             </div>
         </div>
 
-        <div class="quiz-section">
-            <h2>Quiz</h2>
+        <div class="content-column">
+            <h2 class="section-title quiz-title">Quiz</h2>
+            <div class="quiz-section">
 
             <div id="name-input-section" class="name-input-section">
                 <p>Enter your details to begin the assessment.</p>
@@ -1549,8 +1558,6 @@
 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Quiz</h2>
-                    
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
