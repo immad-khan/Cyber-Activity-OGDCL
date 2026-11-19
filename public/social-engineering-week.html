@@ -160,6 +160,41 @@
             opacity: 0.6;
         }
 
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50% !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            cursor: pointer;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background: transparent !important;
+            border-color: transparent !important;
+            transform: translateY(-3px) scale(1.08) !important;
+            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.85)) !important;
+            box-shadow: none !important;
+        }
+
+        .nav-home-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            display: block;
+            border-radius: 50%;
+        }
+
         .score-display {
             display: flex;
             align-items: center;
@@ -579,6 +614,12 @@
                 justify-content: center;
             }
 
+            .weeks-buttons .back-home-btn {
+                width: 44px !important;
+                height: 44px !important;
+                margin: 0 auto;
+            }
+
             .content-wrapper {
                 grid-template-columns: 1fr;
             }
@@ -630,148 +671,7 @@
             }
         }
 
-        .certificate-preview {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: min(980px, 100%);
-            aspect-ratio: 297 / 210;
-            margin: 20px auto;
-            padding: 7% 5% 5%;
-            overflow: hidden;
-            border: 3px solid #49c1a5;
-            background: #fff;
-            color: #19263a;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
 
-        .certificate-watermark {
-            position: absolute;
-            z-index: 0;
-            top: 20%;
-            left: 30%;
-            width: 40%;
-            opacity: 0.09;
-            pointer-events: none;
-        }
-
-        .certificate-logo {
-            position: absolute;
-            top: 3%;
-            left: 5%;
-            z-index: 1;
-            width: 14%;
-            max-height: 9%;
-            object-fit: contain;
-        }
-
-        .certificate-logo-right {
-            position: absolute;
-            top: 3%;
-            right: 5%;
-            z-index: 1;
-            width: 14%;
-            max-height: 9%;
-            object-fit: contain;
-        }
-
-        .certificate-title,
-        .certificate-subtitle,
-        .certificate-recipient,
-        .certificate-completion,
-        .certificate-motto,
-        .certificate-footer {
-            position: relative;
-            z-index: 1;
-        }
-
-        .certificate-title {
-            margin: 0;
-            color: #be8f2b;
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: clamp(1.5rem, 3.8vw, 3.1rem);
-            letter-spacing: 0.08em;
-        }
-
-        .certificate-subtitle {
-            margin-top: 1%;
-            color: #007ee0;
-            font-size: clamp(0.8rem, 1.9vw, 1.5rem);
-            font-weight: 700;
-            letter-spacing: 0.32em;
-        }
-
-        .certificate-recipient {
-            display: inline-block;
-            width: fit-content;
-            max-width: 90%;
-            margin-top: 8%;
-            padding-bottom: 0.15%;
-            border-bottom: 2px solid #19263a;
-            color: #111;
-            font-family: 'Segoe Script', 'Brush Script MT', cursive;
-            font-size: clamp(1.5rem, 4vw, 3.2rem);
-            line-height: 1.1;
-            overflow-wrap: anywhere;
-        }
-
-        .certificate-completion {
-            margin-top: 1%;
-            color: #19263a;
-            font-size: clamp(0.9rem, 2.3vw, 1.7rem);
-        }
-
-        .certificate-completion strong {
-            color: #007ee0;
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: 1em;
-            font-weight: 700;
-        }
-
-        .certificate-motto {
-            margin-top: 1%;
-            color: #19263a;
-            font-family: Georgia, 'Times New Roman', serif;
-            font-size: clamp(0.8rem, 1.8vw, 1.35rem);
-            font-style: italic;
-            font-weight: 700;
-        }
-
-        .certificate-footer {
-            position: absolute;
-            right: 5%;
-            bottom: 3%;
-            left: 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            font-size: clamp(0.55rem, 1vw, 0.9rem);
-        }
-
-        .certificate-date,
-        .certificate-signature {
-            position: relative;
-            width: 28%;
-            border-bottom: 1px solid #19263a;
-            padding-bottom: 0.4%;
-        }
-
-        .certificate-signature img {
-            display: block;
-            width: 42%;
-            height: 38px;
-            margin: 0 auto -4px;
-            object-fit: contain;
-        }
-
-        .certificate-footer-label {
-            position: absolute;
-            bottom: -1.6em;
-            width: 100%;
-            color: #344054;
-        }
 
         @media (max-width: 600px) {
             .header {
@@ -820,22 +720,7 @@
                 width: 48px;
             }
 
-            .certificate-preview {
-                padding-top: 9%;
-                border-width: 2px;
-            }
 
-            .certificate-recipient {
-                max-width: 90%;
-            }
-
-            .certificate-completion {
-                margin-top: 1%;
-            }
-
-            .certificate-signature img {
-                height: 24px;
-            }
         }
     </style>
 </head>
@@ -853,6 +738,9 @@
                 </div>
 
                 <div class="weeks-buttons" id="weekMenu">
+                    <a href="index.html" class="week-button back-home-btn" title="Home" aria-label="Home">
+                        <img src="home-icon.png" alt="Home" class="nav-home-icon">
+                    </a>
                     <a href="mfa-week.html" class="week-button">Activity 1</a>
                     <a href="phishing-week.html" class="week-button">Activity 2</a>
                     <a href="privacy-week.html" class="week-button">Activity 3</a>
@@ -1530,28 +1418,57 @@
                     <h2 style="color: #00ffff; margin-bottom: 10px; font-size: 2.2rem;">Activity 4 Complete!</h2>
                     <p style="color: #e2e8f0; font-size: 1.05rem; margin-bottom: 20px;">Congratulations! You have completed the QR Code Assessment.</p>
                     
-                    <div class="certificate-preview">
-                        <img class="certificate-watermark" src="background.webp" alt="">
-                        <img class="certificate-logo" src="ogdcl-logo.png" alt="OGDCL">
-                        <img class="certificate-logo-right" src="cybershield.webp" alt="CyberShield" onerror="this.src='cybershield-opt.png'">
-                        <h3 class="certificate-title">CERTIFICATE OF PARTICIPATION</h3>
-                        <div class="certificate-subtitle">IS PROUDLY PRESENTED TO</div>
-                        <div class="certificate-recipient">${displayName}</div>
-                        <div class="certificate-completion">
-                            has successfully completed activity on
-                            <strong>QR Code Quishing Defence Program</strong>
+                    <!-- Official OGDCL Certificate Preview Card -->
+                    <div style="background: linear-gradient(135deg, rgba(11, 25, 44, 0.95), rgba(0, 40, 70, 0.95)); border: 2px solid #00ffff; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 600px; text-align: center; box-shadow: 0 12px 40px rgba(0, 255, 255, 0.35); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; right: -10px; background: linear-gradient(45deg, #00b4d8, #0077b6); color: #fff; padding: 6px 20px; border-radius: 0 0 0 15px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                            Official Certificate
                         </div>
-                        <p class="certificate-motto">Your commitment is our shield and your vigilance is our strength.</p>
-                        <div class="certificate-footer">
-                            <div class="certificate-date">
-                                ${currentDate}
-                                <span class="certificate-footer-label">Date</span>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 5px;">
+                            <img src="ogdcl-logo.png" alt="OGDCL" style="height: 44px; object-fit: contain;" onerror="this.style.display='none'">
+                            <div style="text-align: center; flex: 1; padding: 0 10px;">
+                                <div style="font-size: 0.95rem; letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; font-weight: 800;">OIL & GAS DEVELOPMENT COMPANY LTD</div>
+                                <div style="font-size: 0.8rem; letter-spacing: 1px; color: #48cae4; font-weight: 700;">CYBERSECURITY DEPARTMENT</div>
+                                <div style="font-size: 0.72rem; color: #cbd5e0; letter-spacing: 0.8px;">ISLAMABAD, PAKISTAN</div>
                             </div>
-                            <div class="certificate-signature">
-                                <img src="signature.png" alt="Authorized signature">
-                                <span>M. Danish Hussain</span>
-                                <span class="certificate-footer-label">Authorized signature</span>
+                            <img src="cybershield.webp" alt="CyberShield" style="height: 44px; object-fit: contain;" onerror="this.src='cybershield-opt.png'">
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(0,255,255,0.3); border-bottom: 1px solid rgba(0,255,255,0.3); padding: 12px 0; margin: 12px 0;">
+                            <div style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: #a0aec0;">Certificate of Completion</div>
+                            <div style="font-size: 1.7rem; font-weight: bold; color: #00ffff; margin: 14px 0 8px; text-shadow: 0 0 12px rgba(0,255,255,0.4);">${displayName}</div>
+                            <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.4;">
+                                Has successfully demonstrated operational compliance in<br>
+                                <strong style="color: #48cae4;">QR Code Quishing Defence Program</strong>
                             </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin: 15px 0; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 12px;">
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Total Score</div>
+                                <div style="color: #00ffff; font-size: 1.25rem; font-weight: bold;">${userScore}/150</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Quiz Marks</div>
+                                <div style="color: #2ec4b6; font-size: 1.25rem; font-weight: bold;">${quizMarks}/100</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Video Marks</div>
+                                <div style="color: #ffd166; font-size: 1.25rem; font-weight: bold;">${videoMarks}/50</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Accuracy</div>
+                                <div style="color: #48cae4; font-size: 1.25rem; font-weight: bold;">${accuracy}%</div>
+                            </div>
+                            <div>
+                                <div style="color: #a0aec0; font-size: 0.75rem;">Level</div>
+                                <div style="color: ${currentLevel.color}; font-size: 1.1rem; font-weight: bold;">${currentLevel.name}</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #a0aec0; padding-top: 8px;">
+                            <span>📅 Issued: ${currentDate}</span>
+                            <span>🔒 Verified Electronic Credential</span>
                         </div>
                     </div>
                     
