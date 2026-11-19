@@ -301,18 +301,27 @@
             border-radius: 4px;
         }
 
-        .section-title,
-        .study-section h2 {
-            font-size: 2.5rem;
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .content-column .study-section,
+        .content-column .quiz-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
             color: #00ffff;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            text-align: center;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        .quiz-section h2 {
-            font-size: 2.5rem;
+        .section-title.quiz-title {
             color: #4ecdc4;
-            margin-bottom: 30px;
             text-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
         }
 
@@ -608,10 +617,8 @@
                 font-size: 1.2rem;
             }
 
-            .section-title,
-            .study-section h2,
-            .quiz-section h2 {
-                font-size: 2rem;
+            .section-title {
+                font-size: 1.8rem;
             }
         }
 
@@ -702,61 +709,64 @@
     </section>
 
     <div class="content-wrapper">
-        <div class="study-section">
+        <div class="content-column">
             <h2 class="section-title">Watch Video</h2>
-            <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
-                <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/Password_policy_poster.jpg">
-                    <source src="./videos/Password_policy.mp4" type="video/mp4">
-                    <source src="videos/Password_policy.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            
-            <div class="marks-display">
-                <span class="marks-badge">Video: 50 marks</span>
-                <span class="marks-badge">Quiz: 100 marks</span>
-                <div style="margin-top: 10px;">
-                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
-                        🎁 Finished Watching? Claim 50 Video Marks
-                    </button>
+            <div class="study-section">
+                <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
+                    <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/Password_policy_poster.jpg">
+                        <source src="./videos/Password_policy.mp4" type="video/mp4">
+                        <source src="videos/Password_policy.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
-            </div>
-            
-            <div class="learning-points">
-                <h3>🔐 Key Learning Points</h3>
-                <ul>
-                    <li><strong>Strong Passwords:</strong> Use at least 12 characters with upper/lowercase, numbers, and symbols. Avoid personal info.</li>
-                    <li><strong>Two-Factor Authentication:</strong> 2FA adds an extra layer of security even if your password is stolen. Blocks 99% of hacks.</li>
-                    <li><strong>Password Managers:</strong> Use Bitwarden or 1Password to store passwords securely. Generate strong, unique passwords automatically.</li>
-                    <li><strong>Never Reuse:</strong> Create unique passwords for each account. One breach shouldn't compromise all your accounts.</li>
-                    <li><strong>Browser Safety:</strong> Don't save passwords in browsers. Password managers offer stronger encryption.</li>
-                    <li><strong>80% Statistic:</strong> Over 80% of breaches involve weak or stolen passwords. Your password is your first defense.</li>
-                    <li><strong>Report Suspicious Activity:</strong> Always report suspicious login attempts or unexpected MFA prompts immediately.</li>
-                    <li><strong>Regular Updates:</strong> Change compromised passwords immediately and review old, unused accounts regularly.</li>
-                </ul>
+                
+                <div class="marks-display">
+                    <span class="marks-badge">Video: 50 marks</span>
+                    <span class="marks-badge">Quiz: 100 marks</span>
+                    <div style="margin-top: 10px;">
+                        <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                            🎁 Finished Watching? Claim 50 Video Marks
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="learning-points">
+                    <h3>🔐 Key Learning Points</h3>
+                    <ul>
+                        <li><strong>Strong Passwords:</strong> Use at least 12 characters with upper/lowercase, numbers, and symbols. Avoid personal info.</li>
+                        <li><strong>Two-Factor Authentication:</strong> 2FA adds an extra layer of security even if your password is stolen. Blocks 99% of hacks.</li>
+                        <li><strong>Password Managers:</strong> Use Bitwarden or 1Password to store passwords securely. Generate strong, unique passwords automatically.</li>
+                        <li><strong>Never Reuse:</strong> Create unique passwords for each account. One breach shouldn't compromise all your accounts.</li>
+                        <li><strong>Browser Safety:</strong> Don't save passwords in browsers. Password managers offer stronger encryption.</li>
+                        <li><strong>80% Statistic:</strong> Over 80% of breaches involve weak or stolen passwords. Your password is your first defense.</li>
+                        <li><strong>Report Suspicious Activity:</strong> Always report suspicious login attempts or unexpected MFA prompts immediately.</li>
+                        <li><strong>Regular Updates:</strong> Change compromised passwords immediately and review old, unused accounts regularly.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div class="quiz-section">
-            <h2>Quiz</h2>
-            
-            <div id="name-input-section" class="name-input-section">
-                <p>Enter your details to begin the assessment.</p>
-                <div class="name-input-grid">
-                    <input type="text" id="userNameStart" placeholder="Full Name *" required />
+        <div class="content-column">
+            <h2 class="section-title quiz-title">Quiz</h2>
+            <div class="quiz-section">
+                <div id="name-input-section" class="name-input-section">
+                    <p>Enter your details to begin the assessment.</p>
+                    <div class="name-input-grid">
+                        <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                    </div>
+                    <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                 </div>
-                <button onclick="startQuiz()" class="start-button">Start Quiz</button>
-            </div>
-            
-            <div id="quiz-content" style="display: none;">
-                <div class="user-name-display">
-                    <p>
-                        <strong>Name:</strong> <span id="displayUserName"></span>
-                    </p>
+                
+                <div id="quiz-content" style="display: none;">
+                    <div class="user-name-display">
+                        <p>
+                            <strong>Name:</strong> <span id="displayUserName"></span>
+                        </p>
+                    </div>
+                    <p id="quiz-question"></p>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-result"></div>
                 </div>
-                <p id="quiz-question"></p>
-                <div id="quiz-options"></div>
-                <div id="quiz-result"></div>
             </div>
         </div>
     </div>
@@ -1525,8 +1535,6 @@
                 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Quiz</h2>
-                    
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
