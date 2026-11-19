@@ -50,13 +50,14 @@
         }
 
         .nav {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             gap: 20px;
         }
 
         .logo {
+            justify-self: start;
             font-size: 2rem;
             font-weight: bold;
             background: linear-gradient(45deg, #00ffff, #ff00ff);
@@ -102,6 +103,7 @@
             gap: 12px;
             align-items: center;
             flex-shrink: 0;
+            justify-self: center;
         }
 
         .week-button {
@@ -613,6 +615,12 @@
         }
 
         @media (max-width: 968px) {
+            .nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
             .hamburger {
                 display: flex;
             }
