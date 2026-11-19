@@ -319,18 +319,27 @@
             border-color: rgba(218, 112, 214, 0.3);
         }
 
-        .section-title,
-        .study-section h2 {
-            font-size: 2.5rem;
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .content-column .study-section,
+        .content-column .quiz-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
             color: #ba55d3;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            text-align: center;
             text-shadow: 0 0 15px rgba(186, 85, 211, 0.5);
         }
 
-        .quiz-section h2 {
-            font-size: 2.5rem;
+        .section-title.quiz-title {
             color: #da70d6;
-            margin-bottom: 30px;
             text-shadow: 0 0 15px rgba(218, 112, 214, 0.5);
         }
 
@@ -641,10 +650,8 @@
                 font-size: 1.2rem;
             }
 
-            .section-title,
-            .study-section h2,
-            .quiz-section h2 {
-                font-size: 2rem;
+            .section-title {
+                font-size: 1.8rem;
             }
         }
 
@@ -787,56 +794,59 @@
     </section>
 
     <div class="content-wrapper">
-        <div class="study-section">
+        <div class="content-column">
             <h2 class="section-title">Watch Video</h2>
-            <div class="video-container">
-                <iframe id="trainingVideoIframe" src="" title="Social Engineering Defense Training Video"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            </div>
-
-            <div class="marks-display">
-                <span class="marks-badge">Video: 50 marks</span>
-                <span class="marks-badge">Quiz: 100 marks</span>
-                <div style="margin-top: 10px;">
-                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
-                        🎁 Finished Watching? Claim 50 Video Marks
-                    </button>
+            <div class="study-section">
+                <div class="video-container">
+                    <iframe id="trainingVideoIframe" src="" title="Social Engineering Defense Training Video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
-            </div>
 
-            <div class="learning-points">
-                <h3>Video Chapters & Key Learning Points</h3>
-                <ul style="list-style: none; margin-left: 0;">
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">0:00</span><strong>Has this happened to you?</strong> Understanding everyday encounters with social engineering traps.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">0:30</span><strong>What is Social Engineering?</strong> Manipulation of human psychology and trust to trick victims into giving away data or access.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">1:09</span><strong>The Three Traits of an Attack:</strong> Emotional triggers, artificial urgency, and exploiting trust or authority.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">1:35</span><strong>Heightened Emotions & Urgency:</strong> Panic, fear, or curiosity provoke rash actions that bypass logical reasoning.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">2:19</span><strong>Where Attacks Happen:</strong> Phishing emails, phone calls (vishing), SMS/messaging (smishing), social platforms, and in-person tailgating.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Action</span><strong>What to do if attacked:</strong> Slow down, never click or share credentials, verify independently via official channels, and alert IT Security.</li>
-                </ul>
+                <div class="marks-display">
+                    <span class="marks-badge">Video: 50 marks</span>
+                    <span class="marks-badge">Quiz: 100 marks</span>
+                    <div style="margin-top: 10px;">
+                        <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                            🎁 Finished Watching? Claim 50 Video Marks
+                        </button>
+                    </div>
+                </div>
+
+                <div class="learning-points">
+                    <h3>Video Chapters & Key Learning Points</h3>
+                    <ul style="list-style: none; margin-left: 0;">
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">0:00</span><strong>Has this happened to you?</strong> Understanding everyday encounters with social engineering traps.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">0:30</span><strong>What is Social Engineering?</strong> Manipulation of human psychology and trust to trick victims into giving away data or access.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">1:09</span><strong>The Three Traits of an Attack:</strong> Emotional triggers, artificial urgency, and exploiting trust or authority.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">1:35</span><strong>Heightened Emotions & Urgency:</strong> Panic, fear, or curiosity provoke rash actions that bypass logical reasoning.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">2:19</span><strong>Where Attacks Happen:</strong> Phishing emails, phone calls (vishing), SMS/messaging (smishing), social platforms, and in-person tailgating.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">Action</span><strong>What to do if attacked:</strong> Slow down, never click or share credentials, verify independently via official channels, and alert IT Security.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div class="quiz-section">
-            <h2>Quiz</h2>
-
-            <div id="name-input-section" class="name-input-section">
-                <p>Enter your details to begin the assessment.</p>
-                <div class="name-input-grid">
-                    <input type="text" id="userNameStart" placeholder="Full Name *" required />
+        <div class="content-column">
+            <h2 class="section-title quiz-title">Quiz</h2>
+            <div class="quiz-section">
+                <div id="name-input-section" class="name-input-section">
+                    <p>Enter your details to begin the assessment.</p>
+                    <div class="name-input-grid">
+                        <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                    </div>
+                    <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                 </div>
-                <button onclick="startQuiz()" class="start-button">Start Quiz</button>
-            </div>
 
-            <div id="quiz-content" style="display: none;">
-                <div class="user-name-display">
-                    <p>
-                        <strong>Name:</strong> <span id="displayUserName"></span>
-                    </p>
+                <div id="quiz-content" style="display: none;">
+                    <div class="user-name-display">
+                        <p>
+                            <strong>Name:</strong> <span id="displayUserName"></span>
+                        </p>
+                    </div>
+                    <p id="quiz-question"></p>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-result"></div>
                 </div>
-                <p id="quiz-question"></p>
-                <div id="quiz-options"></div>
-                <div id="quiz-result"></div>
             </div>
         </div>
     </div>
@@ -1612,8 +1622,6 @@
 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Quiz</h2>
-                    
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
