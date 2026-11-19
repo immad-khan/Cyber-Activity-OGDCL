@@ -313,18 +313,27 @@
             border-color: rgba(72, 202, 228, 0.35);
         }
 
-        .section-title,
-        .study-section h2 {
-            font-size: 2.5rem;
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .content-column .study-section,
+        .content-column .quiz-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
             color: #00ffff;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            text-align: center;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        .quiz-section h2 {
-            font-size: 2.5rem;
+        .section-title.quiz-title {
             color: #48cae4;
-            margin-bottom: 30px;
             text-shadow: 0 0 15px rgba(72, 202, 228, 0.5);
         }
 
@@ -748,62 +757,65 @@
     <!-- Content Section -->
     <div class="content-wrapper">
         <!-- Study Section (Left Column) -->
-        <div class="study-section">
+        <div class="content-column">
             <h2 class="section-title">Watch Video</h2>
-            <div class="video-container">
-                <iframe id="trainingVideoIframe" src="" title="Data Privacy &amp; Cybersecurity Training Video"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            </div>
-
-            <!-- Video Player -->
-            <!-- Marks Display -->
-            <div class="marks-display">
-                <span class="marks-badge">Video: 50 marks</span>
-                <span class="marks-badge">Quiz: 100 marks</span>
-                <span class="marks-badge">Total: 150 marks</span>
-                <div style="margin-top: 10px;">
-                    <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
-                        🎁 Finished Watching? Claim 50 Video Marks
-                    </button>
+            <div class="study-section">
+                <div class="video-container">
+                    <iframe id="trainingVideoIframe" src="" title="Data Privacy &amp; Cybersecurity Training Video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
-            </div>
 
-            <!-- Learning Points -->
-            <div class="learning-points">
-                <h3>Video Key Topics & Privacy Rules</h3>
-                <ul style="list-style: none; margin-left: 0;">
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Tracking</span><strong>Digital Footprint:</strong> Websites, cookies, and mobile apps constantly track and aggregate personal habits and location history.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">PII Protection</span><strong>Personally Identifiable Information:</strong> Keep CNIC, financial, medical, and corporate confidential data encrypted and confidential.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Public Wi-Fi</span><strong>Network Encryption:</strong> Public Wi-Fi networks in airports and cafes expose unencrypted traffic; always use an authenticated VPN.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Defense</span><strong>MFA & Clean Desk:</strong> Enable multi-factor authentication, use strong unique passwords, and lock workstations (Win + L) whenever unattended.</li>
-                    <li style="margin-bottom: 12px;"><span class="chapter-badge">Least Privilege</span><strong>Need-to-Know Access:</strong> Limit app permissions and grant users only the minimum access necessary for their specific job duties.</li>
-                </ul>
+                <!-- Video Player -->
+                <!-- Marks Display -->
+                <div class="marks-display">
+                    <span class="marks-badge">Video: 50 marks</span>
+                    <span class="marks-badge">Quiz: 100 marks</span>
+                    <span class="marks-badge">Total: 150 marks</span>
+                    <div style="margin-top: 10px;">
+                        <button id="claimVideoBtn" onclick="awardVideoMarks()" class="claim-video-btn">
+                            🎁 Finished Watching? Claim 50 Video Marks
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Learning Points -->
+                <div class="learning-points">
+                    <h3>Video Key Topics & Privacy Rules</h3>
+                    <ul style="list-style: none; margin-left: 0;">
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Tracking</span><strong>Digital Footprint:</strong> Websites, cookies, and mobile apps constantly track and aggregate personal habits and location history.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">PII Protection</span><strong>Personally Identifiable Information:</strong> Keep CNIC, financial, medical, and corporate confidential data encrypted and confidential.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">Public Wi-Fi</span><strong>Network Encryption:</strong> Public Wi-Fi networks in airports and cafes expose unencrypted traffic; always use an authenticated VPN.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">Data Defense</span><strong>MFA & Clean Desk:</strong> Enable multi-factor authentication, use strong unique passwords, and lock workstations (Win + L) whenever unattended.</li>
+                        <li style="margin-bottom: 12px;"><span class="chapter-badge">Least Privilege</span><strong>Need-to-Know Access:</strong> Limit app permissions and grant users only the minimum access necessary for their specific job duties.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
         <!-- Quiz Section (Right Column) -->
-        <div class="quiz-section">
-            <h2>Quiz</h2>
-
-            <!-- Name Input Section -->
-            <div id="name-input-section" class="name-input-section">
-                <p>Enter your details to begin the assessment.</p>
-                <div class="name-input-grid">
-                    <input type="text" id="userNameStart" placeholder="Full Name *" required />
+        <div class="content-column">
+            <h2 class="section-title quiz-title">Quiz</h2>
+            <div class="quiz-section">
+                <!-- Name Input Section -->
+                <div id="name-input-section" class="name-input-section">
+                    <p>Enter your details to begin the assessment.</p>
+                    <div class="name-input-grid">
+                        <input type="text" id="userNameStart" placeholder="Full Name *" required />
+                    </div>
+                    <button onclick="startQuiz()" class="start-button">Start Quiz</button>
                 </div>
-                <button onclick="startQuiz()" class="start-button">Start Quiz</button>
-            </div>
 
-            <!-- Quiz Content (Hidden initially) -->
-            <div id="quiz-content" style="display: none;">
-                <div class="user-name-display">
-                    <p>
-                        <strong>Name:</strong> <span id="displayUserName"></span>
-                    </p>
+                <!-- Quiz Content (Hidden initially) -->
+                <div id="quiz-content" style="display: none;">
+                    <div class="user-name-display">
+                        <p>
+                            <strong>Name:</strong> <span id="displayUserName"></span>
+                        </p>
+                    </div>
+                    <p id="quiz-question"></p>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-result"></div>
                 </div>
-                <p id="quiz-question"></p>
-                <div id="quiz-options"></div>
-                <div id="quiz-result"></div>
             </div>
         </div>
     </div>
@@ -1519,8 +1531,6 @@
 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Quiz</h2>
-                    
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
                         <div class="name-input-grid">
