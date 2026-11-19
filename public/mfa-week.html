@@ -155,19 +155,38 @@
         }
 
         .back-home-btn {
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 150, 255, 0.25));
-            border: 2px solid rgba(0, 255, 255, 0.6) !important;
-            color: #00ffff !important;
-            font-weight: 600;
-            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50% !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            cursor: pointer;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, filter 0.3s ease;
         }
 
         .back-home-btn:hover {
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.35), rgba(0, 150, 255, 0.45)) !important;
-            border-color: #00ffff !important;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6) !important;
-            transform: translateY(-3px);
-            color: #ffffff !important;
+            background: transparent !important;
+            border-color: transparent !important;
+            transform: translateY(-3px) scale(1.08) !important;
+            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.85)) !important;
+            box-shadow: none !important;
+        }
+
+        .nav-home-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            display: block;
+            border-radius: 50%;
         }
 
         .score-display {
@@ -570,6 +589,12 @@
                 justify-content: center;
             }
 
+            .weeks-buttons .back-home-btn {
+                width: 44px !important;
+                height: 44px !important;
+                margin: 0 auto;
+            }
+
             .content-wrapper {
                 grid-template-columns: 1fr;
             }
@@ -635,7 +660,9 @@
                 </div>
                 
                 <div class="weeks-buttons" id="weekMenu">
-                    <a href="index.html" class="week-button back-home-btn">Home</a>
+                    <a href="index.html" class="week-button back-home-btn" title="Home" aria-label="Home">
+                        <img src="home-icon.png" alt="Home" class="nav-home-icon">
+                    </a>
                     <a href="mfa-week.html" class="week-button active">Activity 1</a>
                     <a href="phishing-week.html" class="week-button">Activity 2</a>
                     <a href="privacy-week.html" class="week-button">Activity 3</a>
