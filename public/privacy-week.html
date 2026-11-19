@@ -313,7 +313,8 @@
             border-color: rgba(72, 202, 228, 0.35);
         }
 
-        .section-title {
+        .section-title,
+        .study-section h2 {
             font-size: 2.5rem;
             color: #00ffff;
             margin-bottom: 30px;
@@ -748,6 +749,7 @@
     <div class="content-wrapper">
         <!-- Study Section (Left Column) -->
         <div class="study-section">
+            <h2 class="section-title">Watch Video</h2>
             <div class="video-container">
                 <iframe id="trainingVideoIframe" src="" title="Data Privacy &amp; Cybersecurity Training Video"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
@@ -781,7 +783,7 @@
 
         <!-- Quiz Section (Right Column) -->
         <div class="quiz-section">
-            <h2>Data Protection Quiz (100 marks)</h2>
+            <h2>Quiz</h2>
 
             <!-- Name Input Section -->
             <div id="name-input-section" class="name-input-section">
@@ -1517,7 +1519,7 @@
 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Data Protection Quiz (100 marks)</h2>
+                    <h2>Quiz</h2>
                     
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
