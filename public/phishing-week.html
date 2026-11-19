@@ -315,7 +315,8 @@
             border-color: rgba(255, 107, 107, 0.3);
         }
 
-        .section-title {
+        .section-title,
+        .study-section h2 {
             font-size: 2.5rem;
             color: #00ffff;
             margin-bottom: 30px;
@@ -626,6 +627,7 @@
             }
 
             .section-title,
+            .study-section h2,
             .quiz-section h2 {
                 font-size: 2rem;
             }
@@ -718,6 +720,7 @@
 
     <div class="content-wrapper">
         <div class="study-section">
+            <h2 class="section-title">Watch Video</h2>
             <div class="video-container" onmouseenter="const v=document.getElementById('trainingVideo');if(v&&v.preload!=='auto'){v.preload='auto';}">
                 <video id="trainingVideo" controls controlsList="nodownload" preload="none" playsinline poster="videos/phishing-awareness_poster.jpg">
                     <source src="./videos/phishing-awareness.mp4" type="video/mp4">
@@ -760,7 +763,7 @@
         </div>
 
         <div class="quiz-section">
-            <h2>Email Security Quiz (100 marks)</h2>
+            <h2>Quiz</h2>
 
             <div id="name-input-section" class="name-input-section">
                 <p>Enter your details to begin the assessment.</p>
@@ -1546,7 +1549,7 @@
 
                 const quizSection = document.querySelector('.quiz-section');
                 quizSection.innerHTML = `
-                    <h2>Email Security Quiz (100 marks)</h2>
+                    <h2>Quiz</h2>
                     
                     <div id="name-input-section" class="name-input-section">
                         <p>Enter your details to begin the assessment.</p>
