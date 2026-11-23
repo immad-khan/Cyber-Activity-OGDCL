@@ -18,7 +18,7 @@
     <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
-    <script src="certificate.js?v=12" defer></script>
+    <script src="certificate.js?v=20261119_v3" defer></script>
     <script src="activity-lock.js?v=activity-banner-2" defer></script>
 
     <style>
@@ -329,8 +329,10 @@
         .section-title {
             font-size: 2.2rem;
             color: #00ffff;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
             text-align: center;
+            width: 100%;
+            display: block;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
@@ -1509,7 +1511,7 @@
                 }
 
                 if (typeof window.markCertificateClaimed === 'function') {
-                    window.markCertificateClaimed(userName, activityName);
+                    await window.markCertificateClaimed(userName, activityName);
                 }
 
                 const btn = document.getElementById('genCertBtn');
