@@ -285,6 +285,13 @@
   // Clears certificate claims and device lock from localStorage (used when admin deletes a user record)
   function clearCertificateClaim(activity) {
     try {
+      const actLower = String(activity || '').toLowerCase();
+      if (actLower.includes('4') || actLower.includes('qr') || actLower.includes('social')) {
+        localStorage.removeItem('ogdcl_cert_claimed_activity_4_qr_code');
+        localStorage.removeItem('ogdcl_cert_claimed_activity_4_social_engineering');
+        localStorage.removeItem('ogdcl_cert_claimed_activity_4');
+        localStorage.removeItem('ogdcl_cert_claimed_social_engineering');
+      }
       if (activity) {
         const key = getActivityCertKey(activity);
         localStorage.removeItem(key);
@@ -305,7 +312,7 @@
   }
 
   // Helper to check if this local device or user already generated a certificate for this specific activity.
-  // Performs live verification with the backend so if the admin deletes a record, the device lock is cleared immediately!
+  // Uses a two-tier check: localStorage (instant, set on download) THEN server (handles admin deletion).
   async function checkCertificateClaimed(identifier, activity) {
     try {
       const key = getActivityCertKey(activity);
@@ -314,7 +321,18 @@
       const userName = (identifier || localStorage.getItem('ogdcl_user_name') || '').trim();
       const email = (localStorage.getItem('ogdcl_user_email') || '').trim();
 
-      // Check live database to see if record still exists
+      // ── TIER 1: Check localStorage first (synchronous, most reliable) ──
+      let localClaimed = false;
+      if (val) {
+        try {
+          const parsed = JSON.parse(val);
+          localClaimed = Boolean(parsed && (parsed.claimed === true || parsed.certId));
+        } catch (e) {
+          localClaimed = val === 'true' || val.length > 0;
+        }
+      }
+
+      // ── TIER 2: Verify with live database ──
       try {
         const params = new URLSearchParams({
           activity: activity || '',
@@ -328,38 +346,40 @@
         });
         if (resp.ok) {
           const resData = await resp.json();
-          // If server confirmed no certificate exists in DB (e.g. admin deleted the user record)
-          if (!resData.alreadyGenerated && !resData.claimed) {
-            // Delete local device claim so user can take the test and earn certificate again!
-            localStorage.removeItem(key);
-            localStorage.removeItem('ogdcl_certificate_id');
-            return false;
-          } else {
-            // Certificate confirmed in database
+
+          if (resData.alreadyGenerated || resData.claimed) {
+            // Server confirms certificate was claimed — lock it
             if (!val && resData.certificateId) {
-              markCertificateClaimed(userName, activity, resData.certificateId);
+              markCertificateClaimed(userName, activity, resData.certificateId, false);
             }
             return true;
           }
+
+          // Server says NOT claimed in DB
+          if (localClaimed) {
+            // localStorage says claimed but server disagrees →
+            // This means admin deleted the record. Clear local lock so user can re-earn certificate.
+            clearCertificateClaim(activity);
+            return false;
+          }
+
+          // Neither localStorage nor server have a claim → unlocked
+          return false;
         }
       } catch (netErr) {
-        // Network offline: fall back to local storage check below
+        // Network offline: trust localStorage
       }
 
-      if (!val) return false;
-      try {
-        const parsed = JSON.parse(val);
-        return Boolean(parsed && (parsed.claimed === true || parsed.certId));
-      } catch (e) {
-        return val === 'true' || val.length > 0;
-      }
+      // Server unreachable — trust whatever localStorage says
+      return localClaimed;
     } catch (e) {
       return false;
     }
   }
 
-  // Marks certificate as claimed on this device for this activity
-  function markCertificateClaimed(identifier, activity, certId) {
+  // Marks certificate as claimed on this device for this activity.
+  // Returns a Promise that resolves once the server has been notified (awaitable).
+  async function markCertificateClaimed(identifier, activity, certId, notifyServer = true) {
     try {
       const key = getActivityCertKey(activity);
       const devId = getDeviceId();
@@ -373,6 +393,25 @@
       };
       localStorage.setItem(key, JSON.stringify(payload));
       if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
+
+      // Notify database that certificate has been claimed / downloaded — AWAIT so it completes before page unload
+      if (notifyServer) {
+        try {
+          await fetch('/api/save-username', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              claimCertificate: true,
+              userName: identifier || '',
+              email: (localStorage.getItem('ogdcl_user_email') || '').trim(),
+              activity: activity || '',
+              deviceId: devId
+            })
+          });
+        } catch (fErr) {
+          console.warn('Could not notify server of certificate claim', fErr);
+        }
+      }
     } catch (e) {
       console.warn('Could not store certificate claim in localStorage', e);
     }
