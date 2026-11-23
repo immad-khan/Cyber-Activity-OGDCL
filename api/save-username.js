@@ -1,5 +1,5 @@
 // File: api/save-username.js
-// Saves user completion data to Supabase PostgreSQL (with optional Firebase fallback)
+// Saves user completion and certificate-claim data to PostgreSQL.
 
 import { pool } from './db.js';
 import { randomUUID } from 'node:crypto';
@@ -313,51 +313,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Error saving user to Supabase:', error);
-
-    // Fallback to Firebase if configured
-    try {
-      if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
-        const { initializeApp, getApps, cert } = await import('firebase-admin/app');
-        const { getFirestore } = await import('firebase-admin/firestore');
-
-        if (!getApps().length) {
-          initializeApp({
-            credential: cert({
-              projectId: 'cyber-awareness-b470b',
-              privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-              clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            })
-          });
-        }
-
-        const db = getFirestore();
-        const userData = {
-          userName: req.body?.userName,
-          email: sanitizedEmail,
-          score: req.body?.score || 0,
-          level: req.body?.level || 'Beginner',
-          accuracy: req.body?.accuracy || 0,
-          completionDate: req.body?.date || new Date().toLocaleDateString(),
-          activity: req.body?.activity || 'Cybersecurity Awareness',
-          certificateId: certificateId,
-          deviceId: sanitizedDeviceId,
-          timestamp: new Date().toISOString()
-        };
-        const docRef = await db.collection('users').add(userData);
-        return res.status(200).json({
-          success: true,
-          message: 'Saved to Firebase fallback',
-          id: docRef.id
-        });
-      }
-    } catch (fbErr) {
-      console.error('Firebase fallback failed:', fbErr);
-    }
-
-    return res.status(500).json({
-      error: 'Failed to save username',
-      details: error.message
-    });
+    console.error('PostgreSQL save-user error:', error);
+    return res.status(500).json({ error: 'Failed to save user record' });
   }
 }

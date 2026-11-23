@@ -6,6 +6,7 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
 import { pool } from './db.js';
+import { requireAdmin } from './admin-auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -477,7 +478,7 @@ async function saveDbSetting(key, value) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-token');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -562,11 +563,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      // Verify admin token
-      const adminToken = req.headers['x-admin-token'];
-      if (adminToken !== 'cybershield-admin-2024' && adminToken !== 'ogdcl-admin-2026') {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-      }
+      if (!requireAdmin(req, res)) return;
 
       const body = req.body || {};
       const fb = readFallbackFile();

@@ -1,38 +1,11 @@
 // File: api/db.js
 // Centralized, high-performance PostgreSQL connection pool for CyberShield
 import pkg from 'pg';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import './env.js';
 
 const { Pool } = pkg;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Automatic .env loader for local offline deployment (without requiring external dotenv package)
-try {
-  const envPath = path.resolve(__dirname, '..', '.env');
-  if (fs.existsSync(envPath)) {
-    const lines = fs.readFileSync(envPath, 'utf-8').split(/\r?\n/);
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith('#')) {
-        const eqIdx = trimmed.indexOf('=');
-        if (eqIdx !== -1) {
-          const key = trimmed.slice(0, eqIdx).trim();
-          const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, '');
-          if (!process.env[key]) {
-            process.env[key] = val;
-          }
-        }
-      }
-    }
-  }
-} catch (e) {
-  // Silent fallback
-}
-
-// Connection string: checks environment variable, then falls back to local PostgreSQL or remote Supabase
+// Connection string: use DATABASE_URL when configured, otherwise the local PostgreSQL instance.
 const CONNECTION_STRING = process.env.DATABASE_URL || 
   `postgresql://postgres:azeema01@localhost:5432/cybershield`;
 

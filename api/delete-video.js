@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { pool } from './db.js';
+import { requireAdmin } from './admin-auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +37,7 @@ function writeFallbackFile(data) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-token');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -44,11 +45,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  // Verify admin token
-  const adminToken = req.headers['x-admin-token'] || req.query.token || req.body?.token;
-  if (adminToken !== 'cybershield-admin-2024' && adminToken !== 'ogdcl-admin-2026') {
-    return res.status(401).json({ success: false, error: 'Unauthorized: Invalid admin token' });
-  }
+  if (!requireAdmin(req, res)) return;
 
   try {
     const { moduleId, filename, deleteFile } = req.body || {};

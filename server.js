@@ -17,6 +17,7 @@ import uploadVideoHandler from './api/upload-video.js';
 import listVideosHandler from './api/list-videos.js';
 import deleteVideoHandler from './api/delete-video.js';
 import deleteUserHandler from './api/delete-user.js';
+import adminAuthHandler from './api/admin-auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,7 +46,7 @@ app.use(compression({
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-token, x-filename, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-filename, X-Requested-With');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -73,6 +74,7 @@ app.all('/api/upload-video', wrapHandler(uploadVideoHandler));
 app.all('/api/list-videos', wrapHandler(listVideosHandler));
 app.all('/api/delete-video', wrapHandler(deleteVideoHandler));
 app.all('/api/delete-user', wrapHandler(deleteUserHandler));
+app.all('/api/admin-auth', wrapHandler(adminAuthHandler));
 
 // Health check endpoint for load balancers / monitoring
 app.get('/health', (req, res) => {
