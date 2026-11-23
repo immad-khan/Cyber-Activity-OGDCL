@@ -624,6 +624,22 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
 
+    select,
+    .form-select,
+    #activityFilter {
+      color-scheme: dark !important;
+      background-color: #121324 !important;
+      color: #f0f0ff !important;
+    }
+
+    select option,
+    .form-select option,
+    #activityFilter option {
+      background-color: #121324 !important;
+      color: #f0f0ff !important;
+      padding: 8px 12px;
+    }
+
     .form-input:focus,
     .form-textarea:focus,
     .form-select:focus {
@@ -2203,13 +2219,13 @@
               oninput="filterUsers()" />
           </div>
           <select id="activityFilter" onchange="filterUsers()"
-            style="background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
-            <option value="all">🌐 All Modules</option>
-            <option value="Index">Index (Awareness Overview)</option>
-            <option value="Activity 1">Activity 1 (Password)</option>
-            <option value="Activity 2">Activity 2 (Email Security)</option>
-            <option value="Activity 3">Activity 3 (Data Protection)</option>
-            <option value="Activity 4">Activity 4 (QR Code)</option>
+            style="color-scheme: dark; background: #121324; border: 1px solid var(--border); color: #f0f0ff; padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; font-family: inherit; outline: none; cursor: pointer;">
+            <option value="all" style="background: #121324; color: #f0f0ff;">🌐 All Modules</option>
+            <option value="Index" style="background: #121324; color: #f0f0ff;">Index (Awareness Overview)</option>
+            <option value="Activity 1" style="background: #121324; color: #f0f0ff;">Activity 1 (Password)</option>
+            <option value="Activity 2" style="background: #121324; color: #f0f0ff;">Activity 2 (Email Security)</option>
+            <option value="Activity 3" style="background: #121324; color: #f0f0ff;">Activity 3 (Data Protection)</option>
+            <option value="Activity 4" style="background: #121324; color: #f0f0ff;">Activity 4 (QR Code)</option>
           </select>
         </div>
 
@@ -3392,7 +3408,26 @@
           (u.certificateId || '').toLowerCase().includes(q) ||
           (u.activity || '').toLowerCase().includes(q)
         );
-        const matchesAct = actFilter === 'all' || (u.activity || '').toLowerCase().includes(actFilter.toLowerCase());
+        
+        let matchesAct = actFilter === 'all';
+        if (!matchesAct) {
+          const actLower = (u.activity || '').toLowerCase();
+          const filterLower = actFilter.toLowerCase();
+          if (filterLower.includes('activity 1') || filterLower.includes('password')) {
+            matchesAct = actLower.includes('activity 1') || actLower.includes('password');
+          } else if (filterLower.includes('activity 2') || filterLower.includes('email') || filterLower.includes('phishing')) {
+            matchesAct = actLower.includes('activity 2') || actLower.includes('email') || actLower.includes('phishing');
+          } else if (filterLower.includes('activity 3') || filterLower.includes('data') || filterLower.includes('privacy') || filterLower.includes('protection')) {
+            matchesAct = actLower.includes('activity 3') || actLower.includes('data') || actLower.includes('privacy') || actLower.includes('protection');
+          } else if (filterLower.includes('activity 4') || filterLower.includes('qr') || filterLower.includes('quishing') || filterLower.includes('social engineering')) {
+            matchesAct = actLower.includes('activity 4') || actLower.includes('qr') || actLower.includes('quishing') || actLower.includes('social engineering');
+          } else if (filterLower.includes('index') || filterLower.includes('overview') || filterLower.includes('awareness')) {
+            matchesAct = actLower.includes('index') || actLower.includes('overview') || actLower.includes('awareness');
+          } else {
+            matchesAct = actLower.includes(filterLower);
+          }
+        }
+
         return matchesQuery && matchesAct;
       });
       currentPage = 1;
