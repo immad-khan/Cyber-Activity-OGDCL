@@ -69,9 +69,13 @@ Open Command Prompt / PowerShell as Administrator and run:
    ```env
    DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/cybershield
    PORT=3000
+   ADMIN_EMAILS=admin@your-company.example
+   ADMIN_PASSWORD=SET_A_PRIVATE_ADMIN_PASSWORD
+   ADMIN_SESSION_SECRET=SET_A_RANDOM_SECRET_AT_LEAST_32_CHARACTERS_LONG
+   ADMIN_COOKIE_SECURE=false
    ```
-   *(Replace `YOUR_PASSWORD` with the password you chose in Part 1).*
-4. Save and close the file.
+   *(Replace `YOUR_PASSWORD` with the PostgreSQL password you chose in Part 1. Configure the admin email/password privately; do not publish or commit `.env`. Generate a long random session secret, for example with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`. `ADMIN_COOKIE_SECURE=false` is for plain HTTP on an isolated offline network; set it to `true` when using HTTPS.)*
+4. Save and close the file. The admin login credentials are verified by the server, and the browser receives an HttpOnly session cookie. Do not reuse old hard-coded dashboard credentials.
 
 ---
 
@@ -155,7 +159,7 @@ Because NSSM (Non-Sucking Service Manager) is installed on your server, you can 
 ---
 
 ## Summary of Key Files
-- [`.env`](file:///d:/Desktop/website1-main/website1-main/.env): Stores your local database connection password and server port.
+- [`.env`](file:///d:/Desktop/website1-main/website1-main/.env): Stores the local database connection, server port, and private admin authentication settings.
 - [`setup-db.bat`](file:///d:/Desktop/website1-main/website1-main/setup-db.bat): 1-click database creator and schema runner.
 - [`schema-postgres-local.sql`](file:///d:/Desktop/website1-main/website1-main/schema-postgres-local.sql): Pure PostgreSQL script for `users` and `site_settings`.
 - [`start-server.bat`](file:///d:/Desktop/website1-main/website1-main/start-server.bat): 1-click server runner.

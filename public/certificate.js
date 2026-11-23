@@ -348,72 +348,65 @@
           const resData = await resp.json();
 
           if (resData.alreadyGenerated || resData.claimed) {
-            // Server confirms certificate was claimed — lock it
             if (!val && resData.certificateId) {
-              markCertificateClaimed(userName, activity, resData.certificateId, false);
+              await markCertificateClaimed(userName, activity, resData.certificateId, false);
             }
             return true;
           }
 
-          // Server says NOT claimed in DB
-          if (localClaimed) {
-            // localStorage says claimed but server disagrees →
-            // This means admin deleted the record. Clear local lock so user can re-earn certificate.
-            clearCertificateClaim(activity);
-            return false;
-          }
-
-          // Neither localStorage nor server have a claim → unlocked
+          // Only a successful server response confirming no claim can clear the local lock.
+          if (localClaimed) clearCertificateClaim(activity);
           return false;
         }
       } catch (netErr) {
-        // Network offline: trust localStorage
+        console.warn('Could not verify certificate status; keeping certificate locked.', netErr);
       }
 
-      // Server unreachable — trust whatever localStorage says
-      return localClaimed;
+      // Fail closed: an unavailable server must not allow another certificate.
+      return true;
     } catch (e) {
-      return false;
+      console.warn('Could not verify certificate status; keeping certificate locked.', e);
+      return true;
     }
   }
 
-  // Marks certificate as claimed on this device for this activity.
-  // Returns a Promise that resolves once the server has been notified (awaitable).
+  // Claims on the server first; callers must only generate the PDF when this resolves true.
   async function markCertificateClaimed(identifier, activity, certId, notifyServer = true) {
     try {
       const key = getActivityCertKey(activity);
       const devId = getDeviceId();
-      const payload = {
+      let confirmedCertId = certId;
+
+      if (notifyServer) {
+        const response = await fetch('/api/save-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            claimCertificate: true,
+            userName: identifier || '',
+            email: (localStorage.getItem('ogdcl_user_email') || '').trim(),
+            activity: activity || '',
+            deviceId: devId
+          })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.success !== true || result.claimed !== true) return false;
+        confirmedCertId = result.certificateId || confirmedCertId;
+      }
+
+      localStorage.setItem(key, JSON.stringify({
         claimed: true,
         claimedAt: new Date().toISOString(),
-        certId: certId || ('OGDCL-' + Date.now().toString(36).toUpperCase()),
+        certId: confirmedCertId || ('OGDCL-' + Date.now().toString(36).toUpperCase()),
         activity: activity || '',
         userName: identifier || '',
         deviceId: devId
-      };
-      localStorage.setItem(key, JSON.stringify(payload));
-      if (certId) localStorage.setItem('ogdcl_certificate_id', certId);
-
-      // Notify database that certificate has been claimed / downloaded — AWAIT so it completes before page unload
-      if (notifyServer) {
-        try {
-          await fetch('/api/save-username', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              claimCertificate: true,
-              userName: identifier || '',
-              email: (localStorage.getItem('ogdcl_user_email') || '').trim(),
-              activity: activity || '',
-              deviceId: devId
-            })
-          });
-        } catch (fErr) {
-          console.warn('Could not notify server of certificate claim', fErr);
-        }
-      }
+      }));
+      if (confirmedCertId) localStorage.setItem('ogdcl_certificate_id', confirmedCertId);
+      return true;
     } catch (e) {
-      console.warn('Could not store certificate claim in localStorage', e);
+      console.warn('Could not confirm certificate claim', e);
+      return false;
     }
   }
 

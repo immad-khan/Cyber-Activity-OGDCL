@@ -303,14 +303,10 @@
   </div>
 
   <script>
-    const VALID_EMAILS   = ['admin@ogdcl.com', 'admin@cybershield.com'];
-    const ADMIN_PASSWORD = 'Admin@123';
-    const ADMIN_TOKEN    = 'cybershield-admin-2024';
-
-    // Redirect if already authenticated
-    if (sessionStorage.getItem('adminToken') === ADMIN_TOKEN) {
-      window.location.replace('admin-dashboard.html');
-    }
+    // Redirect only when the server confirms a valid HttpOnly admin session.
+    fetch('/api/admin-auth', { cache: 'no-store' })
+      .then(response => { if (response.ok) window.location.replace('admin-dashboard.html'); })
+      .catch(() => {});
 
     function togglePassword() {
       const pw = document.getElementById('password');
@@ -336,23 +332,27 @@
       document.getElementById('errorAlert').style.display = 'none';
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       e.preventDefault();
       hideError();
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const password = document.getElementById('password').value;
       setLoading(true);
-
-      setTimeout(() => {
-        if (VALID_EMAILS.includes(email) && password === ADMIN_PASSWORD) {
-          sessionStorage.setItem('adminToken', ADMIN_TOKEN);
-          window.location.replace('admin-dashboard.html');
-        } else {
-          setLoading(false);
-          showError('Invalid email or password. Please try again.');
-          document.getElementById('password').value = '';
-        }
-      }, 700);
+      try {
+        const response = await fetch('/api/admin-auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value
+          })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Invalid email or password.');
+        window.location.replace('admin-dashboard.html');
+      } catch (error) {
+        setLoading(false);
+        showError(error.message || 'Unable to sign in. Check the server connection.');
+        document.getElementById('password').value = '';
+      }
     }
 
     document.querySelectorAll('input').forEach(inp => inp.addEventListener('input', hideError));

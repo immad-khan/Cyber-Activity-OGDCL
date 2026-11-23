@@ -2361,7 +2361,7 @@
   </div>
 
   <script>
-    const ADMIN_TOKEN = 'cybershield-admin-2024';
+    const API_ADMIN_AUTH = '/api/admin-auth';
     const API_USERS = '/api/get-users';
     const API_SETTINGS = '/api/admin-settings';
     const API_DELETE_VIDEO = '/api/delete-video';
@@ -2369,9 +2369,16 @@
     const API_LIST_VIDEOS = '/api/list-videos';
     let userToDeleteId = null;
 
-    // Auth guard
-    if (sessionStorage.getItem('adminToken') !== ADMIN_TOKEN) {
+    // Validate the server-side session; APIs independently enforce the same session.
+    async function requireAdminSession() {
+      try {
+        const response = await fetch(API_ADMIN_AUTH, { cache: 'no-store' });
+        if (response.ok) return true;
+      } catch (error) {
+        console.warn('Could not validate admin session:', error);
+      }
       window.location.replace('admin-login.html');
+      return false;
     }
 
     // Module Metadata configuration
@@ -2649,8 +2656,7 @@
         const res = await fetch(API_SETTINGS, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             moduleId: currentModuleId,
@@ -2877,8 +2883,7 @@
         const res = await fetch(API_DELETE_VIDEO, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             moduleId: moduleId,
@@ -2926,9 +2931,7 @@
       container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">⏳ Scanning videos folder…</div>';
 
       try {
-        const res = await fetch(API_LIST_VIDEOS, {
-          headers: { 'x-admin-token': ADMIN_TOKEN }
-        });
+        const res = await fetch(API_LIST_VIDEOS);
         const data = await res.json();
         if (!data.success || !Array.isArray(data.files) || data.files.length === 0) {
           container.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem;text-align:center;padding:10px;">No video files found in public/videos/.</div>';
@@ -2987,8 +2990,7 @@
         const res = await fetch(API_SETTINGS, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             moduleId: currentModuleId,
@@ -3185,8 +3187,7 @@
         const res = await fetch(API_SETTINGS, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             moduleId: currentModuleId,
@@ -3292,8 +3293,7 @@
         const res = await fetch(API_SETTINGS, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             activityId: actId,
@@ -3338,8 +3338,7 @@
         const res = await fetch(API_SETTINGS, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ locked: newState })
         });
@@ -3551,8 +3550,7 @@
         const res = await fetch(API_DELETE_USER, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'x-admin-token': ADMIN_TOKEN
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ id: userToDeleteId })
         });
@@ -3687,11 +3685,10 @@
     }
 
     function logout() {
-      sessionStorage.removeItem('adminToken');
-      window.location.replace('admin-login.html');
+      fetch(API_ADMIN_AUTH, { method: 'DELETE' }).catch(() => {}).finally(() => window.location.replace('admin-login.html'));
     }
 
-    init();
+    requireAdminSession().then(authenticated => { if (authenticated) init(); });
   </script>
 </body>
 

@@ -1475,6 +1475,12 @@
             showNotification('Generating PDF certificate...', 'info');
 
             try {
+                if (typeof window.markCertificateClaimed !== 'function' ||
+                    !(await window.markCertificateClaimed(userName, activityName))) {
+                    showNotification('Could not securely confirm certificate eligibility. Please try again.', 'error');
+                    return;
+                }
+
                 if (typeof window.downloadOGDCLCertificate === 'function') {
                     window.downloadOGDCLCertificate({
                         userName: userName,
@@ -1485,10 +1491,6 @@
                         title: 'Password Security Awareness Program',
                         date: currentDate
                     });
-                }
-
-                if (typeof window.markCertificateClaimed === 'function') {
-                    await window.markCertificateClaimed(userName, activityName);
                 }
 
                 const btn = document.getElementById('genCertBtn');
