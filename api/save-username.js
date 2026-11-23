@@ -77,7 +77,7 @@ export default async function handler(req, res) {
       });
     } catch (e) {
       console.error('Error checking cert status:', e);
-      return res.status(200).json({ alreadyGenerated: false, claimed: false });
+      return res.status(500).json({ error: 'Could not verify certificate status' });
     }
   }
 
@@ -85,30 +85,56 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Handle explicit certificate claim / download confirmation
+  // Atomically claim the certificate before the browser creates the PDF.
   if (req.body?.claimCertificate) {
-    try {
-      const cName = String(req.body.userName || req.body.username || req.body.name || '').trim();
-      const cEmail = String(req.body.email || '').trim().toLowerCase();
-      const cDevice = String(req.body.deviceId || '').trim();
-      const cAct = String(req.body.activity || '').trim();
+    const cName = String(req.body.userName || req.body.username || req.body.name || '').trim();
+    const cEmail = String(req.body.email || '').trim().toLowerCase();
+    const cDevice = String(req.body.deviceId || '').trim();
+    const cAct = String(req.body.activity || '').trim();
 
-      await pool.query(
-        `UPDATE public.users 
-         SET "certificateClaimed" = TRUE 
-         WHERE ("deviceId" = $1 OR ($2 != '' AND LOWER(email) = LOWER($2)) OR ($3 != '' AND LOWER("userName") = LOWER($3)))
-           AND ($4 = '' OR activity = $4 
-                OR (($4 ILIKE '%activity 4%' OR $4 ILIKE '%qr%' OR $4 ILIKE '%social%') AND (activity ILIKE '%activity 4%' OR activity ILIKE '%qr%' OR activity ILIKE '%social%'))
-                OR (($4 ILIKE '%activity 1%' OR $4 ILIKE '%password%') AND (activity ILIKE '%activity 1%' OR activity ILIKE '%password%'))
-                OR (($4 ILIKE '%activity 2%' OR $4 ILIKE '%email%' OR $4 ILIKE '%phishing%') AND (activity ILIKE '%activity 2%' OR activity ILIKE '%email%' OR activity ILIKE '%phishing%'))
-                OR (($4 ILIKE '%activity 3%' OR $4 ILIKE '%privacy%' OR $4 ILIKE '%data%') AND (activity ILIKE '%activity 3%' OR activity ILIKE '%privacy%' OR activity ILIKE '%data%'))
-           )`,
-        [cDevice, cEmail, cName, cAct]
+    if (!cAct || (!cDevice && !cEmail && !cName)) {
+      return res.status(400).json({ success: false, error: 'Activity and participant identity are required' });
+    }
+
+    const identityClause = `(
+      ($1 <> '' AND "deviceId" = $1)
+      OR ($2 <> '' AND LOWER(email) = LOWER($2))
+      OR ($3 <> '' AND LOWER("userName") = LOWER($3))
+    )`;
+    const activityClause = `(
+      activity = $4
+      OR (($4 ILIKE '%activity 4%' OR $4 ILIKE '%qr%' OR $4 ILIKE '%social%') AND (activity ILIKE '%activity 4%' OR activity ILIKE '%qr%' OR activity ILIKE '%social%'))
+      OR (($4 ILIKE '%activity 1%' OR $4 ILIKE '%password%') AND (activity ILIKE '%activity 1%' OR activity ILIKE '%password%'))
+      OR (($4 ILIKE '%activity 2%' OR $4 ILIKE '%email%' OR $4 ILIKE '%phishing%') AND (activity ILIKE '%activity 2%' OR activity ILIKE '%email%' OR activity ILIKE '%phishing%'))
+      OR (($4 ILIKE '%activity 3%' OR $4 ILIKE '%privacy%' OR $4 ILIKE '%data%') AND (activity ILIKE '%activity 3%' OR activity ILIKE '%privacy%' OR activity ILIKE '%data%'))
+    )`;
+
+    try {
+      const values = [cDevice, cEmail, cName, cAct];
+      const claimed = await pool.query(
+        `UPDATE public.users SET "certificateClaimed" = TRUE
+         WHERE ${identityClause} AND ${activityClause}
+           AND "certificateClaimed" IS DISTINCT FROM TRUE
+         RETURNING "certificateId"`,
+        values
       );
-      return res.status(200).json({ success: true, claimed: true });
+      if (claimed.rowCount > 0) {
+        return res.status(200).json({ success: true, claimed: true, certificateId: claimed.rows[0].certificateId });
+      }
+
+      const existing = await pool.query(
+        `SELECT "certificateClaimed", "certificateId" FROM public.users
+         WHERE ${identityClause} AND ${activityClause}
+         LIMIT 1`,
+        values
+      );
+      if (existing.rows[0]?.certificateClaimed) {
+        return res.status(409).json({ success: false, alreadyGenerated: true, error: 'Certificate has already been generated' });
+      }
+      return res.status(404).json({ success: false, error: 'No matching completion record found' });
     } catch (claimErr) {
       console.error('Error claiming certificate:', claimErr);
-      return res.status(200).json({ success: true, claimed: true });
+      return res.status(500).json({ success: false, error: 'Could not claim certificate' });
     }
   }
 
