@@ -23,14 +23,23 @@ export default async function handler(req, res) {
     const qDeviceId = String(req.query?.deviceId || '').trim();
     const qActivity = String(req.query?.activity || '').trim();
     try {
+      const actFilterClause = `
+        ($2 = '' OR activity = $2 
+          OR (($2 ILIKE '%activity 4%' OR $2 ILIKE '%qr%' OR $2 ILIKE '%social%') AND (activity ILIKE '%activity 4%' OR activity ILIKE '%qr%' OR activity ILIKE '%social%'))
+          OR (($2 ILIKE '%activity 1%' OR $2 ILIKE '%password%') AND (activity ILIKE '%activity 1%' OR activity ILIKE '%password%'))
+          OR (($2 ILIKE '%activity 2%' OR $2 ILIKE '%email%' OR $2 ILIKE '%phishing%') AND (activity ILIKE '%activity 2%' OR activity ILIKE '%email%' OR activity ILIKE '%phishing%'))
+          OR (($2 ILIKE '%activity 3%' OR $2 ILIKE '%privacy%' OR $2 ILIKE '%data%') AND (activity ILIKE '%activity 3%' OR activity ILIKE '%privacy%' OR activity ILIKE '%data%'))
+        )
+      `;
+
       let checkRes = { rows: [] };
       // 1. Check by deviceId first if provided
       if (qDeviceId) {
         checkRes = await pool.query(
           `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
            WHERE "deviceId" = $1 
-             AND ($2 = '' OR activity = $2)
-             AND "certificateId" IS NOT NULL 
+             AND ${actFilterClause}
+             AND "certificateClaimed" = TRUE
            LIMIT 1`,
           [qDeviceId, qActivity]
         );
@@ -40,8 +49,8 @@ export default async function handler(req, res) {
         checkRes = await pool.query(
           `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
            WHERE LOWER(email) = LOWER($1) 
-             AND ($2 = '' OR activity = $2)
-             AND "certificateId" IS NOT NULL 
+             AND ${actFilterClause}
+             AND "certificateClaimed" = TRUE
            LIMIT 1`,
           [qEmail, qActivity]
         );
@@ -51,8 +60,8 @@ export default async function handler(req, res) {
         checkRes = await pool.query(
           `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
            WHERE LOWER("userName") = LOWER($1) 
-             AND ($2 = '' OR activity = $2)
-             AND "certificateId" IS NOT NULL 
+             AND ${actFilterClause}
+             AND "certificateClaimed" = TRUE
            LIMIT 1`,
           [qName, qActivity]
         );
@@ -74,6 +83,33 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Handle explicit certificate claim / download confirmation
+  if (req.body?.claimCertificate) {
+    try {
+      const cName = String(req.body.userName || req.body.username || req.body.name || '').trim();
+      const cEmail = String(req.body.email || '').trim().toLowerCase();
+      const cDevice = String(req.body.deviceId || '').trim();
+      const cAct = String(req.body.activity || '').trim();
+
+      await pool.query(
+        `UPDATE public.users 
+         SET "certificateClaimed" = TRUE 
+         WHERE ("deviceId" = $1 OR ($2 != '' AND LOWER(email) = LOWER($2)) OR ($3 != '' AND LOWER("userName") = LOWER($3)))
+           AND ($4 = '' OR activity = $4 
+                OR (($4 ILIKE '%activity 4%' OR $4 ILIKE '%qr%' OR $4 ILIKE '%social%') AND (activity ILIKE '%activity 4%' OR activity ILIKE '%qr%' OR activity ILIKE '%social%'))
+                OR (($4 ILIKE '%activity 1%' OR $4 ILIKE '%password%') AND (activity ILIKE '%activity 1%' OR activity ILIKE '%password%'))
+                OR (($4 ILIKE '%activity 2%' OR $4 ILIKE '%email%' OR $4 ILIKE '%phishing%') AND (activity ILIKE '%activity 2%' OR activity ILIKE '%email%' OR activity ILIKE '%phishing%'))
+                OR (($4 ILIKE '%activity 3%' OR $4 ILIKE '%privacy%' OR $4 ILIKE '%data%') AND (activity ILIKE '%activity 3%' OR activity ILIKE '%privacy%' OR activity ILIKE '%data%'))
+           )`,
+        [cDevice, cEmail, cName, cAct]
+      );
+      return res.status(200).json({ success: true, claimed: true });
+    } catch (claimErr) {
+      console.error('Error claiming certificate:', claimErr);
+      return res.status(200).json({ success: true, claimed: true });
+    }
   }
 
   try {
@@ -120,32 +156,40 @@ export default async function handler(req, res) {
       ? parseInt(score, 10)
       : (finalVideoMarks + finalQuizMarks);
 
-    // ── Check for existing certificate for this email, deviceId, or username + activity ──
+    // ── Check for existing record for this email, deviceId, or username + activity ──
+    const actFilterClause = `
+      ($2 = '' OR activity = $2 
+        OR (($2 ILIKE '%activity 4%' OR $2 ILIKE '%qr%' OR $2 ILIKE '%social%') AND (activity ILIKE '%activity 4%' OR activity ILIKE '%qr%' OR activity ILIKE '%social%'))
+        OR (($2 ILIKE '%activity 1%' OR $2 ILIKE '%password%') AND (activity ILIKE '%activity 1%' OR activity ILIKE '%password%'))
+        OR (($2 ILIKE '%activity 2%' OR $2 ILIKE '%email%' OR $2 ILIKE '%phishing%') AND (activity ILIKE '%activity 2%' OR activity ILIKE '%email%' OR activity ILIKE '%phishing%'))
+        OR (($2 ILIKE '%activity 3%' OR $2 ILIKE '%privacy%' OR $2 ILIKE '%data%') AND (activity ILIKE '%activity 3%' OR activity ILIKE '%privacy%' OR activity ILIKE '%data%'))
+      )
+    `;
+
     let existingCheck = { rows: [] };
-    if (sanitizedEmail) {
+    if (sanitizedDeviceId) {
       existingCheck = await pool.query(
-        `SELECT id, "certificateId", "completionDate", score FROM public.users 
-         WHERE LOWER(email) = LOWER($1) 
-           AND activity = $2 
-           AND "certificateId" IS NOT NULL 
-         LIMIT 1`,
-        [sanitizedEmail, activity]
-      );
-    } else if (sanitizedDeviceId) {
-      existingCheck = await pool.query(
-        `SELECT id, "certificateId", "completionDate", score FROM public.users 
+        `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
          WHERE "deviceId" = $1 
-           AND activity = $2 
-           AND "certificateId" IS NOT NULL 
+           AND ${actFilterClause}
          LIMIT 1`,
         [sanitizedDeviceId, activity]
       );
-    } else if (sanitizedName) {
+    }
+    if (existingCheck.rows.length === 0 && sanitizedEmail) {
       existingCheck = await pool.query(
-        `SELECT id, "certificateId", "completionDate", score FROM public.users 
+        `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
+         WHERE LOWER(email) = LOWER($1) 
+           AND ${actFilterClause}
+         LIMIT 1`,
+        [sanitizedEmail, activity]
+      );
+    }
+    if (existingCheck.rows.length === 0 && sanitizedName) {
+      existingCheck = await pool.query(
+        `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
          WHERE LOWER("userName") = LOWER($1) 
-           AND activity = $2 
-           AND "certificateId" IS NOT NULL 
+           AND ${actFilterClause}
          LIMIT 1`,
         [sanitizedName, activity]
       );
@@ -153,6 +197,7 @@ export default async function handler(req, res) {
 
     if (existingCheck.rows.length > 0) {
       const existing = existingCheck.rows[0];
+      const isAlreadyClaimed = existing.certificateClaimed === true;
       // Update score and details if higher or retaken
       await pool.query(
         `UPDATE public.users 
@@ -162,7 +207,8 @@ export default async function handler(req, res) {
       );
       return res.status(200).json({
         success: true,
-        alreadyGenerated: false,
+        alreadyGenerated: isAlreadyClaimed,
+        claimed: isAlreadyClaimed,
         certificateId: existing.certificateId,
         message: 'Saved successfully',
         id: existing.id,
@@ -173,7 +219,8 @@ export default async function handler(req, res) {
           score: Math.max(existing.score || 0, finalScore),
           level: level,
           completionDate: existing.completionDate,
-          deviceId: sanitizedDeviceId
+          deviceId: sanitizedDeviceId,
+          certificateClaimed: isAlreadyClaimed
         }
       });
     }
@@ -182,6 +229,7 @@ export default async function handler(req, res) {
     const completionDate = date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     // Save to PostgreSQL using pre-warmed connection pool
+    const isCertClaimed = Boolean(generateCertificate || req.body?.certificateClaimed);
     const insertQuery = `
       INSERT INTO public.users (
         "userName",
@@ -200,10 +248,11 @@ export default async function handler(req, res) {
         "totalQuestions",
         activity,
         "completionDate",
-        "deviceId"
+        "deviceId",
+        "certificateClaimed"
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
-      RETURNING id, "userName", email, "certificateId", "employeeId", department, designation, score, level, "deviceId", "createdAt";
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+      RETURNING id, "userName", email, "certificateId", "employeeId", department, designation, score, level, "deviceId", "createdAt", "certificateClaimed";
     `;
 
     const values = [
@@ -223,7 +272,8 @@ export default async function handler(req, res) {
       parseInt(totalQuestions, 10) || 0,
       activity,
       completionDate,
-      sanitizedDeviceId
+      sanitizedDeviceId,
+      isCertClaimed
     ];
 
     const result = await pool.query(insertQuery, values);
