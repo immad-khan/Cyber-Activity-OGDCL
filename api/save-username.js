@@ -22,6 +22,8 @@ export default async function handler(req, res) {
     const qName = String(req.query?.userName || req.query?.name || '').trim();
     const qDeviceId = String(req.query?.deviceId || '').trim();
     const qActivity = String(req.query?.activity || '').trim();
+    const clientLocalClaimed = req.query?.localClaimed === 'true';
+
     try {
       const actFilterClause = `
         ($2 = '' OR activity = $2 
@@ -36,44 +38,59 @@ export default async function handler(req, res) {
       // 1. Check by deviceId first if provided
       if (qDeviceId) {
         checkRes = await pool.query(
-          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
+          `SELECT id, "certificateId", "completionDate", score, "userName", "certificateClaimed" FROM public.users 
            WHERE "deviceId" = $1 
              AND ${actFilterClause}
-             AND "certificateClaimed" = TRUE
-           LIMIT 1`,
+           ORDER BY "certificateClaimed" DESC, id DESC
+           LIMIT 5`,
           [qDeviceId, qActivity]
         );
       }
       // 2. Check by email
       if (checkRes.rows.length === 0 && qEmail) {
         checkRes = await pool.query(
-          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
+          `SELECT id, "certificateId", "completionDate", score, "userName", "certificateClaimed" FROM public.users 
            WHERE LOWER(email) = LOWER($1) 
              AND ${actFilterClause}
-             AND "certificateClaimed" = TRUE
-           LIMIT 1`,
+           ORDER BY "certificateClaimed" DESC, id DESC
+           LIMIT 5`,
           [qEmail, qActivity]
         );
       }
       // 3. Check by userName
       if (checkRes.rows.length === 0 && qName) {
         checkRes = await pool.query(
-          `SELECT "certificateId", "completionDate", score, "userName" FROM public.users 
+          `SELECT id, "certificateId", "completionDate", score, "userName", "certificateClaimed" FROM public.users 
            WHERE LOWER("userName") = LOWER($1) 
              AND ${actFilterClause}
-             AND "certificateClaimed" = TRUE
-           LIMIT 1`,
+           ORDER BY "certificateClaimed" DESC, id DESC
+           LIMIT 5`,
           [qName, qActivity]
         );
       }
 
-      const hasCert = checkRes.rows.length > 0;
+      const userExists = checkRes.rows.length > 0;
+      let hasCert = checkRes.rows.some(r => r.certificateClaimed === true);
+
+      // Auto-sync: If user exists in DB and device had already claimed, ensure DB is marked claimed
+      if (userExists && clientLocalClaimed && !hasCert) {
+        const targetRow = checkRes.rows[0];
+        await pool.query(
+          `UPDATE public.users SET "certificateClaimed" = TRUE WHERE id = $1`,
+          [targetRow.id]
+        ).catch(() => {});
+        hasCert = true;
+      }
+
+      const bestRow = checkRes.rows.find(r => r.certificateClaimed === true) || checkRes.rows[0];
+
       return res.status(200).json({
+        userExists,
         alreadyGenerated: hasCert,
         claimed: hasCert,
-        certificateId: checkRes.rows[0]?.certificateId || null,
-        completionDate: checkRes.rows[0]?.completionDate || null,
-        userName: checkRes.rows[0]?.userName || null
+        certificateId: bestRow?.certificateId || null,
+        completionDate: bestRow?.completionDate || null,
+        userName: bestRow?.userName || null
       });
     } catch (e) {
       console.error('Error checking cert status:', e);
@@ -198,6 +215,7 @@ export default async function handler(req, res) {
         `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
          WHERE "deviceId" = $1 
            AND ${actFilterClause}
+         ORDER BY "certificateClaimed" DESC, id DESC
          LIMIT 1`,
         [sanitizedDeviceId, activity]
       );
@@ -207,6 +225,7 @@ export default async function handler(req, res) {
         `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
          WHERE LOWER(email) = LOWER($1) 
            AND ${actFilterClause}
+         ORDER BY "certificateClaimed" DESC, id DESC
          LIMIT 1`,
         [sanitizedEmail, activity]
       );
@@ -216,23 +235,35 @@ export default async function handler(req, res) {
         `SELECT id, "certificateId", "completionDate", score, "certificateClaimed" FROM public.users 
          WHERE LOWER("userName") = LOWER($1) 
            AND ${actFilterClause}
+         ORDER BY "certificateClaimed" DESC, id DESC
          LIMIT 1`,
         [sanitizedName, activity]
       );
     }
 
+    const clientClaimed = Boolean(generateCertificate || req.body?.certificateClaimed);
+
     if (existingCheck.rows.length > 0) {
       const existing = existingCheck.rows[0];
-      const isAlreadyClaimed = existing.certificateClaimed === true;
-      // Update score and details if higher or retaken
+      const isAlreadyClaimed = existing.certificateClaimed === true || clientClaimed;
+      // Update score and details if higher or retaken, strictly preserving certificateClaimed = true
       await pool.query(
         `UPDATE public.users 
-         SET score = GREATEST(score, $1), "quizMarks" = $2, "correctAnswers" = $3, level = $4, accuracy = $5, "completionDate" = $6, "deviceId" = COALESCE(NULLIF($7, ''), "deviceId")
-         WHERE id = $8`,
-        [finalScore, finalQuizMarks, finalCorrect, level, parseInt(accuracy, 10) || 0, date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), sanitizedDeviceId, existing.id]
+         SET "userName" = $1,
+             score = GREATEST(score, $2),
+             "quizMarks" = $3,
+             "correctAnswers" = $4,
+             level = $5,
+             accuracy = $6,
+             "completionDate" = $7,
+             "deviceId" = COALESCE(NULLIF($8, ''), "deviceId"),
+             "certificateClaimed" = CASE WHEN "certificateClaimed" = TRUE THEN TRUE ELSE $9 END
+         WHERE id = $10`,
+        [sanitizedName, finalScore, finalQuizMarks, finalCorrect, level, parseInt(accuracy, 10) || 0, date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), sanitizedDeviceId, isAlreadyClaimed, existing.id]
       );
       return res.status(200).json({
         success: true,
+        userExists: true,
         alreadyGenerated: isAlreadyClaimed,
         claimed: isAlreadyClaimed,
         certificateId: existing.certificateId,
