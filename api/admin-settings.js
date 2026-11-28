@@ -80,22 +80,22 @@ const DEFAULT_MODULE_VIDEOS = {
   activity_1_banner: {
     id: 'activity_1_banner', name: 'Activity 1 Banner Video', title: 'Activity 1 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 1.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner', enabled: true
+    pageUrl: 'mfa-week.html', pageName: 'Activity 1: Hero video banner', enabled: false
   },
   activity_2_banner: {
     id: 'activity_2_banner', name: 'Activity 2 Banner Video', title: 'Activity 2 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 2.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'phishing-week.html', pageName: 'Activity 2: Hero video banner', enabled: true
+    pageUrl: 'phishing-week.html', pageName: 'Activity 2: Hero video banner', enabled: false
   },
   activity_3_banner: {
     id: 'activity_3_banner', name: 'Activity 3 Banner Video', title: 'Activity 3 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 3.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner', enabled: true
+    pageUrl: 'privacy-week.html', pageName: 'Activity 3: Hero video banner', enabled: false
   },
   activity_4_banner: {
     id: 'activity_4_banner', name: 'Activity 4 Banner Video', title: 'Activity 4 Video Briefing',
     desc: 'Watch this video briefing before starting Activity 4.', sourceType: 'mp4', url: '', poster: '',
-    pageUrl: 'social-engineering-week.html', pageName: 'Activity 4: Hero video banner', enabled: true
+    pageUrl: 'social-engineering-week.html', pageName: 'Activity 4: Hero video banner', enabled: false
   }
 };
 
