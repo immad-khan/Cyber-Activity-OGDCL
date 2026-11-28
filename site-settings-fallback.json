@@ -18,53 +18,59 @@
       "pageUrl": "index.html",
       "pageName": "Home / Index Page",
       "enabled": true,
-      "updatedAt": "2026-11-19T08:29:05.293Z"
+      "updatedAt": "2026-11-28T00:00:00.000Z"
     },
     "activity_1": {
       "id": "activity_1",
       "name": "Activity 1",
-      "title": "The Executive Target & Phishing Defense",
-      "desc": "Executive spear-phishing, business email compromise, deepfakes, and verification protocols.",
-      "sourceType": "mp4",
-      "url": "videos/phishing-awareness.mp4",
-      "poster": "videos/phishing-awareness_poster.jpg",
-      "pageUrl": "phishing-week.html",
-      "pageName": "Activity 1: The Executive Target",
-      "enabled": true,
-      "updatedAt": "2026-10-22T18:36:56.985Z"
-    },
-    "activity_2": {
-      "id": "activity_2",
-      "name": "Activity 2",
       "title": "Password Security & Multi-Factor Authentication",
       "desc": "Password policy, Bitwarden vault security, and multi-factor authentication defense.",
       "sourceType": "mp4",
       "url": "videos/Password_policy.mp4",
       "poster": "videos/Password_policy_poster.jpg",
       "pageUrl": "mfa-week.html",
-      "pageName": "Activity 2: Password Protection"
+      "pageName": "Activity 1: Password",
+      "enabled": true,
+      "updatedAt": "2026-11-28T00:00:00.000Z"
+    },
+    "activity_2": {
+      "id": "activity_2",
+      "name": "Activity 2",
+      "title": "The Executive Target & Phishing Defense",
+      "desc": "Executive spear-phishing, business email compromise, deepfakes, and verification protocols.",
+      "sourceType": "mp4",
+      "url": "videos/phishing-awareness.mp4",
+      "poster": "videos/phishing-awareness_poster.jpg",
+      "pageUrl": "phishing-week.html",
+      "pageName": "Activity 2: Email Security",
+      "enabled": true,
+      "updatedAt": "2026-11-28T00:00:00.000Z"
     },
     "activity_3": {
       "id": "activity_3",
       "name": "Activity 3",
-      "title": "Social Engineering Defense Training",
-      "desc": "Recognize manipulation, verify identity, and defend against pretexting and human attacks.",
-      "sourceType": "youtube",
-      "url": "https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0",
-      "poster": "",
-      "pageUrl": "social-engineering-week.html",
-      "pageName": "Activity 3: Social Engineering"
-    },
-    "activity_4": {
-      "id": "activity_4",
-      "name": "Activity 4",
       "title": "Data Privacy & Corporate Asset Protection",
       "desc": "Safeguard sensitive corporate information, master PII standards, and defend company data.",
       "sourceType": "youtube",
       "url": "https://www.youtube.com/embed/aAfB0CQOdWQ?enablejsapi=1&rel=0",
       "poster": "",
       "pageUrl": "privacy-week.html",
-      "pageName": "Activity 4: Data Privacy"
+      "pageName": "Activity 3: Data Protection",
+      "enabled": true,
+      "updatedAt": "2026-11-28T00:00:00.000Z"
+    },
+    "activity_4": {
+      "id": "activity_4",
+      "name": "Activity 4",
+      "title": "Social Engineering Defense Training",
+      "desc": "Recognize manipulation, verify identity, and defend against pretexting and human attacks.",
+      "sourceType": "youtube",
+      "url": "https://www.youtube.com/embed/uvKTMgWRPw4?enablejsapi=1&rel=0",
+      "poster": "",
+      "pageUrl": "social-engineering-week.html",
+      "pageName": "Activity 4: QR Code",
+      "enabled": true,
+      "updatedAt": "2026-11-28T00:00:00.000Z"
     },
     "activity_1_banner": {
       "id": "activity_1_banner",
@@ -72,12 +78,12 @@
       "title": "Activity 1 Video Briefing",
       "desc": "Watch this video briefing before starting Activity 1.",
       "sourceType": "mp4",
-      "url": "videos/phishing-awareness.mp4",
+      "url": "",
       "poster": "",
       "pageUrl": "mfa-week.html",
       "pageName": "Activity 1: Shared hero video",
-      "enabled": true,
-      "updatedAt": "2026-10-22T20:04:28.427Z"
+      "enabled": false,
+      "updatedAt": "2026-11-27T20:04:23.602Z"
     },
     "activity_2_banner": {
       "id": "activity_2_banner",
@@ -85,12 +91,12 @@
       "title": "Activity 2 Video Briefing",
       "desc": "Watch this video briefing before starting Activity 2.",
       "sourceType": "mp4",
-      "url": "videos/Password_policy.mp4",
+      "url": "videos/phishing-awareness.mp4",
       "poster": "",
       "pageUrl": "social-engineering-week.html",
       "pageName": "Activity 2: Shared hero video",
       "enabled": true,
-      "updatedAt": "2026-10-22T20:05:00.630Z"
+      "updatedAt": "2026-11-27T20:17:37.597Z"
     },
     "activity_3_banner": {
       "id": "activity_3_banner",
@@ -103,7 +109,7 @@
       "pageUrl": "privacy-week.html",
       "pageName": "Activity 3: Shared hero video",
       "enabled": false,
-      "updatedAt": "2026-10-22T20:02:44.668Z"
+      "updatedAt": "2026-11-27T20:04:23.606Z"
     },
     "activity_4_banner": {
       "id": "activity_4_banner",
@@ -113,10 +119,10 @@
       "sourceType": "mp4",
       "url": "",
       "poster": "",
-      "pageUrl": "phishing-week.html",
+      "pageUrl": "social-engineering-week.html",
       "pageName": "Activity 4: Shared hero video",
       "enabled": false,
-      "updatedAt": "2026-10-22T20:02:48.967Z"
+      "updatedAt": "2026-11-27T20:04:23.606Z"
     }
   },
   "moduleMcqs": {
