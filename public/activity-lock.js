@@ -342,15 +342,24 @@
     function syncSharedActivityVideo(videoCfg) {
         const section = document.getElementById('sharedActivityVideoSection');
         const container = document.getElementById('sharedActivityVideoContainer');
-        if (!section || !container || !videoCfg) return;
+        if (!section || !container) return;
 
-        const isVisible = !(videoCfg.enabled === false || videoCfg.enabled === 'false' || videoCfg.enabled === 0 || videoCfg.enabled === '0');
+        const url = (videoCfg?.url || '').trim();
+        const posterUrl = (videoCfg?.poster || '').trim();
+        const isVisible = Boolean(videoCfg) &&
+                          !(videoCfg.enabled === false || videoCfg.enabled === 'false' || videoCfg.enabled === 0 || videoCfg.enabled === '0') &&
+                          Boolean(url);
+
         section.style.display = isVisible ? 'block' : 'none';
         const nextHero = section.nextElementSibling;
         if (nextHero && nextHero.classList.contains('hero')) {
             nextHero.style.marginTop = isVisible ? '25px' : '';
         }
-        if (!isVisible) return;
+        if (!isVisible) {
+            container.innerHTML = '';
+            container.removeAttribute('data-loaded-src');
+            return;
+        }
 
         const title = document.getElementById('sharedActivityVideoTitle');
         const paragraph = document.getElementById('sharedActivityVideoSubtitle');
@@ -363,39 +372,26 @@
             paragraph.style.display = videoCfg.desc ? 'block' : 'none';
         }
 
-        const url = (videoCfg.url || '').trim();
-        const posterUrl = (videoCfg.poster || '').trim();
-        if (!url) {
-            container.dataset.loadedSrc = '';
-            container.dataset.loadedPoster = '';
-            container.innerHTML = `
-                <div style="padding:52px 24px; text-align:center; background:radial-gradient(circle at center, rgba(0,255,255,.08), rgba(10,15,30,.95)); aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:center;">
-                    <div style="font-size:3rem; margin-bottom:10px;">🎬</div>
-                    <h3 style="font-size:1.3rem; color:#00ffff; margin:0 0 8px;">Shared Activity Video</h3>
-                    <p style="color:rgba(255,255,255,.75); font-size:.95rem; max-width:480px; margin:0 auto; line-height:1.5;">This video briefing is being updated by the administrator. Check back soon.</p>
-                </div>
-            `;
-            return;
-        }
+        if (container.getAttribute('data-loaded-src') === url) return;
+        container.setAttribute('data-loaded-src', url);
 
-        if (container.dataset.loadedSrc === url && container.dataset.loadedPoster === posterUrl) return;
-        const video = document.createElement('video');
-        video.controls = true;
-        video.preload = 'auto';
-        video.playsInline = true;
-        video.setAttribute('controlsList', 'nodownload');
-        video.style.cssText = 'width:100%;display:block;border-radius:15px;';
-        if (posterUrl) video.poster = new URL(posterUrl, window.location.href).href;
-        video.src = new URL(url, window.location.href).href;
-        video.addEventListener('error', () => {
-            const mediaError = video.error;
-            container.dataset.loadedSrc = '';
-            container.innerHTML = `<p style="padding:20px;color:#ff8b8b;">Video could not be loaded (${mediaError ? `media error ${mediaError.code}` : 'network error'}). Check that the video URL is accessible.</p>`;
-        }, { once: true });
-        container.replaceChildren(video);
-        container.dataset.loadedSrc = url;
-        container.dataset.loadedPoster = posterUrl;
-        video.load();
+        const isYt = (videoCfg.sourceType === 'youtube') || url.includes('youtube.com') || url.includes('youtu.be');
+        if (isYt) {
+            container.innerHTML = `
+                <iframe src="${url}" title="${videoCfg.title || 'Activity Video'}" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen style="width:100%;aspect-ratio:16/9;border:none;display:block;">
+                </iframe>
+            `;
+        } else {
+            const posterAttr = posterUrl ? `poster="${posterUrl}"` : '';
+            container.innerHTML = `
+                <video controls controlsList="nodownload" preload="metadata" playsinline ${posterAttr} style="width:100%;aspect-ratio:16/9;display:block;border-radius:15px;">
+                    <source src="${url}" type="video/mp4">
+                    Your browser does not support HTML5 video streaming.
+                </video>
+            `;
+        }
     }
 
     // ── Dynamic MCQs Sync ──
