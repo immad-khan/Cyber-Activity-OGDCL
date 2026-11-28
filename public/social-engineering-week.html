@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
     <script src="certificate.js?v=20261119_v3" defer></script>
-    <script src="activity-lock.js?v=activity-banner-2" defer></script>
+    <script src="activity-lock.js?v=activity-banner-4" defer></script>
     <script src="https://www.youtube.com/iframe_api" defer></script>
 
     <style>
@@ -1024,7 +1024,8 @@
                     correctAnswers,
                     totalQuestions,
                     activity: 'Activity 4: QR Code',
-                    deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || ''))
+                    deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || '')),
+                    certificateClaimed: (typeof window.checkCertificateClaimedLocal === 'function' ? window.checkCertificateClaimedLocal('Activity 4: QR Code') : false)
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -1429,7 +1430,7 @@
             const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
             const activityName = 'Activity 4: QR Code';
 
-            saveToDatabase();
+            await saveToDatabase();
 
             const alreadyGenerated = (typeof window.checkCertificateClaimed === 'function')
                 ? await window.checkCertificateClaimed(displayName, activityName)
