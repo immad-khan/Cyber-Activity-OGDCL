@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="cert-assets.js?v=5" defer></script>
     <script src="certificate.js?v=20261119_v3" defer></script>
-    <script src="activity-lock.js?v=activity-banner-2" defer></script>
+    <script src="activity-lock.js?v=activity-banner-4" defer></script>
 
     <style>
         * {
@@ -749,26 +749,27 @@
                 </div>
             </div>
 
-            <div class="learning-points">
-                <h3>Key Learning Points</h3>
-                <ul>
-                    <li><strong>Business Email Compromise:</strong> Attackers impersonate executives to request wire
-                        transfers. Always verify via phone.</li>
-                    <li><strong>AI Deepfakes:</strong> Voice and video can be faked. Establish verification codes for
-                        sensitive requests.</li>
-                    <li><strong>Credential Theft:</strong> Use hardware MFA keys and unique passwords. Never reuse
-                        credentials.</li>
-                    <li><strong>Executive Risk:</strong> 71% of targeted attacks focus on C-level. You are 4.6x more
-                        likely to be targeted.</li>
-                    <li><strong>Verification Protocol:</strong> When in doubt, call back using a known number before
-                        acting on requests.</li>
-                    <li><strong>Red Flags:</strong> Unexpected MFA prompts, urgent financial requests, poor video
-                        quality, or unusual login alerts.</li>
-                    <li><strong>Best Practice:</strong> Separate work and personal accounts. Use VPN on public networks.
-                    </li>
-                    <li><strong>Cost of Breach:</strong> Average executive account compromise costs $3.9M. Your security
-                        protects the organization.</li>
-                </ul>
+                <div class="learning-points">
+                    <h3>Key Learning Points</h3>
+                    <ul>
+                        <li><strong>Business Email Compromise:</strong> Attackers impersonate executives to request wire
+                            transfers. Always verify via phone.</li>
+                        <li><strong>AI Deepfakes:</strong> Voice and video can be faked. Establish verification codes for
+                            sensitive requests.</li>
+                        <li><strong>Credential Theft:</strong> Use hardware MFA keys and unique passwords. Never reuse
+                            credentials.</li>
+                        <li><strong>Executive Risk:</strong> 71% of targeted attacks focus on C-level. You are 4.6x more
+                            likely to be targeted.</li>
+                        <li><strong>Verification Protocol:</strong> When in doubt, call back using a known number before
+                            acting on requests.</li>
+                        <li><strong>Red Flags:</strong> Unexpected MFA prompts, urgent financial requests, poor video
+                            quality, or unusual login alerts.</li>
+                        <li><strong>Best Practice:</strong> Separate work and personal accounts. Use VPN on public networks.
+                        </li>
+                        <li><strong>Cost of Breach:</strong> Average executive account compromise costs $3.9M. Your security
+                            protects the organization.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -793,6 +794,7 @@
                 <p id="quiz-question"></p>
                 <div id="quiz-options"></div>
                 <div id="quiz-result"></div>
+            </div>
             </div>
         </div>
     </div>
@@ -987,7 +989,8 @@
                     correctAnswers,
                     totalQuestions,
                     activity: 'Activity 2: Email Security',
-                    deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || ''))
+                    deviceId: (typeof window.getDeviceId === 'function' ? window.getDeviceId() : (localStorage.getItem('ogdcl_device_id') || '')),
+                    certificateClaimed: (typeof window.checkCertificateClaimedLocal === 'function' ? window.checkCertificateClaimedLocal('Activity 2: Email Security') : false)
                 };
 
                 const response = await fetch(API_ENDPOINT, {
@@ -1363,7 +1366,7 @@
             const userEmail = (currentUserEmail || localStorage.getItem('ogdcl_user_email') || '').trim().toLowerCase();
             const activityName = 'Activity 2: Email Security';
 
-            saveToDatabase();
+            await saveToDatabase();
 
             const alreadyGenerated = (typeof window.checkCertificateClaimed === 'function')
                 ? await window.checkCertificateClaimed(displayName, activityName)
