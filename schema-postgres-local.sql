@@ -34,6 +34,7 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "employeeId" TEXT;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "certificateId" TEXT;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "deviceId" TEXT;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS "certificateClaimed" BOOLEAN DEFAULT FALSE;
 UPDATE public.users
 SET "certificateId" = 'OGDCL-LEGACY-' || id::TEXT
 WHERE "certificateId" IS NULL;
@@ -46,6 +47,7 @@ CREATE INDEX IF NOT EXISTS idx_users_createdat ON public.users ("createdAt" DESC
 CREATE INDEX IF NOT EXISTS idx_users_empid ON public.users ("employeeId");
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users (email);
 CREATE INDEX IF NOT EXISTS idx_users_deviceid ON public.users ("deviceId");
+CREATE INDEX IF NOT EXISTS idx_users_cert_claimed ON public.users ("certificateClaimed");
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_certificate_id ON public.users ("certificateId") WHERE "certificateId" IS NOT NULL;
 
 -- STEP 4: Create Site Settings Table (Controls Site Lock & Activity Locks)
