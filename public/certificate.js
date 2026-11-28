@@ -311,6 +311,18 @@
     }
   }
 
+  function checkCertificateClaimedLocal(activity) {
+    try {
+      const key = getActivityCertKey(activity);
+      const val = localStorage.getItem(key);
+      if (!val) return false;
+      const parsed = JSON.parse(val);
+      return Boolean(parsed && (parsed.claimed === true || parsed.certId));
+    } catch (e) {
+      return Boolean(localStorage.getItem(getActivityCertKey(activity)));
+    }
+  }
+
   // Helper to check if this local device or user already generated a certificate for this specific activity.
   // Uses a two-tier check: localStorage (instant, set on download) THEN server (handles admin deletion).
   async function checkCertificateClaimed(identifier, activity) {
@@ -338,7 +350,8 @@
           activity: activity || '',
           deviceId: devId || '',
           userName: userName || '',
-          email: email || ''
+          email: email || '',
+          localClaimed: localClaimed ? 'true' : 'false'
         });
         const resp = await fetch(`/api/save-username?${params.toString()}`, {
           method: 'GET',
@@ -354,16 +367,23 @@
             return true;
           }
 
-          // Only a successful server response confirming no claim can clear the local lock.
+          // If the user record still exists in the database, keep the certificate locked if claimed locally
+          if (resData.userExists) {
+            return localClaimed;
+          }
+
+          // ONLY if the server confirms the record does NOT exist in the database
+          // (which happens when the Admin explicitly deletes the user record),
+          // clear the local claim so the participant can retake and earn a new certificate.
           if (localClaimed) clearCertificateClaim(activity);
           return false;
         }
       } catch (netErr) {
-        console.warn('Could not verify certificate status; keeping certificate locked.', netErr);
+        console.warn('Could not verify certificate status with server; keeping current lock state.', netErr);
+        return localClaimed;
       }
 
-      // Fail closed: an unavailable server must not allow another certificate.
-      return true;
+      return localClaimed;
     } catch (e) {
       console.warn('Could not verify certificate status; keeping certificate locked.', e);
       return true;
@@ -433,6 +453,7 @@
   window.resolveCertificateTitle = resolveCertificateTitle;
   window.downloadOGDCLCertificate = downloadOGDCLCertificate;
   window.checkCertificateClaimed = checkCertificateClaimed;
+  window.checkCertificateClaimedLocal = checkCertificateClaimedLocal;
   window.markCertificateClaimed = markCertificateClaimed;
   window.disableCertButton = disableCertButton;
 })(window);
